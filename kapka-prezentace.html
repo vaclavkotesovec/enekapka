@@ -228,256 +228,276 @@ h1 em, h2 em, .en-display em { font-style: normal; color: var(--accent-text); } 
 }
 
 
-html,body{margin:0;background:var(--en-gray-50)}
-body{font-family:'Archivo',system-ui,sans-serif;color:var(--en-navy)}
-html{scroll-snap-type:y mandatory}
-.slide{box-sizing:border-box;width:100vw;height:100vh;min-height:560px;scroll-snap-align:start;position:relative;overflow:hidden;
-  padding:7vh 6vw 13vh;display:flex;flex-direction:column;justify-content:center;background:#fff}
-.slide.dark{background:var(--en-navy);color:#fff}
-.slide.centered{align-items:center;text-align:center;padding:8vh 8vw}
-.slide h2{font-size:clamp(1.8rem,3.2vw,2.8rem);line-height:1.15;font-weight:800;margin:.2em 0 .7em;letter-spacing:-.01em;max-width:26em}
-.slide h3{font-size:1.1rem;font-weight:700;margin:.6em 0 .35em;line-height:1.3}
-.slide p{margin:0;line-height:1.55;color:var(--en-slate);font-size:1rem}
-.slide.dark p{color:#D5D8DC}
-.en-label.on-dark{color:var(--en-green-light)}
-.on-dark-h{color:#fff}
-.g{color:var(--en-green-light)}
-.lead{font-size:1.15rem !important;max-width:46em;margin-bottom:2em !important}
-.caption{font-size:.85rem !important;margin-top:10px !important;color:var(--en-gray-500) !important}
-.claim{font-size:clamp(3.5rem,7.5vw,6.5rem);font-weight:800;line-height:1;margin:.15em 0 .3em;letter-spacing:-.02em;color:#fff}
-.sub{font-size:clamp(1.1rem,1.7vw,1.4rem) !important;max-width:32em;color:#D5D8DC}
-/* co-branding */
-.cobrand{display:flex;align-items:center;gap:22px;margin-bottom:44px}
-.cobrand.end{margin:56px 0 0}
-.cb-en{height:36px;display:block}.cb-en svg{height:100%;width:auto;display:block}
-.cb-x{font-size:1.6rem;color:#A7B0B8;font-weight:400}
-.kp-lockup{display:inline-flex;align-items:center;gap:8px;font-family:"Bricolage Grotesque",'Archivo',sans-serif;font-weight:800;font-size:36px;line-height:1;letter-spacing:-.03em}
-.kp-drop{width:34px;height:34px;flex:none;display:block}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:.5em}
-.en-card{padding:26px}
-.ic{width:48px;height:48px;border-radius:12px;background:var(--en-green-50);display:flex;align-items:center;justify-content:center;color:var(--en-green-text)}
-.en-card--muted .ic{background:#fff}
-.ic .en-icon{width:28px;height:28px}
-/* Kapka panely = ukázky klientské značky */
-.kp-panel{font-family:"Instrument Sans",'Archivo',sans-serif;border-radius:2px 20px 20px 20px}
-.kp-hero{background:#0a2e33;color:#fff;padding:28px 30px;display:flex;flex-direction:column;gap:16px}
-.kp-hero .kp-lockup{font-size:30px}.kp-hero .kp-drop{width:28px;height:28px}
-.kp-hero p{color:rgba(255,255,255,.76) !important;font-family:"Instrument Sans",'Archivo',sans-serif;font-size:.98rem}
-.kp-eq{display:flex;flex-wrap:wrap;gap:8px 12px;font-family:"Bricolage Grotesque",'Archivo',sans-serif;font-weight:700;font-size:30px;letter-spacing:-.01em}
-.kp-eq i{font-style:normal;color:#f0a830}
-.kp-sw{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px}
-.kp-sw div{display:grid;gap:2px;font-size:.85rem}
-.kp-sw span{height:40px;border-radius:2px 12px 12px 12px;margin-bottom:6px}
-.kp-sw small{color:rgba(255,255,255,.65)}
-.brand-row{display:grid;grid-template-columns:1fr 1.1fr;gap:28px;align-items:start}
-.kp-light{background:#f6f8f7;border:1px solid #d5e0df;padding:22px}
-.kp-calc{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr auto 1.15fr;gap:10px;align-items:stretch}
-.kp-calc>i{align-self:center;font-style:normal;font:700 30px/1 "Bricolage Grotesque",'Archivo',sans-serif;color:#4d6366}
-.kc{background:#fff;border:1px solid #d5e0df;border-radius:2px 20px 20px 20px;padding:18px;display:grid;gap:4px;align-content:start;color:#0f2226}
-.kc b{font:800 56px/1 "Bricolage Grotesque",'Archivo',sans-serif;letter-spacing:-.04em}
-.kc strong{font:700 17px/1.2 "Bricolage Grotesque",'Archivo',sans-serif}
-.kc small{font-size:13px;color:#4d6366}
-.kc.k{background:#ddf0ee;border-color:#ddf0ee}.kc.k b{color:#0b6e73}
+:root{--navy:#243746;--green:#46B433;--green-t:#378729;--green-l:#EEF7EC;--slate:#505F6B;--muted:#69727D;--line:#D5D8DC;
+--kapka:#0b6e73;--jantar:#f0a830;--hlubina:#0a2e33;--out:cubic-bezier(.22,1,.36,1);
+--pozadi:radial-gradient(42% 52% at 88% 6%, rgba(240,168,48,.13), transparent 65%),radial-gradient(46% 56% at 96% 62%, rgba(70,180,51,.11), transparent 65%),radial-gradient(48% 60% at 2% 96%, rgba(11,110,115,.10), transparent 65%),#fff}
+html,body{margin:0;height:100%;background:#E9EBEE;overflow:hidden}
+body{font-family:'Archivo',system-ui,sans-serif;color:var(--navy);-webkit-font-smoothing:antialiased}
+.deck{position:absolute;inset:0;display:grid;place-items:center}
+.stage{position:relative;width:min(100vw,177.78vh);height:min(56.25vw,100vh);container-type:size;overflow:hidden;background:var(--pozadi)}
+.slide{position:absolute;inset:0;padding:15cqh 7cqh 9cqh;display:flex;flex-direction:column;opacity:0;visibility:hidden;
+  transition:opacity .5s ease,visibility 0s .5s}
+.slide.akt{opacity:1;visibility:visible;transition:opacity .6s ease}
+.logo{position:absolute;left:6cqh;top:5cqh;display:flex;align-items:center;gap:1.6cqh;height:3.4cqh}
+.logo>svg{height:100%;width:auto}
+.logo .x{color:var(--muted);font-size:2.4cqh}
+.kp-lockup{display:inline-flex;align-items:center;gap:.8cqh;font-family:"Bricolage Grotesque",'Archivo',sans-serif;font-weight:800;font-size:3.6cqh;letter-spacing:-.03em;line-height:1}
+.kp-drop{height:1em;width:1em;flex:none}
+.kp-lockup.big{font-size:7cqh}
+.acc{color:var(--green)}
+.kicker{font-weight:500;font-size:1.9cqh;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin:0 0 1.6cqh}
+h2{font-weight:800;font-size:7cqh;line-height:1.02;letter-spacing:-.035em;margin:0 0 5cqh;max-width:85%}
+.mega{font-weight:800;font-size:13cqh;line-height:1;letter-spacing:-.045em;margin:0}
+.center{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4cqh;margin-top:-6cqh}
+.podpis{font-weight:500;font-size:2.4cqh;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin:0}
+.eq{display:flex;gap:2cqh;font-weight:700;font-size:4.6cqh;letter-spacing:-.02em;margin:0}
+.eq i{font-style:normal;color:var(--jantar)}
+/* kroky: prvek se zaostří a vyjede */
+.f{opacity:0;filter:blur(.5cqh);transform:translateY(1.2cqh);transition:opacity .35s,filter .35s,transform .35s}
+.f.on{opacity:1;filter:none;transform:none;transition:opacity .7s ease-out,filter .7s ease-out,transform .7s var(--out)}
+/* co děláme */
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:5cqh;margin-top:2cqh}
+.tri b{display:block;font-weight:800;font-size:4.6cqh;letter-spacing:-.03em;border-top:.5cqh solid var(--navy);padding-top:2cqh;margin-bottom:1.4cqh}
+.tri p,.body4 p{margin:0;font-size:2.5cqh;line-height:1.5;color:var(--slate)}
+/* značka */
+.znacka{display:grid;grid-template-columns:1fr 1fr;gap:6cqh;align-items:center}
+.kp-hero{background:var(--hlubina);color:#fff;border-radius:.3cqh 3cqh 3cqh 3cqh;padding:4.5cqh;display:flex;flex-direction:column;gap:3cqh}
+.kp-hero p{margin:0;font-family:"Instrument Sans",'Archivo',sans-serif;color:rgba(255,255,255,.78);font-size:2.4cqh;line-height:1.5}
+.kp-sw{display:flex;gap:1.4cqh}.kp-sw span{flex:1;height:6cqh;border-radius:.3cqh 1.8cqh 1.8cqh 1.8cqh}
+.slovnik{list-style:none;margin:0;padding:0;display:grid;gap:3cqh}
+.slovnik span{display:block;font-weight:500;font-size:1.7cqh;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.slovnik b{font-weight:700;font-size:3.2cqh;letter-spacing:-.015em}
+/* výpočet */
+.calc{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr auto 1.15fr;gap:1.6cqh;align-items:stretch;margin-top:2cqh}
+.calc>i{align-self:center;font-style:normal;font-family:"Bricolage Grotesque",'Archivo',sans-serif;font-weight:700;font-size:5cqh;color:#4d6366}
+.kc{background:#fff;border:.2cqh solid #d5e0df;border-radius:.3cqh 3cqh 3cqh 3cqh;padding:2.6cqh;display:flex;flex-direction:column;gap:.6cqh;color:#0f2226}
+.kc b{font-family:"Bricolage Grotesque",'Archivo',sans-serif;font-weight:800;font-size:9cqh;line-height:1;letter-spacing:-.04em}
+.kc strong{font-family:"Bricolage Grotesque",'Archivo',sans-serif;font-size:2.5cqh;line-height:1.15}
+.kc small{font-family:"Instrument Sans",'Archivo',sans-serif;font-size:1.9cqh;color:#4d6366}
+.kc.k{background:#ddf0ee;border-color:#ddf0ee}.kc.k b{color:var(--kapka)}
 .kc.j{background:#fcefd6;border-color:#fcefd6}.kc.j b{color:#8a5300}
-.kc.t{background:#0a2e33;border-color:#0a2e33;color:#fff}.kc.t b{color:#f0a830;font-size:66px}.kc.t small{color:rgba(255,255,255,.72)}
-.brand-row .en-table th,.brand-row .en-table td{font-size:15px !important;padding:10px 14px !important}
-/* model */
-.model{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:16px;align-items:center;margin-bottom:24px}
-.col{display:flex;flex-direction:column;gap:12px}
-.obj{border:1px solid var(--en-gray-300);border-radius:16px;padding:14px 18px;background:#fff;display:flex;flex-direction:column;gap:2px}
-.obj b{font-weight:700;font-size:1rem;color:var(--en-navy)}
-.obj span{font-size:.88rem;color:var(--en-slate)}
-.obj.std{background:var(--en-gray-50);border-color:var(--en-gray-50)}
-.obj.hero{border:2px solid var(--en-green);background:var(--en-green-50)}
-.arrow{color:var(--en-green-text)}.arrow .en-icon{width:32px;height:32px}
-.note{max-width:62em;margin-top:22px}
-.note p{color:var(--en-navy) !important}
-/* ADLC */
-.adlc{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
-.ph{border-top:3px solid var(--en-green);padding-top:14px;display:flex;flex-direction:column;gap:6px}
-.ph .num{display:inline-flex;width:34px;height:34px;border-radius:50%;background:var(--en-navy);color:#fff;font-weight:700;align-items:center;justify-content:center}
-.ph h3{margin:.3em 0 0}
-.ph code{font-family:ui-monospace,Menlo,monospace;font-size:.85rem;color:var(--accent-text-tint);background:var(--en-green-50);border-radius:6px;padding:3px 8px;align-self:flex-start}
-.ph p{font-size:.92rem}
+.kc.t{background:var(--hlubina);border-color:var(--hlubina);color:#fff}.kc.t b{color:var(--jantar);font-size:11cqh}.kc.t small{color:rgba(255,255,255,.72)}
+.pozn-dole{position:absolute;left:7cqh;bottom:6cqh;margin:0;font-weight:500;font-size:1.9cqh;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+/* kresby perem */
+.kresba{flex:1;width:100%;min-height:0}
+.seg{fill:none;stroke:var(--navy);stroke-width:7;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;opacity:0;transition:stroke-dashoffset .25s ease-in,opacity 0s .25s}
+.seg.tenka{stroke-width:4;stroke:#8A949C}
+.seg.zpet{stroke:var(--green);stroke-width:4;stroke-dasharray:1}
+.seg.on{stroke-dashoffset:0;opacity:1;transition:stroke-dashoffset .9s var(--out) var(--sd,0s),opacity 0s var(--sd,0s)}
+.bod{fill:#fff;stroke:var(--navy);stroke-width:5;opacity:0;transition:opacity .2s}
+.bod.on{opacity:1;transition:opacity .3s ease-out .55s}
+.uzel{opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s}
+.uzel.on{opacity:1;transform:none;transition:opacity .6s ease-out .45s,transform .7s var(--out) .45s}
+.uzel rect{fill:#fff;stroke:var(--line);stroke-width:2;filter:drop-shadow(0 14px 24px rgba(36,55,70,.07))}
+.uzel.hero rect{fill:var(--green-l);stroke:var(--green);stroke-width:3}
+.uzel .n{font-weight:700;font-size:27px;fill:var(--navy)}
+.uzel .s{font-size:21px;fill:var(--slate)}
+.pozn{font-weight:500;font-size:20px;letter-spacing:.2em;fill:var(--muted)}
+.pn{font-weight:500;font-size:22px;letter-spacing:.2em;fill:var(--muted)}
+.jm{font-weight:800;font-size:40px;letter-spacing:-.03em;fill:var(--navy)}
+.sk{font-family:ui-monospace,Menlo,monospace;font-size:22px;fill:#215219}
+text.s{font-size:21px;fill:var(--slate)}
+/* body4 */
+.body4{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:5cqh 7cqh}
+.body4 span{font-weight:800;font-size:2.4cqh;color:var(--green-t)}
+.body4 b{display:block;font-weight:800;font-size:3.8cqh;letter-spacing:-.025em;margin:.6cqh 0 1cqh}
 /* kanban */
-.kanban{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;background:var(--en-gray-50);border-radius:16px;padding:20px}
-.khead{font-weight:700;font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;display:flex;align-items:center;gap:8px}
-.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
-.dot.gray{background:var(--en-gray-500)}.dot.blue{background:var(--en-blue)}.dot.green{background:var(--en-green)}
-.kcard{background:#fff;border:1px solid var(--en-gray-300);border-radius:10px;padding:12px 14px;margin-top:8px;font-size:.95rem}
+.kanban{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:3cqh;flex:1;max-height:48cqh}
+.col{background:rgba(246,247,248,.85);border-radius:2.4cqh;padding:2.4cqh;display:flex;flex-direction:column;gap:1.4cqh}
+.col>p{margin:0 0 .6cqh;font-weight:500;font-size:1.8cqh;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.kc2{background:#fff;border:.2cqh solid var(--line);border-radius:1.4cqh;padding:1.8cqh 2cqh;font-size:2.4cqh;color:var(--slate)}
+.kc2.done{border-color:var(--green)}
+.putuje{position:absolute;top:21cqh;left:calc(2.4cqh);width:calc((100% - 6cqh)/3 - 4.8cqh);background:#fff;border:.35cqh solid var(--navy);
+  border-radius:1.4cqh;padding:1.8cqh 2cqh;display:flex;flex-direction:column;gap:.8cqh;box-shadow:0 1.6cqh 3cqh rgba(36,55,70,.12);
+  transition:left .9s var(--out),border-color .4s}
+.putuje b{font-size:2.6cqh}
+.putuje .tag{font-weight:500;font-size:1.6cqh;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.putuje[data-pos="1"]{left:calc((100% + 3cqh)/3 + 2.4cqh)}
+.putuje[data-pos="2"]{left:calc(2*(100% + 3cqh)/3 + 2.4cqh);border-color:var(--green)}
 /* čísla */
-.stats{margin:1.5em 0 2em}
-.big{font-size:clamp(3.5rem,7vw,6rem);font-weight:800;line-height:1;color:var(--en-green-light);margin-bottom:.15em}
-.stats p{font-size:1.1rem !important;max-width:16em}
-.closing-line{font-size:1.4rem !important;font-weight:500;color:#fff !important}
-/* patička */
-.d-footer{position:absolute;left:6vw;right:6vw;bottom:36px;border-top:1px solid var(--en-gray-300);padding-top:14px;display:flex;justify-content:space-between;align-items:center;font-size:.8rem;color:var(--en-slate)}
-.d-footer.on-dark{border-top-color:rgba(255,255,255,.18);color:#A7B0B8}
-.d-footer-logo{height:20px}.d-footer-logo svg{height:100%;width:auto;display:block}
-@media screen and (max-width:900px){.grid3,.grid4,.adlc,.kanban,.brand-row{grid-template-columns:1fr}.model,.kp-calc{grid-template-columns:1fr}.kp-calc>i,.arrow{justify-self:center}.arrow{transform:rotate(90deg)}.slide{height:auto;min-height:100vh;padding:48px 16px 96px}.cobrand{flex-wrap:wrap;justify-content:center}}
-@page{size:1280px 720px;margin:0}
-@media print{html,body{background:#fff}.slide{width:1280px;height:720px;min-height:0;page-break-after:always;padding:50px 76px 92px}
- .slide p{font-size:15px}.lead{font-size:18px !important}.obj span{font-size:13px}.caption{font-size:12px !important}}
+.cisla{display:flex;gap:9cqh;margin-top:2cqh}
+.cisla b{display:block;font-weight:800;font-size:10cqh;line-height:1;letter-spacing:-.04em;color:var(--green-t)}
+.cisla span{font-weight:500;font-size:1.9cqh;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+/* ovládání */
+.hud{position:absolute;right:6cqh;bottom:4.6cqh;font-weight:500;font-size:1.7cqh;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);z-index:5}
+.progress{position:absolute;left:0;bottom:0;height:.45cqh;background:var(--green);transition:width .5s var(--out);z-index:5}
+/* přechod mezi slidy: obsah odjede do strany ve směru listování, logo stojí */
+.slide{transition:opacity .45s ease,visibility 0s .7s}
+.slide.akt{transition:opacity .6s ease .1s}
+.slide>:not(.logo){transform:translateX(14cqw);transition:transform .7s cubic-bezier(.65,0,.35,1)}
+.slide.pred>:not(.logo){transform:translateX(-14cqw)}
+.slide.akt>:not(.logo){transform:none;transition:transform .8s var(--out)}
+@media (prefers-reduced-motion:reduce){*{transition-duration:0s!important}}
+@page{size:1600px 900px;margin:0}
+@media print{
+ html,body{overflow:visible;height:auto;background:#fff}
+ .deck{position:static;display:block}
+ .stage{width:1600px;height:900px;overflow:visible;background:none;container-type:normal}
+ .stage{container-type:size}
+ .slide{position:relative;width:1600px;height:900px;opacity:1;visibility:visible;page-break-after:always;box-sizing:border-box;
+   background:radial-gradient(42% 52% at 88% 6%, rgba(240,168,48,.13), transparent 65%),radial-gradient(46% 56% at 96% 62%, rgba(70,180,51,.11), transparent 65%),radial-gradient(48% 60% at 2% 96%, rgba(11,110,115,.10), transparent 65%),#fff}
+ .f,.uzel,.bod{opacity:1!important;filter:none!important;transform:none!important}
+ .seg{stroke-dashoffset:0!important;opacity:1!important}
+ .putuje{left:calc(2*(100% + 3cqh)/3 + 2.4cqh)!important;border-color:var(--green)}
+ .hud,.progress{display:none}
+ .slide>*{transform:none!important}
+}
 
 </style>
 </head>
 <body>
+<div class="deck"><main class="stage">
 
-<section class="slide dark centered">
-  <div class="cobrand"><span class="cb-en"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgl-1{fill:#fff;}.lgl-2{fill:#59aa46;}</style></defs><g ><g><path class="lgl-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgl-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg></span><span class="cb-x">×</span><span class="kp-lockup" style="color:#fff"><svg viewBox="0 0 64 64" class="kp-drop" aria-hidden="true"><path fill="#f0a830" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</span></div>
-  <p class="en-label on-dark">AI Hackathon · 6. 11. 2026 · tým 2</p>
-  <h1 class="claim">Kapka Klub</h1>
-  <p class="sub">Věrnostní program pro síť 120 čerpacích stanic Kapka postavený na <span class="g">Salesforce</span>, navržený a&nbsp;vyvinutý s&nbsp;AI agenty</p>
-</section>
-
-<section class="slide">
-  <p class="en-label">Co děláme</p>
-  <h2>Kapky, které jdou dohledat od nákupu až po odměnu</h2>
-  <p class="lead">Za každý litr paliva, nákup v&nbsp;obchodě a&nbsp;aktivitu v&nbsp;portálu dostane člen kapky. Vymění je za vouchery partnera EneServis.</p>
-  <div class="grid3">
-    <div class="en-card"><div class="ic"><svg class="en-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M329.39-257.31h301.22v-45.38H329.39v45.38Zm0-167.31h301.22V-470H329.39v45.38ZM237.69-100q-23.53 0-40.61-17.08T180-157.69v-644.62q0-23.53 17.08-40.61T237.69-860h347.54L780-665.23v507.54q0 23.53-17.08 40.61T722.31-100H237.69Zm324.85-544.77v-169.84H237.69q-4.61 0-8.46 3.84-3.84 3.85-3.84 8.46v644.62q0 4.61 3.84 8.46 3.85 3.84 8.46 3.84h484.62q4.61 0 8.46-3.84 3.84-3.85 3.84-8.46v-487.08H562.54ZM225.39-814.61v169.84-169.84 669.22-669.22Z"/></svg></div><h3>Kapky jako účetní kniha</h3><p>Každý pohyb kapek je samostatný neměnný záznam. Zůstatek je jejich součet, nic se nepřepisuje.</p></div>
-    <div class="en-card"><div class="ic"><svg class="en-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="m630.08-295.46 33.84-33.85-159-160.01v-200.22h-45.38v218.85l170.54 175.23ZM480.07-100q-78.22 0-147.4-29.92t-120.99-81.71q-51.81-51.79-81.75-120.94Q100-401.71 100-479.93q0-78.22 29.92-147.4t81.71-120.99q51.79-51.81 120.94-81.75Q401.71-860 479.93-860q78.22 0 147.4 29.92t120.99 81.71q51.81 51.79 81.75 120.94Q860-558.29 860-480.07q0 78.22-29.92 147.4t-81.71 120.99q-51.79 51.81-120.94 81.75Q558.29-100 480.07-100ZM480-480Zm0 334.61q138.08 0 236.35-98.26 98.26-98.27 98.26-236.35 0-138.08-98.26-236.35-98.27-98.26-236.35-98.26-138.08 0-236.35 98.26-98.26 98.27-98.26 236.35 0 138.08 98.26 236.35 98.27 98.26 236.35 98.26Z"/></svg></div><h3>Expirace po balíčcích</h3><p>Každé připsání nese vlastní datum expirace. Čerpání i&nbsp;expirace berou kapky metodou FIFO.</p></div>
-    <div class="en-card"><div class="ic"><svg class="en-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M253.31-180q-80.69 0-137-56.5T60-373.69q0-73.39 49.23-129.12 49.23-55.73 122.77-62.73 15.39-93.15 85.73-153.5 70.35-60.34 163.89-60.34 104.69 0 177.07 75.73 72.39 75.73 72.39 182.03v37.85h12.3q65.47-2.38 111.04 41.31Q900-398.77 900-332.08q0 62.46-44.81 107.27Q810.38-180 747.92-180H253.31Zm0-45.39h494.61q44.23 0 75.46-31.23 31.23-31.23 31.23-75.26 0-44.04-31.23-75.27-31.23-31.23-75.46-31.23h-62.23v-83.24q0-88.69-60.23-150.53Q565.23-734 478.38-734q-86.46 0-147.19 61.85-60.73 61.84-60.73 150.53h-19.38q-60.85 0-103.27 42.93-42.42 42.92-42.42 105.38 0 61.46 43.23 104.69t104.69 43.23ZM480-480Z"/></svg></div><h3>Na Salesforce, který Kapka má</h3><p>Sales Cloud a&nbsp;Experience Cloud se standardními objekty a&nbsp;vlastním datovým modelem, bez nové platformy.</p></div>
+<section class="slide titul" data-label="Úvod">
+  <div class="logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgd-1{fill:#243746;}.lgd-2{fill:#59aa46;}</style></defs><g ><g><path class="lgd-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgd-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg><span class="x">×</span><span class="kp-lockup" style="color:#0a2e33"><svg viewBox="0 0 64 64" class="kp-drop" aria-hidden="true"><path fill="#0b6e73" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</span></div>
+  <div class="center">
+    <h1 class="mega">Kapka Klub<span class="acc">.</span></h1>
+    <p class="eq f" data-step="0"><span>1 litr</span><i>=</i><span>1 kapka</span><i>=</i><span>1 bod</span></p>
+    <p class="podpis">Tým 2 · Enehano × Kapka · AI Hackathon 2026</p>
   </div>
-  <div class="d-footer"><span class="d-footer-logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgd-1{fill:#243746;}.lgd-2{fill:#59aa46;}</style></defs><g ><g><path class="lgd-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgd-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg></span><span>Kapka Klub · AI Hackathon 6. 11. 2026 · tým 2</span><span>02</span></div>
 </section>
 
-<section class="slide">
-  <p class="en-label">Značka klienta</p>
-  <h2>Značka Kapka: název, který vysvětlí pravidla</h2>
-  <div class="brand-row">
-    <div class="kp-panel kp-hero">
-      <span class="kp-lockup" style="color:#fff"><svg viewBox="0 0 64 64" class="kp-drop" aria-hidden="true"><path fill="#f0a830" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</span>
-      <div class="kp-eq"><span>1 litr</span><i>=</i><span>1 kapka</span><i>=</i><span>1 bod</span></div>
-      <p>Body se jmenují kapky, takže pravidlo není potřeba vysvětlovat. Obrácená kapka je špendlík na mapě: zastávka na cestě.</p>
-      <div class="kp-sw">
-        <div><span style="background:#0b6e73"></span><b>Kapka</b><small>značka</small></div>
-        <div><span style="background:#f0a830"></span><b>Jantar</b><small>kapky a&nbsp;odměny</small></div>
-        <div><span style="background:#0a2e33;outline:1px solid rgba(255,255,255,.3)"></span><b>Hlubina</b><small>tmavé plochy</small></div>
-      </div>
+<section class="slide" data-label="Co děláme">
+  <div class="logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgd-1{fill:#243746;}.lgd-2{fill:#59aa46;}</style></defs><g ><g><path class="lgd-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgd-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg><span class="x">×</span><span class="kp-lockup" style="color:#0a2e33"><svg viewBox="0 0 64 64" class="kp-drop" aria-hidden="true"><path fill="#0b6e73" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</span></div>
+  <p class="kicker">01 · Co děláme</p>
+  <h2>Každá kapka jde dohledat<span class="acc">.</span></h2>
+  <div class="tri">
+    <div class="f" data-step="1"><b>Sbíráš</b><p>Kapky za každý litr paliva, nákup v&nbsp;obchodě a&nbsp;aktivity v&nbsp;portálu. 120 stanic od prvního dne.</p></div>
+    <div class="f" data-step="2"><b>Utrácíš</b><p>Vouchery partnera EneServis. Kód KPK-XXXX-XXXX přijde e-mailem a&nbsp;v&nbsp;servisu se nadiktuje.</p></div>
+    <div class="f" data-step="3"><b>Dohledáš</b><p>Každý pohyb kapek je neměnný záznam v&nbsp;knize. Zůstatek je jejich součet, expirace jde po balíčcích FIFO.</p></div>
+  </div>
+</section>
+
+<section class="slide" data-label="Značka Kapka">
+  <div class="logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgd-1{fill:#243746;}.lgd-2{fill:#59aa46;}</style></defs><g ><g><path class="lgd-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgd-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg><span class="x">×</span><span class="kp-lockup" style="color:#0a2e33"><svg viewBox="0 0 64 64" class="kp-drop" aria-hidden="true"><path fill="#0b6e73" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</span></div>
+  <p class="kicker">02 · Značka klienta</p>
+  <h2>Název, který vysvětlí pravidla<span class="acc">.</span></h2>
+  <div class="znacka">
+    <div class="kp-hero f" data-step="1">
+      <span class="kp-lockup big" style="color:#fff"><svg viewBox="0 0 64 64" class="kp-drop" aria-hidden="true"><path fill="#f0a830" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</span>
+      <div class="kp-sw"><span style="background:#0b6e73"></span><span style="background:#f0a830"></span><span style="background:#0a2e33;outline:1px solid rgba(255,255,255,.35)"></span></div>
+      <p>Petrolej nese značku, jantar patří kapkám a&nbsp;odměnám. Obrácená kapka je špendlík na mapě.</p>
     </div>
-    <div class="en-table-wrap"><table class="en-table">
-      <thead><tr><th>Věc</th><th>Název</th></tr></thead>
-      <tbody>
-        <tr><td>Věrnostní program</td><td>Kapka Klub</td></tr>
-        <tr><td>Bod</td><td>kapka (1 kapka, 2 kapky, 5 kapek)</td></tr>
-        <tr><td>Kampaň 40&nbsp;l a&nbsp;víc</td><td>Natankuj plnou · +50 kapek</td></tr>
-        <tr><td>Kampaň obchod od 150&nbsp;Kč</td><td>Zastávka na cestě · ×1,1</td></tr>
-        <tr><td>Partner a&nbsp;voucher</td><td>EneServis · KPK-XXXX-XXXX</td></tr>
-        <tr><td>Stanice</td><td>Kapka Brno – Vídeňská · KPK-001 až KPK-120</td></tr>
-      </tbody>
-    </table></div>
+    <ul class="slovnik">
+      <li class="f" data-step="2"><span>Program</span><b>Kapka Klub</b></li>
+      <li class="f" data-step="2"><span>Bod</span><b>kapka · 1 kapka, 2 kapky, 5 kapek</b></li>
+      <li class="f" data-step="3"><span>Kampaně</span><b>Natankuj plnou · Zastávka na cestě</b></li>
+      <li class="f" data-step="3"><span>Partner</span><b>EneServis · voucher KPK-XXXX-XXXX</b></li>
+    </ul>
   </div>
-  <p class="caption">Stejné názvy používáme v&nbsp;portálu, e-mailech, popiscích v&nbsp;Salesforce i&nbsp;v&nbsp;reportu.</p>
-  <div class="d-footer"><span class="d-footer-logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgd-1{fill:#243746;}.lgd-2{fill:#59aa46;}</style></defs><g ><g><path class="lgd-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgd-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg></span><span>Kapka Klub · AI Hackathon 6. 11. 2026 · tým 2</span><span>03</span></div>
 </section>
 
-<section class="slide">
-  <p class="en-label">Jak se počítají kapky</p>
-  <h2>Jana natankuje 45&nbsp;l a&nbsp;koupí kávu se sušenkou za 180&nbsp;Kč</h2>
-  <div class="kp-panel kp-light">
-    <div class="kp-calc">
-      <div class="kc"><b>45</b><strong>Palivo</strong><small>1 kapka za celý litr</small></div><i>+</i>
-      <div class="kc"><b>9</b><strong>Obchod</strong><small>1 kapka za celých 20&nbsp;Kč</small></div><i>+</i>
-      <div class="kc j"><b>5</b><strong>Zastávka na cestě</strong><small>(45 + 9) × 1,1 = 59</small></div><i>+</i>
-      <div class="kc k"><b>50</b><strong>Natankuj plnou</strong><small>aspoň 40&nbsp;l v&nbsp;transakci</small></div><i>=</i>
-      <div class="kc t"><b>109</b><strong>kapek</strong><small>připsáno hned po nákupu</small></div>
+<section class="slide" data-label="Výpočet kapek">
+  <div class="logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgd-1{fill:#243746;}.lgd-2{fill:#59aa46;}</style></defs><g ><g><path class="lgd-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgd-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg><span class="x">×</span><span class="kp-lockup" style="color:#0a2e33"><svg viewBox="0 0 64 64" class="kp-drop" aria-hidden="true"><path fill="#0b6e73" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</span></div>
+  <p class="kicker">03 · Jak se počítají kapky</p>
+  <h2>Jana: 45&nbsp;l a&nbsp;káva se sušenkou za 180&nbsp;Kč<span class="acc">.</span></h2>
+  <div class="calc">
+    <div class="kc f" data-step="1"><b>45</b><strong>Palivo</strong><small>1 kapka za celý litr</small></div>
+    <i class="f" data-step="2">+</i>
+    <div class="kc f" data-step="2"><b>9</b><strong>Obchod</strong><small>1 kapka za celých 20&nbsp;Kč</small></div>
+    <i class="f" data-step="3">+</i>
+    <div class="kc j f" data-step="3"><b>5</b><strong>Zastávka na cestě</strong><small>+10&nbsp;% z&nbsp;54 kapek, dolů</small></div>
+    <i class="f" data-step="4">+</i>
+    <div class="kc k f" data-step="4"><b>50</b><strong>Natankuj plnou</strong><small>aspoň 40&nbsp;l v&nbsp;transakci</small></div>
+    <i class="f" data-step="5">=</i>
+    <div class="kc t f" data-step="5"><b>109</b><strong>kapek</strong><small>připsáno hned po nákupu</small></div>
+  </div>
+  <p class="pozn-dole f" data-step="5">Ukázka v&nbsp;designu Kapka · kampaně jsou data, ne kód</p>
+</section>
+
+<section class="slide" data-label="Datový model">
+  <div class="logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgd-1{fill:#243746;}.lgd-2{fill:#59aa46;}</style></defs><g ><g><path class="lgd-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgd-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg><span class="x">×</span><span class="kp-lockup" style="color:#0a2e33"><svg viewBox="0 0 64 64" class="kp-drop" aria-hidden="true"><path fill="#0b6e73" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</span></div>
+  <p class="kicker">04 · Datový model</p>
+  <h2>Člen je středem, kapky žijí v&nbsp;knize<span class="acc">.</span></h2>
+  <svg class="kresba" viewBox="0 60 1600 760" preserveAspectRatio="xMidYMid meet">
+    <path class="seg" data-step="1" pathLength="1" style="--sd:0s" d="M 560 250 C 640 250, 640 400, 660 410"/><path class="seg" data-step="1" pathLength="1" style="--sd:0.15s" d="M 560 430 L 660 430"/><path class="seg tenka" data-step="1" pathLength="1" style="--sd:0.3s" d="M 360 610 C 360 560, 420 540, 420 520"/><path class="seg" data-step="2" pathLength="1" style="--sd:0s" d="M 800 220 L 800 370"/><path class="seg" data-step="3" pathLength="1" style="--sd:0s" d="M 940 430 C 1000 430, 1000 330, 1040 330"/><path class="seg" data-step="3" pathLength="1" style="--sd:0.4s" d="M 1240 380 L 1240 470"/><path class="seg tenka" data-step="4" pathLength="1" style="--sd:0s" d="M 1240 600 L 1240 660"/><path class="seg tenka" data-step="4" pathLength="1" style="--sd:0.2s" d="M 940 450 C 1000 450, 1000 760, 1040 760"/>
+    <g class="uzel " data-step="1"><rect x="160" y="200" width="400" height="100" rx="20"/><text class="n" x="184" y="244">Account · Contact</text><text class="s" x="184" y="278">zákazník, domácnost, flotila</text></g><g class="uzel " data-step="1"><rect x="160" y="380" width="400" height="100" rx="20"/><text class="n" x="184" y="424">Order · OrderItem</text><text class="s" x="184" y="458">nákup na stanici</text></g><g class="uzel " data-step="1"><rect x="160" y="610" width="400" height="100" rx="20"/><text class="n" x="184" y="654">Fuel_Station__c</text><text class="s" x="184" y="688">stanice KPK-001 až KPK-120</text></g><g class="uzel " data-step="2"><rect x="600" y="120" width="400" height="100" rx="20"/><text class="n" x="624" y="164">Loyalty_Card__c</text><text class="s" x="624" y="198">karta načtená u&nbsp;pokladny</text></g><g class="uzel hero" data-step="0"><rect x="660" y="370" width="280" height="100" rx="20"/><text class="n" x="680" y="414" style="font-size:24px">Loyalty_Member__c</text><text class="s" x="680" y="448">člen Kapka Klubu</text></g><g class="uzel hero" data-step="3"><rect x="1040" y="280" width="400" height="100" rx="20"/><text class="n" x="1064" y="324">Points_Transaction__c</text><text class="s" x="1064" y="358">kniha pohybů kapek</text></g><g class="uzel " data-step="3"><rect x="1040" y="480" width="400" height="100" rx="20"/><text class="n" x="1064" y="524">Points_Allocation__c</text><text class="s" x="1064" y="558">z&nbsp;kterých kapek se čerpalo</text></g><g class="uzel " data-step="4"><rect x="1040" y="660" width="400" height="100" rx="20"/><text class="n" x="1064" y="704">Earning_Rule__c</text><text class="s" x="1064" y="738">kolik kapek, od–do</text></g>
+    <text class="pozn f" data-step="4" x="1040" y="805">POHYB SE NEMAŽE · MĚNÍ SE JEN STAV</text>
+  </svg>
+</section>
+
+<section class="slide" data-label="Přístup">
+  <div class="logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgd-1{fill:#243746;}.lgd-2{fill:#59aa46;}</style></defs><g ><g><path class="lgd-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgd-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg><span class="x">×</span><span class="kp-lockup" style="color:#0a2e33"><svg viewBox="0 0 64 64" class="kp-drop" aria-hidden="true"><path fill="#0b6e73" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</span></div>
+  <p class="kicker">05 · Jak na to jdeme</p>
+  <h2>Agent dostane mantinely, ne volnou ruku<span class="acc">.</span></h2>
+  <ol class="body4">
+    <li class="f" data-step="1"><span>01</span><b>Notion jako zdroj pravdy</b><p>Zadání, datový model, značka a&nbsp;Kanban. Čte z&nbsp;něj tým i&nbsp;agent.</p></li>
+    <li class="f" data-step="2"><span>02</span><b>Datový model předem</b><p>Objekty, pole a&nbsp;pravidla knihy kapek agent nevymýšlí, jen implementuje.</p></li>
+    <li class="f" data-step="3"><span>03</span><b>Skilly místo promptů</b><p>Každá fáze má svůj skill v&nbsp;repu, stejný postup v&nbsp;každém běhu.</p></li>
+    <li class="f" data-step="4"><span>04</span><b>Striktně utažené</b><p>Bez schváleného plánu se nepíše kód. Hotovo = ověřeno proti AC.</p></li>
+  </ol>
+</section>
+
+<section class="slide" data-label="ADLC">
+  <div class="logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgd-1{fill:#243746;}.lgd-2{fill:#59aa46;}</style></defs><g ><g><path class="lgd-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgd-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg><span class="x">×</span><span class="kp-lockup" style="color:#0a2e33"><svg viewBox="0 0 64 64" class="kp-drop" aria-hidden="true"><path fill="#0b6e73" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</span></div>
+  <p class="kicker">06 · ADLC</p>
+  <h2>Pět fází, pět skillů, žádná improvizace<span class="acc">.</span></h2>
+  <svg class="kresba" viewBox="0 300 1600 480" preserveAspectRatio="xMidYMid meet"><circle class="bod" data-step="1" cx="180" cy="420" r="16"/><g class="f" data-step="1"><text class="pn" x="180" y="380" text-anchor="middle">01</text><text class="jm" x="180" y="500" text-anchor="middle">Specifikace</text><text class="sk" x="180" y="545" text-anchor="middle">/kapka-spec</text><text class="s" x="180" y="585" text-anchor="middle">AC v&nbsp;Gherkinu, plán, karty</text></g><path class="seg" data-step="2" pathLength="1" style="--sd:0s" d="M 180 420 L 490 420"/><circle class="bod" data-step="2" cx="490" cy="420" r="16"/><g class="f" data-step="2"><text class="pn" x="490" y="380" text-anchor="middle">02</text><text class="jm" x="490" y="500" text-anchor="middle">Test first</text><text class="sk" x="490" y="545" text-anchor="middle">/kapka-tdd</text><text class="s" x="490" y="585" text-anchor="middle">nejdřív červený test</text></g><path class="seg" data-step="3" pathLength="1" style="--sd:0s" d="M 490 420 L 800 420"/><circle class="bod" data-step="3" cx="800" cy="420" r="16"/><g class="f" data-step="3"><text class="pn" x="800" y="380" text-anchor="middle">03</text><text class="jm" x="800" y="500" text-anchor="middle">Vývoj</text><text class="sk" x="800" y="545" text-anchor="middle">/kapka-develop</text><text class="s" x="800" y="585" text-anchor="middle">řez po řezu, deploy</text></g><path class="seg" data-step="4" pathLength="1" style="--sd:0s" d="M 800 420 L 1110 420"/><circle class="bod" data-step="4" cx="1110" cy="420" r="16"/><g class="f" data-step="4"><text class="pn" x="1110" y="380" text-anchor="middle">04</text><text class="jm" x="1110" y="500" text-anchor="middle">Review</text><text class="sk" x="1110" y="545" text-anchor="middle">/kapka-review</text><text class="s" x="1110" y="585" text-anchor="middle">spec a&nbsp;standardy</text></g><path class="seg" data-step="5" pathLength="1" style="--sd:0s" d="M 1110 420 L 1420 420"/><circle class="bod" data-step="5" cx="1420" cy="420" r="16"/><g class="f" data-step="5"><text class="pn" x="1420" y="380" text-anchor="middle">05</text><text class="jm" x="1420" y="500" text-anchor="middle">Retro</text><text class="sk" x="1420" y="545" text-anchor="middle">/kapka-retro</text><text class="s" x="1420" y="585" text-anchor="middle">lepší skilly příště</text></g><path class="seg tenka zpet" data-step="6" pathLength="1" style="--sd:0s" d="M 1420 615 C 1420 690, 1280 700, 800 700 C 320 700, 180 690, 180 615"/><text class="pozn f" data-step="6" x="800" y="755" text-anchor="middle">RETRO VYLEPŠÍ SKILLY · DALŠÍ KARTA JDE LÉPE</text></svg>
+</section>
+
+<section class="slide" data-label="Kanban">
+  <div class="logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgd-1{fill:#243746;}.lgd-2{fill:#59aa46;}</style></defs><g ><g><path class="lgd-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgd-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg><span class="x">×</span><span class="kp-lockup" style="color:#0a2e33"><svg viewBox="0 0 64 64" class="kp-drop" aria-hidden="true"><path fill="#0b6e73" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</span></div>
+  <p class="kicker">07 · Spec driven development</p>
+  <h2>Zadání rozpadlé na ověřitelné karty<span class="acc">.</span></h2>
+  <div class="kanban" data-move>
+    <div class="col"><p>Not started</p><div class="kc2">vouchery EneServis</div><div class="kc2">kampaně a&nbsp;pravidla</div></div>
+    <div class="col"><p>In progress</p></div>
+    <div class="col"><p>Done</p><div class="kc2 done">zadání a&nbsp;datový model</div></div>
+    <div class="putuje" data-pos="0"><b>kniha kapek a&nbsp;FIFO</b><span class="tag">spec.md · plan.md</span></div>
+  </div>
+  <p class="pozn-dole"><span class="f" data-step="1">/kapka-spec založí kartu</span><span class="f" data-step="2"> → /kapka-develop ji vezme</span><span class="f" data-step="3"> → Done až po zeleném review</span></p>
+</section>
+
+<section class="slide" data-label="Cíl">
+  <div class="logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgd-1{fill:#243746;}.lgd-2{fill:#59aa46;}</style></defs><g ><g><path class="lgd-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgd-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg><span class="x">×</span><span class="kp-lockup" style="color:#0a2e33"><svg viewBox="0 0 64 64" class="kp-drop" aria-hidden="true"><path fill="#0b6e73" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</span></div>
+  <div class="center">
+    <h1 class="mega">Jdeme si pro výhru<span class="acc">.</span></h1>
+    <div class="cisla">
+      <div class="f" data-step="1"><b>0</b><span>řádků kódu bez schváleného plánu</span></div>
+      <div class="f" data-step="2"><b>5</b><span>fází ADLC na každou kartu</span></div>
+      <div class="f" data-step="3"><b>100&nbsp;%</b><span>pohybů kapek dohledatelných</span></div>
     </div>
   </div>
-  <p class="caption">Ukázka v&nbsp;designu Kapka, jak ji uvidí člen v&nbsp;portálu.</p>
-  <div class="en-callout note"><p><b>Kampaně jsou záznamy, ne kód.</b> Loyalty manažer nastaví období, podmínku a&nbsp;odměnu bez vývojáře.</p></div>
-  <div class="d-footer"><span class="d-footer-logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgd-1{fill:#243746;}.lgd-2{fill:#59aa46;}</style></defs><g ><g><path class="lgd-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgd-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg></span><span>Kapka Klub · AI Hackathon 6. 11. 2026 · tým 2</span><span>04</span></div>
 </section>
 
-<section class="slide">
-  <p class="en-label">Datový model</p>
-  <h2>Člen Kapka Klubu je středem modelu</h2>
-  <div class="model">
-    <div class="col">
-      <div class="obj std"><b>Account · Contact</b><span>zákazník, domácnost, flotila</span></div>
-      <div class="obj std"><b>Order · OrderItem</b><span>nákup na stanici</span></div>
-      <div class="obj"><b>Fuel_Station__c</b><span>stanice KPK-001 až KPK-120</span></div>
-    </div>
-    <div class="arrow"><svg class="en-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M693.69-457.31H180v-45.38h513.69L448.39-748 480-780l300 300-300 300-31.61-32 245.3-245.31Z"/></svg></div>
-    <div class="col">
-      <div class="obj hero"><b>Loyalty_Member__c</b><span>člen Kapka Klubu, zůstatek kapek</span></div>
-      <div class="obj"><b>Loyalty_Card__c</b><span>karta načtená u&nbsp;pokladny</span></div>
-      <div class="obj"><b>Earning_Rule__c</b><span>kolik kapek za kategorii, od–do</span></div>
-    </div>
-    <div class="arrow"><svg class="en-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M693.69-457.31H180v-45.38h513.69L448.39-748 480-780l300 300-300 300-31.61-32 245.3-245.31Z"/></svg></div>
-    <div class="col">
-      <div class="obj hero"><b>Points_Transaction__c</b><span>pohyb kapek: Earn, Redeem, Expire, Reversal</span></div>
-      <div class="obj"><b>Points_Allocation__c</b><span>z&nbsp;kterých kapek se čerpalo</span></div>
-      <div class="obj"><b>Points_Statement__c</b><span>periodický výpis s&nbsp;historií</span></div>
-    </div>
+<section class="slide titul" data-label="Díky">
+  <div class="logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgd-1{fill:#243746;}.lgd-2{fill:#59aa46;}</style></defs><g ><g><path class="lgd-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgd-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg><span class="x">×</span><span class="kp-lockup" style="color:#0a2e33"><svg viewBox="0 0 64 64" class="kp-drop" aria-hidden="true"><path fill="#0b6e73" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</span></div>
+  <div class="center">
+    <h1 class="mega">Děkujeme<span class="acc">.</span></h1>
+    <p class="podpis">Tým 2 · Kapka Klub · github.com/vaclavkotesovec/enekapka</p>
   </div>
-  <div class="en-callout note"><p><b>Pravidlo knihy:</b> pohyb kapek se nikdy nemaže ani nepřepisuje. Mění se jen stav: Pending, Posted, Cancelled.</p></div>
-  <div class="d-footer"><span class="d-footer-logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgd-1{fill:#243746;}.lgd-2{fill:#59aa46;}</style></defs><g ><g><path class="lgd-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgd-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg></span><span>Kapka Klub · AI Hackathon 6. 11. 2026 · tým 2</span><span>05</span></div>
 </section>
-
-<section class="slide">
-  <p class="en-label">Jak na to jdeme</p>
-  <h2>AI agent dostane mantinely, ne volnou ruku</h2>
-  <div class="grid4">
-    <div class="en-card en-card--muted"><div class="ic"><svg class="en-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M160.69-80.69Q130-111.39 130-155.72t30.87-74.85q30.87-30.51 74.85-30.51 13.05 0 24.07 2.7 11.01 2.69 22.13 8.07l100-124.08q-18.23-21.46-26.88-48.07-8.65-26.62-4.04-55.54l-144.46-48.31q-13.85 24.23-37.39 38.04-23.53 13.81-53.76 13.81-43.5 0-74.45-30.84Q10-536.14 10-580.09t30.94-74.7q30.95-30.75 74.78-30.75t74.6 30.82q30.76 30.81 30.76 74.72 0 1.92-.2 4.31-.19 2.38-.19 3.54l145.08 50.07q15.31-27.76 38.12-43.8 22.8-16.04 52.26-22.27v-153.62q-38.61-9.08-60.15-39.15-21.54-30.08-21.54-63.54 0-43.65 30.59-74.6Q435.64-950 480.09-950t74.95 30.94q30.5 30.95 30.5 74.6 0 33.46-21.85 63.54-21.84 30.07-59.84 39.15v153.62q29.46 6.23 52.57 22.27 23.12 16.04 38.81 43.8l144.08-50.07q-.39-1.06-.39-3.54V-580q0-43.91 30.76-74.72 30.77-30.82 74.6-30.82t74.78 30.59Q950-624.36 950-579.91t-30.94 74.95q-30.95 30.5-74.45 30.5-30.23 0-54.07-14-23.85-14-37.08-37.85L609-478q5 28.92-3.54 55.73-8.54 26.81-27.38 47.5l100 124.46q10.61-5.38 21.88-8.07 11.27-2.7 23.88-2.7 44.92 0 75.54 30.51Q830-200.05 830-155.72t-30.69 75.03Q768.61-50 724.28-50t-74.85-30.85q-30.51-30.84-30.51-74.8 0-19.12 5.33-34.57 5.32-15.45 16.83-30.4l-100-124.84q-27.9 15.84-61.49 15.84-33.58 0-61.28-15.84l-99.39 125.84q11.16 14.62 16.66 29.74 5.5 15.11 5.5 34.23 0 43.96-30.51 74.8Q280.05-50 235.72-50t-75.03-30.69Zm-45.05-439.16q25.21 0 42.63-17.52 17.42-17.53 17.42-42.73 0-25.21-17.52-42.63-17.53-17.42-42.73-17.42-25.21 0-42.63 17.52-17.43 17.53-17.43 42.73 0 25.21 17.53 42.63t42.73 17.42Zm162.63 406.94q17.42-17.53 17.42-42.73 0-25.21-17.52-42.63-17.53-17.42-42.73-17.42-25.21 0-42.63 17.52-17.43 17.53-17.43 42.73 0 25.21 17.53 42.63 17.53 17.43 42.73 17.43 25.21 0 42.63-17.53Zm244.46-688.92q17.42-17.53 17.42-42.73 0-25.21-17.52-42.63-17.53-17.43-42.73-17.43-25.21 0-42.63 17.53t-17.42 42.73q0 25.21 17.52 42.63 17.53 17.42 42.73 17.42 25.21 0 42.63-17.52ZM480.31-375q35.38 0 60.04-24.96Q565-424.92 565-460.31q0-35.38-24.77-60.04Q515.47-545 480-545q-35.08 0-60.04 24.77Q395-495.47 395-460q0 35.08 24.96 60.04T480.31-375Zm286.88 262.09q17.43-17.53 17.43-42.73 0-25.21-17.53-42.63t-42.73-17.42q-25.21 0-42.63 17.52-17.42 17.53-17.42 42.73 0 25.21 17.52 42.63 17.53 17.43 42.73 17.43 25.21 0 42.63-17.53Zm120-424.46q17.43-17.53 17.43-42.73 0-25.21-17.53-42.63t-42.73-17.42q-25.21 0-42.63 17.52-17.42 17.53-17.42 42.73 0 25.21 17.52 42.63 17.53 17.42 42.73 17.42 25.21 0 42.63-17.52ZM480-844.46ZM115.54-580ZM480-460Zm364.46-120ZM235.54-155.54Zm488.92 0Z"/></svg></div><h3>Notion jako zdroj pravdy</h3><p>Zadání, datový model, značka i&nbsp;Kanban na jednom místě. Čte z&nbsp;něj tým i&nbsp;agent.</p></div>
-    <div class="en-card en-card--muted"><div class="ic"><svg class="en-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M612.85-130v-123.85H457.31v-407.3H347.77v127.3H90V-830h257.77v123.46h265.08V-830H870v296.15H612.85v-127.3H502.69v361.92h110.16v-127.31H870V-130H612.85ZM135.38-784.62v205.39-205.39Zm522.85 403.47v205.77-205.77Zm0-403.47v205.39-205.39Zm0 205.39h166.39v-205.39H658.23v205.39Zm0 403.85h166.39v-205.77H658.23v205.77ZM135.38-579.23h167.01v-205.39H135.38v205.39Z"/></svg></div><h3>ADLC</h3><p>Každá karta projde pěti fázemi se skilly: specifikace, TDD, vývoj, review, retro.</p></div>
-    <div class="en-card en-card--muted"><div class="ic"><svg class="en-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M480-140q-145.61 0-242.81-41.12Q140-222.23 140-283.85V-680q0-57.92 99.54-98.96Q339.08-820 480-820q140.92 0 240.46 41.04Q820-737.92 820-680v396.15q0 61.62-97.19 102.73Q625.61-140 480-140Zm0-468.38q85.23 0 174.38-25.35 89.16-25.35 114-57.19-25.46-31.62-114.23-57.66-88.77-26.03-174.15-26.03-86.85 0-175.46 25.03-88.62 25.04-114.31 57.12 25.31 33.84 112.73 58.96 87.42 25.12 177.04 25.12Zm-.62 211.3q41.62 0 83.24-4.5 41.61-4.5 79.53-13.3 37.93-8.81 71.97-21.62 34.03-12.81 60.49-28.42v-167.7q-27.46 16-61.3 28.81-33.85 12.81-72.27 21.62-38.42 8.8-79.23 13.61-40.81 4.81-82.43 4.81-42.38 0-84.19-5-41.81-5-79.73-13.81T244.38-604q-33.15-12.62-58.99-28.62v167.7q25.46 15.61 58.49 28.23 33.04 12.61 70.97 21.61 37.92 9 79.53 13.5 41.62 4.5 85 4.5Zm.62 211.69q50.31 0 99.77-7.53 49.46-7.54 89.85-20.39 40.38-12.84 68.53-29.46 28.16-16.61 36.46-35v-141.15q-26.46 16-60.49 28.3-34.04 12.31-71.97 21.12-37.92 8.81-79.23 13.31-41.3 4.5-83.54 4.5-43.38 0-85-4.5-41.61-4.5-79.53-13.31-37.93-8.81-70.77-21.31-32.85-12.5-58.69-28.11v141.77q7.69 18.15 35.53 34.88 27.85 16.73 68.54 29.27 40.69 12.54 90.16 20.08 49.46 7.53 100.38 7.53Z"/></svg></div><h3>Agent dostane datový model</h3><p>Objekty, pole, vazby a&nbsp;pravidla knihy kapek jsou dané předem. Agent je nevymýšlí.</p></div>
-    <div class="en-card en-card--muted"><div class="ic"><svg class="en-icon" aria-hidden="true" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"><path d="M237.69-100q-23.59 0-40.64-17.05T180-157.69v-400.15q0-23.9 17.05-40.8t40.64-16.9h69.62v-91.77q0-71.89 50.44-122.29Q408.19-880 480.13-880q71.95 0 122.25 50.4 50.31 50.4 50.31 122.29v91.77h69.62q23.59 0 40.64 16.9t17.05 40.8v400.15q0 23.59-17.05 40.64T722.31-100H237.69Zm0-45.39h484.62q5.38 0 8.84-3.46t3.46-8.84v-400.15q0-5.39-3.46-8.85t-8.84-3.46H237.69q-5.38 0-8.84 3.46t-3.46 8.85v400.15q0 5.38 3.46 8.84t8.84 3.46Zm290.27-164.14q19.81-19.53 19.81-47.01 0-26.54-19.98-47.77-19.97-21.23-47.96-21.23-27.98 0-47.79 21.23t-19.81 48.27q0 27.04 19.98 46.54 19.97 19.5 47.96 19.5 27.98 0 47.79-19.53ZM352.69-615.54h254.62v-91.77q0-53.04-37.09-90.17t-90.08-37.13q-52.99 0-90.22 37.13t-37.23 90.17v91.77Zm-127.3 470.15v-424.76 424.76Z"/></svg></div><h3>Striktně utažené</h3><p>Bez schváleného plánu se nepíše kód. Hotovo znamená ověřeno proti akceptačním kritériím.</p></div>
-  </div>
-  <div class="d-footer"><span class="d-footer-logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgd-1{fill:#243746;}.lgd-2{fill:#59aa46;}</style></defs><g ><g><path class="lgd-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgd-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg></span><span>Kapka Klub · AI Hackathon 6. 11. 2026 · tým 2</span><span>06</span></div>
-</section>
-
-<section class="slide">
-  <p class="en-label">ADLC · agent development lifecycle</p>
-  <h2>Pět fází, pět skillů, žádná improvizace</h2>
-  <div class="adlc">
-    <div class="ph"><span class="num">1</span><h3>Specifikace</h3><code>/kapka-spec</code><p>Zadání z&nbsp;Notion, akceptační kritéria v&nbsp;Gherkinu, plán a&nbsp;karty v&nbsp;Kanbanu</p></div>
-    <div class="ph"><span class="num">2</span><h3>Test first</h3><code>/kapka-tdd</code><p>Schválené seamy, nejdřív padající test, pak kód</p></div>
-    <div class="ph"><span class="num">3</span><h3>Vývoj</h3><code>/kapka-develop</code><p>Řez po řezu, deploy do orgu, testy zeleně</p></div>
-    <div class="ph"><span class="num">4</span><h3>Review</h3><code>/kapka-review</code><p>Dvě osy: splňuje spec, drží standardy</p></div>
-    <div class="ph"><span class="num">5</span><h3>Retro</h3><code>/kapka-retro</code><p>Co zlepšit ve skillech a&nbsp;specifikaci pro další kartu</p></div>
-  </div>
-  <div class="en-callout note"><p><b>Každá fáze nechává stopu:</b> spec.md, plan.md, review a&nbsp;retro záznam ke každé kartě. Reviewer běží jako samostatný agent bez kontextu vývojáře.</p></div>
-  <div class="d-footer"><span class="d-footer-logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgd-1{fill:#243746;}.lgd-2{fill:#59aa46;}</style></defs><g ><g><path class="lgd-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgd-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg></span><span>Kapka Klub · AI Hackathon 6. 11. 2026 · tým 2</span><span>07</span></div>
-</section>
-
-<section class="slide">
-  <p class="en-label">Spec driven development</p>
-  <h2>Kanban v&nbsp;Notion: zadání rozpadlé na ověřitelné karty</h2>
-  <div class="kanban">
-    <div class="kcol"><div class="khead"><span class="dot gray"></span>Not started</div><div class="kcard">earn-kapky: kampaně a&nbsp;pravidla</div><div class="kcard">vouchery EneServis</div></div>
-    <div class="kcol"><div class="khead"><span class="dot blue"></span>In progress</div><div class="kcard">kniha kapek a&nbsp;FIFO čerpání</div></div>
-    <div class="kcol"><div class="khead"><span class="dot green"></span>Done</div><div class="kcard">zadání, datový model, značka</div></div>
-  </div>
-  <p class="caption">Kartu založí /kapka-spec, na In progress ji přepne vývoj, na Done až po zeleném review.</p>
-  <div class="d-footer"><span class="d-footer-logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgd-1{fill:#243746;}.lgd-2{fill:#59aa46;}</style></defs><g ><g><path class="lgd-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgd-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg></span><span>Kapka Klub · AI Hackathon 6. 11. 2026 · tým 2</span><span>08</span></div>
-</section>
-
-<section class="slide dark">
-  <p class="en-label on-dark">Proč vyhrajeme</p>
-  <h2 class="on-dark-h">Máme jasný cíl: <span class="g">vyhrát</span></h2>
-  <div class="grid3 stats">
-    <div><div class="big">1</div><p>zdroj pravdy v&nbsp;Notion pro tým i&nbsp;agenta</p></div>
-    <div><div class="big">5</div><p>fází ADLC, kterými projde každá karta</p></div>
-    <div><div class="big">100&nbsp;%</div><p>pohybů kapek dohledatelných od nákupu po voucher</p></div>
-  </div>
-  <p class="closing-line">Nejdřív přemýšlíme, pak stavíme. Proto stavíme rychle a&nbsp;správně.</p>
-  <div class="d-footer on-dark"><span class="d-footer-logo"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgl-1{fill:#fff;}.lgl-2{fill:#59aa46;}</style></defs><g ><g><path class="lgl-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgl-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg></span><span>Kapka Klub · AI Hackathon 6. 11. 2026 · tým 2</span><span>09</span></div>
-</section>
-
-<section class="slide dark centered">
-  <h1 class="claim">Děkujeme</h1>
-  <p class="sub">Tým 2 · Kapka Klub</p>
-  <div class="cobrand end"><span class="cb-en"><svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 0 283.46 46.35"><defs><style>.lgl-1{fill:#fff;}.lgl-2{fill:#59aa46;}</style></defs><g ><g><path class="lgl-2" d="M264.37,10.69c-11.06,0-19.16,7.48-19.16,17.8s8.03,17.86,19.1,17.86,19.16-7.6,19.16-17.92-8.03-17.74-19.1-17.74m9.13,24.88l-8.91-6.18-8.86,6.18v-7.99l8.86-6.3,8.91,6.3v7.99Z"></path><path class="lgl-1" d="M34.42,31.52c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02C7.48,10.69,0,18.23,0,28.49s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.46,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.05,2.16,7.23,6.55l-15.26,.06c.86-4.2,3.58-6.61,8.03-6.61M63.18,10.69c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m53.56,20.83c.68-1.79,1.11-3.65,1.11-5.81,0-8.59-7.11-15.02-16.93-15.02-11.12,0-18.6,7.54-18.6,17.8s8.16,17.86,19.03,17.86c4.82,0,8.78-.99,12.67-3.46l-2.35-7.48c-2.78,1.79-6.49,2.66-9.45,2.66-5.01,0-8.65-2.04-9.64-6.55h24.16Zm-16.13-12.61c4.2,0,7.04,2.16,7.23,6.55l-15.26,.06c.87-4.2,3.58-6.61,8.04-6.61m44.89-8.22c-5.19,0-8.9,2.16-11.25,5.31V0h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21m34.77,0c-4.39,0-8.77,.68-12.61,1.85l.99,8.4c3.03-1.17,6.67-1.85,10.51-1.85,5.31,0,7.91,1.98,7.91,5.81v.25c-2.66-.25-6.36-.43-9.52-.43-9.46,0-13.6,4.51-13.6,10.75s4.76,10.88,11.93,10.88c5.44,0,9.33-2.29,11.25-5.07v4.33h10.2V25.65c0-9.21-5.19-14.96-17.06-14.96m-.93,27.62c-3.52,0-5.62-1.3-5.62-3.77s1.73-4.14,6.74-4.14c2.6,0,4.64,.12,6.61,.37v.86c-.31,3.89-2.84,6.67-7.73,6.67m46.73-27.62c-5.19,0-8.9,2.16-11.25,5.31v-4.57h-10.2V45.61h10.2V25.83c1.3-3.52,4.26-6.06,8.03-6.06,4.33,0,6.49,2.41,6.49,7.05v18.79h10.2V24.9c0-8.96-5.25-14.21-13.47-14.21"></path></g></g></svg></span><span class="cb-x">×</span><span class="kp-lockup" style="color:#fff"><svg viewBox="0 0 64 64" class="kp-drop" aria-hidden="true"><path fill="#f0a830" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</span></div>
-</section>
+<div class="hud"></div><div class="progress"></div>
+</main></div>
 <script>
-document.addEventListener('keydown', function(e){
+(function(){
   var slides=[].slice.call(document.querySelectorAll('.slide'));
-  var i=slides.findIndex(function(s){return s.getBoundingClientRect().top>-window.innerHeight/2;});
-  if(['ArrowDown','ArrowRight',' ','PageDown'].indexOf(e.key)>-1){e.preventDefault();slides[Math.min(i+1,slides.length-1)].scrollIntoView({behavior:'smooth'});}
-  if(['ArrowUp','ArrowLeft','PageUp'].indexOf(e.key)>-1){e.preventDefault();slides[Math.max(i-1,0)].scrollIntoView({behavior:'smooth'});}
-});
+  var max=slides.map(function(s){var m=0;s.querySelectorAll('[data-step]').forEach(function(e){m=Math.max(m,+e.dataset.step)});return m;});
+  var si=0, st=0, hud=document.querySelector('.hud'), bar=document.querySelector('.progress');
+  function render(){
+    slides.forEach(function(s,i){
+      s.classList.toggle('akt',i===si);
+      s.classList.toggle('pred',i<si);
+    });
+    var s=slides[si];
+    s.querySelectorAll('[data-step]').forEach(function(e){e.classList.toggle('on',+e.dataset.step<=st)});
+    var p=s.querySelector('.putuje'); if(p){p.dataset.pos=Math.max(0,Math.min(2,st-1));}
+    hud.textContent=(si+1)+' / '+slides.length+' · '+s.dataset.label;
+    bar.style.width=((si+ (max[si]? st/max[si]:1))/slides.length*100)+'%';
+    history.replaceState(null,'','#'+(si+1));
+  }
+  function next(){ if(st<max[si]) st++; else if(si<slides.length-1){si++;st=0;} render(); }
+  function prev(){ if(st>0) st--; else if(si>0){si--;st=max[si];} render(); }
+  document.addEventListener('keydown',function(e){
+    if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].indexOf(e.key)>-1){e.preventDefault();next();}
+    if(['ArrowLeft','ArrowUp','PageUp','Backspace'].indexOf(e.key)>-1){e.preventDefault();prev();}
+    if(e.key==='Home'){si=0;st=0;render();}
+    if(e.key==='End'){si=slides.length-1;st=max[si];render();}
+  });
+  document.addEventListener('click',function(e){ (e.clientX < innerWidth*0.25)? prev(): next(); });
+  var h=parseInt(location.hash.slice(1),10); if(h>=1&&h<=slides.length) si=h-1;
+  render();
+})();
 </script>
 </body>
 </html>

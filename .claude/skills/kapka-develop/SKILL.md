@@ -8,28 +8,27 @@ argument-hint: "Karta v Kanbanu, např. \"earn-kapky:\""
 
 Plán v kartě je zdroj pravdy; byl odsouhlasen ve `/kapka-spec`, takže ho implementuj, ne znovu grilluj. Ptej se jen, když si plán odporuje, když realita (org, platforma) neodpovídá plánu, nebo když mlčí o rozhodnutí, které mění pozorovatelné chování. V repu vzniká jen kód a metadata; plán a stav žijí v Notion (`/notion-api`).
 
+Každá smyčka je **úzká**: nasazuješ jen soubory karty a pouštíš jen testovací třídy karty. Celý `force-app` ani `RunLocalTests` se během karty nepouští.
+
 ## Vstup
 
 Karta v Kanbanu ve stavu **Business ready** (`node scripts/notion.mjs page "<id>:"`). Když nemá sekci Plán nebo je ve stavu Not started, pošli uživatele na `/kapka-spec` a skonči.
 
 ## Postup
 
-1. **Načti kartu** celou a [apex-standards.md](apex-standards.md). Hotovo, když má každé AC řez s testem.
-2. **Začni hned In progress:** `node scripts/notion.mjs card-status "<id>:" "In progress"` a `card-assign "<id>:" "<tvé jméno>"` dřív, než napíšeš první řádek. Todo list z řezů karty v jejich pořadí.
-3. **Implementuj řez po řezu** podle `/kapka-tdd`: padající test, ověř, že padá; minimální kód; zelená. Na metadata použij platform skilly:
-   - objekty `/platform-custom-object-generate`, pole `/platform-custom-field-generate`, validace `/platform-validation-rule-generate`, oprávnění `/platform-permission-set-generate`, dotazy `/platform-soql-query`.
-4. **Validuj a opravuj**, dokud není *zeleno*:
-   - deploy: `sf project deploy start --source-dir force-app` (do default orgu; když není nastavený, zeptej se);
-   - testy: `sf apex run test --test-level RunLocalTests --result-format human --code-coverage --wait 20`;
-   - oprav každou chybu a pusť znovu. Stejná chyba po třech různých pokusech → stop a reportuj s důkazy.
-   *Zeleno* = deploy prošel a všechny relevantní testy prošly.
-5. **Zapiš postup do karty:** po každém zeleném řezu zaškrtni jeho `- [x]` v Plánu. Stáhni kartu (`page "<id>:" > .work/<id>/karta.md`), smaž z exportu první nadpis, řádek `_id … · upraveno …_` a řádky podstránek `- 📄 …`, uprav a publikuj `write "<id>:" .work/<id>/karta.md`.
-6. **Necommituj.** Commity jsou na uživateli.
-7. **Předej do review:** spusť `/kapka-review "<id>:"` (ideálně jako subagent bez tvého kontextu). Nálezy ukaž podle závažnosti, nech uživatele vybrat, co opravit; schválené opravy nejdřív připiš do Plánu v kartě jako nové řezy, pak je udělej test-first a znovu krok 4.
-8. **Ruční test:** požádej uživatele o ověření v orgu (demo: Jana, Kapka Brno – Vídeňská, 45 l + 180 Kč = +109 kapek). Každý nález → nejdřív řez do karty, pak test-first oprava.
-9. **Akceptace:** zapiš výsledek Apex testů do databáze Testy a požádej analytika karty (Jakub / Veronika) o ruční akceptaci podle scénářů karty. Selhaný scénář = nová karta `bug: <karta> AC-x.y` (Rozhodnutí TT4).
-10. **Zavři:** až po zeleném review a zelené akceptaci `card-status "<id>:" Done` a navrhni `/kapka-retro "<id>:"`.
+1. **Start jedním tahem:** `bash scripts/git-sync.sh`, `node scripts/notion.mjs card-start "<id>:" "<tvé jméno>"`, načti kartu a [apex-standards.md](apex-standards.md), zapiš si základ `git rev-parse HEAD` pro review. Todo list z řezů karty v jejich pořadí.
+2. **Řez po řezu** podle `/kapka-tdd`. Platform skilly (`/platform-custom-object-generate`, `-custom-field-`, `-validation-rule-`, `-permission-set-`, `/platform-soql-query`) načti jen u prvního řezu, který daný typ metadat mění.
+   - **Red:** nasaď test a pusť ho. Když test nejde zkompilovat, protože třída nebo pole ještě neexistuje, je chyba deploye ten red – přidej rovnou minimální kód a jdi na green.
+   - **Green:** nasaď soubory řezu a pusť testy karty:
+     ```bash
+     sf project deploy start --source-dir <soubory řezu> --wait 10
+     bash scripts/apex-test.sh <TestyKarty…>   # po třídách, sám opakuje při zahlcené frontě orgu
+     ```
+   - Stejná chyba po třech různých pokusech → stop a reportuj s důkazy.
+3. **Po zeleném řezu** naráz: `node scripts/notion.mjs card-check "<id>:" "R<n>"`, `bash scripts/git-sync.sh`, commit `feat(<id>): R<n> <co>` a push.
+4. **Po posledním řezu:** spusť `/kapka-review "<id>:" <základ>` jako subagent na pozadí. Opravy 🔴 a 🟠 udělej hned (test-first, řez `R<n> (review)` připiš do karty přes `write "<id>:" … --append`); 🟡 a ⚪ zůstanou v reportu pro uživatele. Kolo review je jedno; druhé jen když oprava změnila chování.
+5. **Předej k akceptaci a pusť kartu z ruky:** `card-assign "<id>:" "<analytik karty>"` (stav zůstává In progress, akceptuje analytik) a do komentáře karty (`comment`) napiš výsledek testů, commity a demo krok (Jana, Kapka Brno – Vídeňská, 45 l + 180 Kč = +109 kapek). Analytik akceptuje ručně podle scénářů a kartu zavře `card-status "<id>:" Done`; selhaný scénář = nová karta `bug: <karta> AC-x.y` (Rozhodnutí TT4). Ty bereš další kartu.
 
 ## Report
 
-Při každé zastávce: změněné soubory, stav deploye a testů, hotové řezy, kola review, stav ručního testu, co zůstává otevřené. Krok označ jako hotový, jen když opravdu proběhl.
+Změněné soubory, commity, stav deploye a testů, hotové řezy, nálezy review (opravené / ponechané), komu je karta předána.
