@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Consumed_Points__c</fullName>
+    <description>Kolik kapek z připsání už spotřebovaly alokace.</description>
+    <inlineHelpText>Počítá se automaticky z alokací.</inlineHelpText>
+    <label>Spotřebované kapky</label>
+    <summarizedField>Points_Allocation__c.Points__c</summarizedField>
+    <summaryForeignKey>Points_Allocation__c.Credit_Transaction__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <type>Summary</type>
+</CustomField>

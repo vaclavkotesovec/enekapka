@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Active_Product_Requires_Price</fullName>
+    <active>true</active>
+    <description>Bez ceny by položka nákupu neměla z čeho vzít cenu.</description>
+    <errorConditionFormula><![CDATA[AND(IsActive, ISBLANK(Price__c))]]></errorConditionFormula>
+    <errorDisplayField>Price__c</errorDisplayField>
+    <errorMessage>Aktivní produkt musí mít cenu.</errorMessage>
+</ValidationRule>

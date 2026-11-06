@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Source__c</fullName>
+    <description>Z čeho pohyb vznikl (Q17).</description>
+    <inlineHelpText>Nákup, aktivita člena, odměna, expirace nebo ruční úprava.</inlineHelpText>
+    <label>Zdroj</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Purchase</fullName>
+                <default>false</default>
+                <label>Nákup</label>
+            </value>
+            <value>
+                <fullName>Profile</fullName>
+                <default>false</default>
+                <label>Profil</label>
+            </value>
+            <value>
+                <fullName>Consent</fullName>
+                <default>false</default>
+                <label>Souhlas</label>
+            </value>
+            <value>
+                <fullName>Reward</fullName>
+                <default>false</default>
+                <label>Odměna</label>
+            </value>
+            <value>
+                <fullName>Expiration</fullName>
+                <default>false</default>
+                <label>Expirace</label>
+            </value>
+            <value>
+                <fullName>Manual</fullName>
+                <default>false</default>
+                <label>Ručně</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

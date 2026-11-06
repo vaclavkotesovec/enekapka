@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Contact__c</fullName>
+    <description>Řidič nebo držitel u firemního členství (AC-1.2).</description>
+    <inlineHelpText>Vyplňte jen u firmy – kontakt řidiče.</inlineHelpText>
+    <label>Řidič</label>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <referenceTo>Contact</referenceTo>
+    <relationshipLabel>Členství</relationshipLabel>
+    <relationshipName>Loyalty_Members</relationshipName>
+    <required>false</required>
+    <type>Lookup</type>
+</CustomField>

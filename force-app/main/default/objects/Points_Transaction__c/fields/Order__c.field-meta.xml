@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Order__c</fullName>
+    <description>Nákup, ze kterého připsání vzniklo.</description>
+    <inlineHelpText>Vyplňuje se u kapek za nákup.</inlineHelpText>
+    <label>Nákup</label>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <referenceTo>Order__c</referenceTo>
+    <relationshipLabel>Pohyby kapek</relationshipLabel>
+    <relationshipName>Points_Transactions</relationshipName>
+    <required>false</required>
+    <type>Lookup</type>
+</CustomField>

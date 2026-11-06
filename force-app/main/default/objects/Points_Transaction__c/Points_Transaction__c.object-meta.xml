@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Objekt Pohyb kapek je neměnná kniha kapek člena: typ (připsání, čerpání, expirace, úprava), stav, zdroj a kapky se znaménkem, u nákupu rozpad na základ a kampaně. Zbývající kapky připsání se počítají z alokací. Kapky, typ ani datum nelze po vložení změnit; úprava vyžaduje důvod.</description>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <externalSharingModel>ControlledByParent</externalSharingModel>
+    <label>Pohyb kapek</label>
+    <nameField>
+        <label>Pohyb</label>
+        <displayFormat>PK-{0000000000}</displayFormat>
+        <startingNumber>1</startingNumber>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Pohyby kapek</pluralLabel>
+    <sharingModel>ControlledByParent</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

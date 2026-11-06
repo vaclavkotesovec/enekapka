@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Loyalty_Member__c</fullName>
+    <description>Člen, kterému nákup patří; nákup bez člena se neukládá (AC-4.2).</description>
+    <inlineHelpText>Člen identifikovaný kartou nebo aplikací.</inlineHelpText>
+    <label>Člen</label>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <referenceTo>Loyalty_Member__c</referenceTo>
+    <relationshipLabel>Nákupy</relationshipLabel>
+    <relationshipName>Orders</relationshipName>
+    <required>true</required>
+    <type>Lookup</type>
+</CustomField>

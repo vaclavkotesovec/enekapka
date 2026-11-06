@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Account__c</fullName>
+    <description>Držitel členství: Person Account u osoby, firemní Account u firmy (AC-1).</description>
+    <inlineHelpText>Vyberte osobu nebo firmu, které členství patří.</inlineHelpText>
+    <label>Účet</label>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Členství</relationshipLabel>
+    <relationshipName>Loyalty_Members</relationshipName>
+    <required>true</required>
+    <type>Lookup</type>
+</CustomField>

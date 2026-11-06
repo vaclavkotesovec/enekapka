@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Fuel_Amount__c</fullName>
+    <description>Součet položek paliva; základ kapek za palivo.</description>
+    <inlineHelpText>Počítá se automaticky z položek paliva.</inlineHelpText>
+    <label>Palivo – částka</label>
+    <summaryFilterItems>
+        <field>Order_Item__c.Product_Family__c</field>
+        <operation>equals</operation>
+        <value>Fuel</value>
+    </summaryFilterItems>
+    <summarizedField>Order_Item__c.Line_Total__c</summarizedField>
+    <summaryForeignKey>Order_Item__c.Order__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <type>Summary</type>
+</CustomField>

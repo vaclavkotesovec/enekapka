@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Expiration_Date__c</fullName>
+    <description>Jen u připsání: datum + 12 měsíců (Q7).</description>
+    <inlineHelpText>Den, kdy nespotřebované kapky propadnou.</inlineHelpText>
+    <label>Datum expirace</label>
+    <required>false</required>
+    <type>Date</type>
+</CustomField>

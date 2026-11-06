@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Campaign_Points__c</fullName>
+    <description>U připsání za nákup část z kampaní (Q17).</description>
+    <inlineHelpText>Kapky navíc z kampaní.</inlineHelpText>
+    <label>Kapky z kampaní</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <type>Number</type>
+</CustomField>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type__c</fullName>
+    <description>Druh pohybu kapek.</description>
+    <inlineHelpText>Úpravu zakládá jen podpora a vyžaduje důvod.</inlineHelpText>
+    <label>Typ</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Earn</fullName>
+                <default>false</default>
+                <label>Připsání</label>
+            </value>
+            <value>
+                <fullName>Redeem</fullName>
+                <default>false</default>
+                <label>Čerpání</label>
+            </value>
+            <value>
+                <fullName>Expire</fullName>
+                <default>false</default>
+                <label>Expirace</label>
+            </value>
+            <value>
+                <fullName>Adjustment</fullName>
+                <default>false</default>
+                <label>Úprava</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

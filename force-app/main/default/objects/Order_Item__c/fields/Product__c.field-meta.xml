@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Product__c</fullName>
+    <description>Prodaný produkt; z něj se kopíruje cena a kategorie. Povinnost hlídá validace, protože lookup na Product2 nesmí být povinný.</description>
+    <inlineHelpText>Produkt z katalogu – povinný.</inlineHelpText>
+    <label>Produkt</label>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <referenceTo>Product2</referenceTo>
+    <relationshipLabel>Položky nákupu</relationshipLabel>
+    <relationshipName>Loyalty_Order_Items</relationshipName>
+    <required>false</required>
+    <type>Lookup</type>
+</CustomField>

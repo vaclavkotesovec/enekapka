@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Objekt Stanice je čerpací stanice sítě Kapka, kde vznikají nákupy. Nese Kód stanice (unikátní externí ID, KPK-001 až KPK-120), město, ulici, kraj a příznak aktivní. Používá se pro import nákupů z pokladen a regionální reporty.</description>
+    <enableActivities>true</enableActivities>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <externalSharingModel>Private</externalSharingModel>
+    <label>Stanice</label>
+    <nameField>
+        <label>Název stanice</label>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Stanice</pluralLabel>
+    <sharingModel>ReadWrite</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

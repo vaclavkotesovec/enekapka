@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Fuel_Station__c</fullName>
+    <description>Stanice, na které nákup vznikl.</description>
+    <inlineHelpText>Stanice z účtenky.</inlineHelpText>
+    <label>Stanice</label>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <referenceTo>Fuel_Station__c</referenceTo>
+    <relationshipLabel>Nákupy</relationshipLabel>
+    <relationshipName>Orders</relationshipName>
+    <required>false</required>
+    <type>Lookup</type>
+</CustomField>
