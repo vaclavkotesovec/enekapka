@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StaticResource xmlns="http://soap.sforce.com/2006/04/metadata">
+    <cacheControl>Public</cacheControl>
+    <contentType>image/png</contentType>
+    <description>Brand Kapka: bílá značka 96 px do hlavičky e-mailu (e-mailoví klienti SVG nezobrazí)</description>
+</StaticResource>

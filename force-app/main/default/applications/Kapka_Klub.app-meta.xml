@@ -2,6 +2,8 @@
 <CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
     <brand>
         <headerColor>#0B6E73</headerColor>
+        <logo>kapkaAppIcon</logo>
+        <logoVersion>1</logoVersion>
         <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
     </brand>
     <description>Back-office Kapka Klubu pro loyalty manažera: členové, nákupy, pohyby kapek, kampaně, pravidla připisování, odměny, vouchery a stanice.</description>

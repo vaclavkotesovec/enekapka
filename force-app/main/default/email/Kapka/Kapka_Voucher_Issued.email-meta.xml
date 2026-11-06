@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EmailTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <available>true</available>
+    <description>Kostra e-mailu s kódem voucheru v brandu Kapka (karta design-system R5); text a odeslání doplní karta cerpani-email.</description>
+    <encodingKey>UTF-8</encodingKey>
+    <name>Kapka – voucher vydán</name>
+    <style>none</style>
+    <subject>Tvůj voucher na servis: {!Voucher__c.Code__c}</subject>
+    <type>custom</type>
+    <uiType>Aloha</uiType>
+</EmailTemplate>

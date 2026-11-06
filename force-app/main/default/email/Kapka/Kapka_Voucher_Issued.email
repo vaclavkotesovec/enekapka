@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tvůj voucher na servis</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f6f8f7;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f6f8f7;">
+  <tr>
+    <td align="center" style="padding:24px 12px;">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:600px;max-width:100%;">
+        <!-- Hlavička: plocha hlubina, bílá značka + slovo kapka -->
+        <tr>
+          <td style="background-color:#0a2e33;padding:24px 32px;border-radius:2px 20px 0 0;">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="padding-right:12px;vertical-align:middle;">
+                  <img src="https://orgfarm-90b25041ad-dev-ed.develop.my.site.com/kapkaportal/sfsites/c/resource/kapkaMarkWhitePng" width="40" height="40" alt="" style="display:block;border:0;">
+                </td>
+                <td style="vertical-align:middle;font-family:'Bricolage Grotesque','Segoe UI',Arial,sans-serif;font-weight:800;font-size:26px;letter-spacing:-0.03em;color:#ffffff;">
+                  kapka
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <!-- Karta s kódem -->
+        <tr>
+          <td style="background-color:#ffffff;padding:32px;border:1px solid #d5e0df;border-top:0;border-radius:0 0 20px 20px;font-family:'Instrument Sans','Segoe UI',Arial,sans-serif;font-size:16px;line-height:1.5;color:#0f2226;">
+            <p style="margin:0 0 8px;font-family:'Bricolage Grotesque','Segoe UI',Arial,sans-serif;font-weight:700;font-size:22px;line-height:1.25;color:#0f2226;">
+              Hotovo. Tady je tvůj voucher.
+            </p>
+            <p style="margin:0 0 24px;color:#4d6366;">
+              {!Voucher__c.Reward__c} · Partner: EneServis
+            </p>
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;">
+              <tr>
+                <td style="background-color:#ddf0ee;padding:16px 24px;border-radius:2px 8px 8px 8px;font-family:'JetBrains Mono',Consolas,'Courier New',monospace;font-weight:600;font-size:26px;letter-spacing:0.08em;color:#0f2226;">
+                  {!Voucher__c.Code__c}
+                </td>
+              </tr>
+            </table>
+            <p style="margin:0 0 8px;">
+              V EneServisu kód stačí nadiktovat.
+            </p>
+            <p style="margin:0;color:#4d6366;">
+              Voucher neexpiruje. Najdeš ho i v portálu Kapka Klubu.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:16px 32px;font-family:'Instrument Sans','Segoe UI',Arial,sans-serif;font-size:12px;line-height:1.5;color:#4d6366;">
+            Kapka Klub · Kapka a.s.
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>
