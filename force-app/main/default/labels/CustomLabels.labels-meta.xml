@@ -24,4 +24,12 @@
         <shortDescription>Čerpání: členství není aktivní</shortDescription>
         <value>Tvoje členství v Kapka Klubu není aktivní.</value>
     </labels>
+    <labels>
+        <fullName>Kapka_Portal_NoMember</fullName>
+        <categories>Kapka,Portal</categories>
+        <language>cs</language>
+        <protected>false</protected>
+        <shortDescription>Portál: uživatel bez členství</shortDescription>
+        <value>K tomuto účtu zatím není přiřazené členství v Kapka Klubu.</value>
+    </labels>
 </CustomLabels>

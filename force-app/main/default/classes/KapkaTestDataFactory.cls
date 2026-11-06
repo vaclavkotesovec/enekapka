@@ -192,6 +192,65 @@ public class KapkaTestDataFactory {
         return manager;
     }
 
+    // ---- portál: přihlášený člen ----
+
+    public static final String PORTAL_PROFILE = 'Kapka Portal Member';
+
+    /**
+     * Uživatel portálu s osobním účtem a aktivním členem. Účet vlastní admin s rolí,
+     * bez ní Salesforce uživatele portálu nezaloží.
+     */
+    public static User createPortalMember(String firstName, String lastName) {
+        User portalUser = makeUser(PORTAL_PROFILE, 'kapka.member', lastName);
+        portalUser.FirstName = firstName;
+        System.runAs(createAccountOwnerWithRole()) {
+            Account person = createPersonAccount(firstName, lastName);
+            Loyalty_Member__c member = makeMember(person.Id);
+            member.Status__c = 'Active';
+            insert member;
+            portalUser.ContactId = [SELECT PersonContactId FROM Account WHERE Id = :person.Id].PersonContactId;
+            insert portalUser;
+        }
+        return portalUser;
+    }
+
+    /** Člen, kterému patří uživatel portálu (podle jeho osobního účtu). */
+    public static Loyalty_Member__c memberOf(User portalUser) {
+        Id accountId = [SELECT AccountId FROM User WHERE Id = :portalUser.Id].AccountId;
+        return [SELECT Id, Account__c, Status__c FROM Loyalty_Member__c WHERE Account__c = :accountId LIMIT 1];
+    }
+
+    /** Admin s rolí a Kapka_Loyalty_Manager (viditelnost record typu Person Account). */
+    private static User createAccountOwnerWithRole() {
+        User owner = makeUser('System Administrator', 'kapka.owner', 'Vlastník účtů');
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            UserRole role = new UserRole(Name = 'Kapka test ' + owner.Alias, DeveloperName = 'Kapka_Test_' + owner.Alias);
+            insert role;
+            owner.UserRoleId = role.Id;
+            insert owner;
+            insert new PermissionSetAssignment(
+                AssigneeId = owner.Id,
+                PermissionSetId = [SELECT Id FROM PermissionSet WHERE Name = 'Kapka_Loyalty_Manager' LIMIT 1].Id
+            );
+        }
+        return owner;
+    }
+
+    private static User makeUser(String profileName, String usernamePrefix, String lastName) {
+        String unique = String.valueOf(Crypto.getRandomInteger()).remove('-');
+        return new User(
+            ProfileId = [SELECT Id FROM Profile WHERE Name = :profileName LIMIT 1].Id,
+            Username = usernamePrefix + '.' + unique + '@kapka.test',
+            Email = usernamePrefix + '@kapka.test',
+            LastName = lastName,
+            Alias = 'k' + unique.left(7),
+            TimeZoneSidKey = 'Europe/Prague',
+            LocaleSidKey = 'cs_CZ',
+            LanguageLocaleKey = 'en_US',
+            EmailEncodingKey = 'UTF-8'
+        );
+    }
+
     private static Id personAccountRecordTypeId() {
         return [SELECT Id FROM RecordType WHERE SobjectType = 'Account' AND IsPersonType = TRUE LIMIT 1].Id;
     }
