@@ -341,4 +341,61 @@ private class KapkaAdjustPointsActionTest {
         );
     }
 
+    // Uživatelská hláška místo chyby databáze (review ST-4): důvod nejvýš 255 znaků jako pole Důvod
+    @IsTest
+    static void tooLongReasonFails() {
+        // Pokud loyalty manažer s oprávněním k úpravám
+        User adjuster = createAdjuster();
+        Loyalty_Member__c jana = createJana(new Map<Date, Decimal>());
+
+        // Když Janě přidá 100 kapek s důvodem o 256 znacích
+        Test.startTest();
+        String error = adjustAs(adjuster, jana.Id, 100, 'x'.repeat(256));
+        Test.stopTest();
+
+        // Pak se nic neuloží a manažer vidí, jak dlouhý důvod smí být
+        Assert.areEqual(
+            Label.Kapka_Adjust_Reason_Too_Long + ' / 0',
+            error + ' / ' + movementCountOf(jana.Id),
+            'Příliš dlouhý důvod má skončit hláškou z Custom Label.'
+        );
+    }
+
+    // Review ST-4: neexistující člen
+    @IsTest
+    static void missingMemberFails() {
+        // Pokud loyalty manažer s oprávněním k úpravám a Id člena, který neexistuje
+        User adjuster = createAdjuster();
+        Id missingMemberId = Id.valueOf(Loyalty_Member__c.SObjectType.getDescribe().getKeyPrefix() + '000000000001');
+
+        // Když mu přidá 100 kapek
+        Test.startTest();
+        String error = adjustAs(adjuster, missingMemberId, 100, 'Oprava');
+        Test.stopTest();
+
+        // Pak manažer vidí, že člen nebyl nalezen
+        Assert.areEqual(Label.Kapka_Adjust_Member_Not_Found, error, 'Neexistující člen má skončit hláškou z Custom Label.');
+    }
+
+    // Review ST-4, rozhodnutí v plánu: ukončenému členovi se kapky neupravují
+    @IsTest
+    static void closedMemberCannotBeAdjusted() {
+        // Pokud Jana má ukončené členství
+        User adjuster = createAdjuster();
+        Loyalty_Member__c jana = createJana(new Map<Date, Decimal>());
+        jana.Status__c = 'Closed';
+        update jana;
+
+        // Když jí loyalty manažer přidá 100 kapek
+        Test.startTest();
+        String error = adjustAs(adjuster, jana.Id, 100, 'Reklamace myčky');
+        Test.stopTest();
+
+        // Pak se nic neuloží a manažer vidí, že členství je ukončené
+        Assert.areEqual(
+            Label.Kapka_Adjust_Member_Closed + ' / 0',
+            error + ' / ' + movementCountOf(jana.Id),
+            'Ukončenému členovi se kapky upravit nesmí.'
+        );
+    }
 }

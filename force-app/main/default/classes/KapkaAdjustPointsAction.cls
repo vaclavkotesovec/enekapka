@@ -11,6 +11,12 @@ public with sharing class KapkaAdjustPointsAction {
     private static final String POSTED = 'Posted';
     private static final String SOURCE_MANUAL = 'Manual';
     private static final Integer KAPKY_VALIDITY_MONTHS = 12;
+    /** Délka pole Points_Transaction__c.Reason__c. */
+    private static final Integer REASON_MAX_LENGTH = 255;
+    /** Ukončené členství (rozhodnutí v plánu): kapky se neupravují; Registrován, Aktivní a Pozastaven ano. */
+    private static final String MEMBER_CLOSED = 'Closed';
+    private static final String LOCK_TIMEOUT = 'UNABLE_TO_LOCK_ROW';
+    private static final String LOCK_TIMEOUT_QUERY = 'Record Currently Unavailable';
 
     public class Request {
         @InvocableVariable(label='Člen' required=true)
@@ -43,13 +49,28 @@ public with sharing class KapkaAdjustPointsAction {
             return write(requests);
         } catch (Exception e) {
             Database.rollback(beforeAdjust);
+            if (isLockTimeout(e)) {
+                throw new KapkaAdjustPointsException(Label.Kapka_Adjust_Member_Locked);
+            }
             throw e;
         }
+    }
+
+    /** Člena právě upravuje jiná transakce a zámek (FOR UPDATE nebo DML) nedočkal. */
+    private static Boolean isLockTimeout(Exception e) {
+        if (e instanceof DmlException) {
+            return ((DmlException) e).getDmlType(0) == StatusCode.UNABLE_TO_LOCK_ROW;
+        }
+        return e instanceof QueryException &&
+            (e.getMessage().contains(LOCK_TIMEOUT) || e.getMessage().contains(LOCK_TIMEOUT_QUERY));
     }
 
     private static void validate(Request request) {
         if (String.isBlank(request.reason)) {
             throw new KapkaAdjustPointsException(Label.Kapka_Adjust_Reason_Required);
+        }
+        if (request.reason.trim().length() > REASON_MAX_LENGTH) {
+            throw new KapkaAdjustPointsException(Label.Kapka_Adjust_Reason_Too_Long);
         }
         if (request.points == null || request.points == 0) {
             throw new KapkaAdjustPointsException(Label.Kapka_Adjust_Zero_Points);
@@ -75,15 +96,18 @@ public with sharing class KapkaAdjustPointsAction {
 
     private static List<Id> write(List<Request> requests) {
         Datetime adjustedAt = now != null ? now : System.now();
+        Set<Id> memberIds = new Set<Id>();
         Set<Id> debitedMembers = new Set<Id>();
         for (Request request : requests) {
+            memberIds.add(request.memberId);
             if (request.points < 0) {
                 debitedMembers.add(request.memberId);
             }
         }
+        // Zamyká i členy s přidáním: jejich zůstatek (roll-up) se mění stejně, a ověří se tím existence a stav.
+        checkMembers(requests, new Map<Id, Loyalty_Member__c>(KapkaPointsLedger.lockMembers(memberIds)));
         Map<Id, List<Points_Transaction__c>> creditsByMember = new Map<Id, List<Points_Transaction__c>>();
         if (!debitedMembers.isEmpty()) {
-            KapkaPointsLedger.lockMembers(debitedMembers);
             creditsByMember = KapkaPointsLedger.creditsByMember(debitedMembers);
         }
 
@@ -110,6 +134,19 @@ public with sharing class KapkaAdjustPointsAction {
             movementIds.add(movement.Id);
         }
         return movementIds;
+    }
+
+    /** Člen musí existovat, být pro manažera viditelný (zámek WITH USER_MODE) a nesmí mít ukončené členství. */
+    private static void checkMembers(List<Request> requests, Map<Id, Loyalty_Member__c> members) {
+        for (Request request : requests) {
+            Loyalty_Member__c member = members.get(request.memberId);
+            if (member == null) {
+                throw new KapkaAdjustPointsException(Label.Kapka_Adjust_Member_Not_Found);
+            }
+            if (member.Status__c == MEMBER_CLOSED) {
+                throw new KapkaAdjustPointsException(Label.Kapka_Adjust_Member_Closed);
+            }
+        }
     }
 
     /** Přidané kapky jsou připsání, protože čerpání a expirace berou kapky jen z připsání. */
