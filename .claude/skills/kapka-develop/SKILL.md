@@ -16,7 +16,7 @@ Karta v Kanbanu ve stavu **Business ready** (`node scripts/notion.mjs page "<id>
 
 ## Postup
 
-1. **Start jedním tahem:** `bash scripts/git-sync.sh`, `node scripts/notion.mjs card-start "<id>:" "<tvé jméno>"`, načti kartu a [apex-standards.md](apex-standards.md), zapiš si základ `git rev-parse HEAD` pro review. Todo list z řezů karty v jejich pořadí.
+1. **Start jedním tahem:** `bash scripts/git-sync.sh`, `node scripts/notion.mjs card-start "<id>:" "<tvé jméno>" --dev`, načti kartu a [apex-standards.md](apex-standards.md), zapiš si základ `git rev-parse HEAD` pro review. Todo list z řezů karty v jejich pořadí.
 2. **Řez po řezu** podle `/kapka-tdd`. Platform skilly (`/platform-custom-object-generate`, `-custom-field-`, `-validation-rule-`, `-permission-set-`, `/platform-soql-query`) načti jen u prvního řezu, který daný typ metadat mění.
    - **Red:** nasaď test a pusť ho. Když test nejde zkompilovat, protože třída nebo pole ještě neexistuje, je chyba deploye ten red – přidej rovnou minimální kód a jdi na green.
    - **Green:** nasaď soubory řezu a pusť testy karty:

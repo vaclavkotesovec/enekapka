@@ -9,7 +9,7 @@
 //   write <stránka|karta> <soubor.md|-> [--append]        nahradí (nebo připojí) obsah; podstránky zůstanou
 //   subpage <stránka|karta> "<název>" [soubor.md|-]       nová podstránka, např. review nebo retro
 //   card-assign <karta> "<Jakub[, Veronika]>"           nastaví Řešitele (nahradí)
-//   card-start <karta> "<jméno>"                          In progress + Řešitel jedním voláním
+//   card-start <karta> "<jméno>" [--dev]                  In progress + Řešitel (s --dev i Vývojář)
 //   card-check <karta> "R3[,R4]"                          zaškrtne řezy v Plánu bez přepisu karty
 //   comment <stránka|karta> "<text>"
 //   search "<dotaz>"
@@ -281,15 +281,18 @@ async function cmdKanban(status, json) {
     return console.log(
       "Kanban je prázdný" + (status ? ` ve stavu ${status}.` : "."),
     );
-  console.log("| Status | Řešitel | Název | id |\n| --- | --- | --- | --- |");
+  console.log(
+    "| Status | Řešitel | Vývojář | Název | id |\n| --- | --- | --- | --- | --- |",
+  );
   for (const r of rows) {
-    const who = (r.properties["Řešitel"]?.multi_select || [])
-      .map((o) => o.name)
-      .join(", ");
     console.log(
-      `| ${r.properties.Status?.status?.name ?? ""} | ${who} | ${title(r)} | ${r.id.replace(/-/g, "")} |`,
+      `| ${r.properties.Status?.status?.name ?? ""} | ${names(r, "Řešitel").join(", ")} | ${names(r, "Vývojář").join(", ")} | ${title(r)} | ${r.id.replace(/-/g, "")} |`,
     );
   }
+}
+
+function names(page, property) {
+  return (page.properties[property]?.multi_select || []).map((o) => o.name);
 }
 
 function checkStatus(s) {
@@ -358,24 +361,24 @@ async function cmdAssign(ref, names, json) {
   );
 }
 
-async function cmdCardStart(ref, names, json) {
-  if (!names) die("Chybí jméno řešitele.");
+async function cmdCardStart(ref, who, dev, json) {
+  if (!who) die("Chybí jméno řešitele.");
   const id = await resolveCard(ref);
+  const multi = who
+    .split(",")
+    .map((n) => ({ name: n.trim() }))
+    .filter((o) => o.name);
   const page = await api("PATCH", `/pages/${id}`, {
     properties: {
       Status: { status: { name: "In progress" } },
-      Řešitel: {
-        multi_select: names
-          .split(",")
-          .map((n) => ({ name: n.trim() }))
-          .filter((o) => o.name),
-      },
+      Řešitel: { multi_select: multi },
+      ...(dev ? { Vývojář: { multi_select: multi } } : {}),
     },
   });
   console.log(
     json
       ? JSON.stringify(page, null, 2)
-      : `${title(page)} → In progress, ${names}`,
+      : `${title(page)} → In progress, ${who}${dev ? " (vývojář)" : ""}`,
   );
 }
 
@@ -587,9 +590,12 @@ async function ensureBug(testId, row, note) {
   const cards = (await queryKanban()).filter((r) =>
     title(r).toLowerCase().startsWith(`${key.toLowerCase()}:`),
   );
+  // TT4: bug patří vývojáři původní karty (Vývojář), až pak Řešiteli.
   const owners =
     cards.length === 1
-      ? (cards[0].properties["Řešitel"]?.multi_select || []).map((o) => o.name)
+      ? names(cards[0], "Vývojář").length
+        ? names(cards[0], "Vývojář")
+        : names(cards[0], "Řešitel")
       : [];
   const url = row.url || `https://www.notion.so/${row.id.replace(/-/g, "")}`;
   const page = await api("POST", "/pages", {
@@ -911,7 +917,8 @@ const opt = {};
 const pos = [];
 for (let i = 0; i < argv.length; i++) {
   if (VALUE_OPTS.includes(argv[i])) opt[argv[i].slice(2)] = argv[++i];
-  else if (!["--json", "--append"].includes(argv[i])) pos.push(argv[i]);
+  else if (!["--json", "--append", "--dev"].includes(argv[i]))
+    pos.push(argv[i]);
 }
 const status = opt.status;
 const [cmd, a1, a2, a3] = pos;
@@ -924,7 +931,7 @@ const commands = {
   subpage: () => cmdSubpage(a1, a2, a3, json),
   "card-status": () => cmdCardStatus(a1, a2, json),
   "card-assign": () => cmdAssign(a1, a2, json),
-  "card-start": () => cmdCardStart(a1, a2, json),
+  "card-start": () => cmdCardStart(a1, a2, argv.includes("--dev"), json),
   "card-check": () => cmdCardCheck(a1, a2),
   comment: () => cmdComment(a1, a2, json),
   search: () => cmdSearch(a1, json),

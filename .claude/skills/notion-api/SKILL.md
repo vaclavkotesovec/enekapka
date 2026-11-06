@@ -15,7 +15,7 @@ Notion je znalostní báze projektu; repo nese jen skilly a kód. Jediná cesta 
 | Zadání | `zadani` | zadání hackathonu (PDF) |
 | Datový model | `model` | objekty, pole, expirace, procesy, otevřené otázky |
 | Značka | `znacka` | brand kit, názvosloví |
-| Kanban | `kanban` | jedna karta = jedna funkce `<id>: <název>`, sloupec Řešitel; tělo = Specifikace + Plán, podstránky = Review a Retro |
+| Kanban | `kanban` | jedna karta = jedna funkce `<id>: <název>`, sloupce Řešitel (kdo má kartu teď v ruce) a Vývojář (kdo ji vyvíjí – na něj jdou bugy, TT4); tělo = Specifikace + Plán, podstránky = Review a Retro |
 | Rozhodnutí | `rozhodnuti` | společná rozhodnutí z grillingu (Q, E, C, A, P) a rozdělení práce; nová rozhodnutí z `/kapka-spec` se připisují sem |
 | Testy | `testy` | databáze scénářů a test logu (TT1–TT4): Name = `<karta> AC-x.y`, Karta, Typ (Ruční / E2E / Apex), Kroky, Očekávaný výsledek, Stav (Nespuštěno / Prošlo / Selhalo), Tester, Datum, Poznámka |
 
@@ -30,7 +30,7 @@ Notion je znalostní báze projektu; repo nese jen skilly a kód. Jediná cesta 
 | Nová podstránka | `subpage <stránka \| karta> "<název>" report.md` |
 | Změnit stav | `card-status <karta> "In progress"` |
 | Řešitel | `card-assign <karta> "Jakub"` (víc jmen čárkou) |
-| Začít kartu | `card-start <karta> "Jakub"` (In progress + Řešitel jedním voláním) |
+| Začít kartu | `card-start <karta> "Jakub"` (In progress + Řešitel; vývojář přidá `--dev` a zapíše se i do sloupce Vývojář) |
 | Odškrtnout řez | `card-check <karta> "R3"` (víc čárkou; nepřepisuje kartu) |
 | Komentář | `comment <stránka \| karta> "<text>"` |
 | Hledat | `search "<dotaz>"` |

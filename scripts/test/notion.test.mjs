@@ -80,7 +80,7 @@ Požadavek: Připsání základních kapek za nákup
       A poslední aktivita člena je 6. 11. 2026`;
 
 const rt = (s) => [{ type: "text", text: { content: s }, plain_text: s }];
-const kanbanCard = (id, name, owners) => ({
+const kanbanCard = (id, name, owners, devs = []) => ({
   object: "page",
   id,
   parent: { database_id: KANBAN_DB },
@@ -91,15 +91,23 @@ const kanbanCard = (id, name, owners) => ({
       type: "multi_select",
       multi_select: owners.map((name) => ({ name })),
     },
+    Vývojář: {
+      type: "multi_select",
+      multi_select: devs.map((name) => ({ name })),
+    },
   },
   children: [],
 });
 
 const dir = mkdtempSync(join(tmpdir(), "notion-test-"));
 const STATE = join(dir, "state.json");
-const earn = kanbanCard(CARD_ID, "earn-zaklad: základní kapky za nákup", [
-  "Jan",
-]);
+// Karta je u analytika k akceptaci (Řešitel Jakub), vyvíjel ji Jan (Vývojář) – bug patří Janovi (TT4).
+const earn = kanbanCard(
+  CARD_ID,
+  "earn-zaklad: základní kapky za nákup",
+  ["Jakub"],
+  ["Jan"],
+);
 earn.children = [
   {
     object: "block",
