@@ -31,5 +31,19 @@
         <protected>false</protected>
         <shortDescription>Portál: uživatel bez členství</shortDescription>
         <value>K tomuto účtu zatím není přiřazené členství v Kapka Klubu.</value>
+        <fullName>Kapka_Portal_ProfileOnlyPerson</fullName>
+        <categories>Kapka Portal</categories>
+        <language>cs</language>
+        <protected>false</protected>
+        <shortDescription>Portál: profil jen pro osoby</shortDescription>
+        <value>Profil a souhlasy teď v portálu upravují jen osobní členové Kapka Klubu.</value>
+    </labels>
+    <labels>
+        <fullName>Kapka_Portal_UnknownConsent</fullName>
+        <categories>Kapka Portal</categories>
+        <language>cs</language>
+        <protected>false</protected>
+        <shortDescription>Portál: neznámý účel souhlasu</shortDescription>
+        <value>Tenhle souhlas v Kapka Klubu neevidujeme.</value>
     </labels>
 </CustomLabels>
