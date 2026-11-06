@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Manual_Requires_Adjust_Permission</fullName>
+    <active>true</active>
+    <description>Ruční pohyb kapek smí založit jen uživatel s custom permission Kapka_Adjust_Points (karta bonus: ruční úprava kapek, review SP-1). Bez toho by manažer obešel akci Upravit kapky přímým založením pohybu.</description>
+    <errorConditionFormula><![CDATA[AND(ISNEW(), ISPICKVAL(Source__c, "Manual"), NOT($Permission.Kapka_Adjust_Points))]]></errorConditionFormula>
+    <errorMessage>Ruční pohyb kapek může založit jen uživatel s oprávněním k úpravám kapek.</errorMessage>
+</ValidationRule>

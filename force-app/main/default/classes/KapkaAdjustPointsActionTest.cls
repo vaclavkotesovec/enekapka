@@ -60,6 +60,30 @@ private class KapkaAdjustPointsActionTest {
         return [SELECT Points_Balance__c FROM Loyalty_Member__c WHERE Id = :memberId].Points_Balance__c;
     }
 
+    /** Ruční připsání založené přímo, mimo akci Upravit kapky. */
+    private static Points_Transaction__c manualEarn(Id memberId, String reason) {
+        Points_Transaction__c earn = KapkaTestDataFactory.makeTransaction(memberId, EARN, POSTED, 100);
+        earn.Source__c = MANUAL;
+        earn.Reason__c = reason;
+        earn.Expiration_Date__c = Date.newInstance(2027, 11, 6);
+        return earn;
+    }
+
+    /** Založí pohyb přímo pod uživatelem (user mode) a vrátí kód první chyby a pole, nebo null. */
+    private static String insertDirectlyAs(User user, Points_Transaction__c movement) {
+        Database.SaveResult result;
+        System.runAs(user) {
+            result = Database.insert(movement, false, AccessLevel.USER_MODE);
+        }
+        return result.isSuccess() ? null : result.getErrors()[0].getStatusCode() + ' ' + result.getErrors()[0].getFields();
+    }
+
+    /** Člen patří manažerovi, aby ho směl editovat (pohyb pod člena chce zápis do rodiče). */
+    private static void giveMemberTo(Loyalty_Member__c member, User owner) {
+        member.OwnerId = owner.Id;
+        update member;
+    }
+
     // AC-3.1
     @IsTest
     static void plusAdjustmentCreatesSpendableManualEarn() {
@@ -201,5 +225,39 @@ private class KapkaAdjustPointsActionTest {
             adjustment.Transaction_Date__c + ' / ' + (adjustment.CreatedById == adjuster.Id),
             'Úprava má nést zdroj Ručně, kapky, důvod, datum a autora.'
         );
+    }
+
+    // AC-1 (review SP-1): oprávnění nejde obejít přímým založením pohybu
+    @IsTest
+    static void managerWithoutPermissionCannotInsertManualMovementDirectly() {
+        // Pokud loyalty manažer bez oprávnění k úpravám může editovat členku Janu
+        User manager = KapkaTestDataFactory.createLoyaltyManager();
+        Loyalty_Member__c jana = createJana(new Map<Date, Decimal>());
+        giveMemberTo(jana, manager);
+
+        // Když jí přímo (mimo akci Upravit kapky) založí ruční připsání 100 kapek s důvodem
+        Test.startTest();
+        String error = insertDirectlyAs(manager, manualEarn(jana.Id, 'Reklamace myčky'));
+        Test.stopTest();
+
+        // Pak se pohyb neuloží kvůli validaci
+        Assert.areEqual('FIELD_CUSTOM_VALIDATION_EXCEPTION ()', error, 'Ruční pohyb smí založit jen uživatel s oprávněním k úpravám.');
+    }
+
+    // AC-2 (review SP-1): důvod hlídá i přímé založení ručního pohybu
+    @IsTest
+    static void manualMovementWithoutReasonIsRejected() {
+        // Pokud loyalty manažer s oprávněním k úpravám může editovat členku Janu
+        User adjuster = createAdjuster();
+        Loyalty_Member__c jana = createJana(new Map<Date, Decimal>());
+        giveMemberTo(jana, adjuster);
+
+        // Když jí přímo založí ruční připsání bez důvodu
+        Test.startTest();
+        String error = insertDirectlyAs(adjuster, manualEarn(jana.Id, null));
+        Test.stopTest();
+
+        // Pak se pohyb neuloží a chyba ukazuje na pole Důvod
+        Assert.areEqual('FIELD_CUSTOM_VALIDATION_EXCEPTION (Reason__c)', error, 'Ruční pohyb musí mít důvod.');
     }
 }
