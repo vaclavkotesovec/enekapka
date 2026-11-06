@@ -4,6 +4,10 @@
         <application>Kapka_Klub</application>
         <visible>true</visible>
     </applicationVisibilities>
+    <customMetadataTypeAccesses>
+        <enabled>true</enabled>
+        <name>Kapka_Activity_Reward__mdt</name>
+    </customMetadataTypeAccesses>
     <description>Loyalty manažer Kapka Klubu: členové, stanice, nákupy, kniha kapek, souhlasy, pravidla, kampaně a katalog odměn. Pohyby kapek, alokace ani členy nelze mazat (smazání člena by kaskádou smazalo knihu kapek).</description>
     <fieldPermissions>
         <editable>true</editable>
