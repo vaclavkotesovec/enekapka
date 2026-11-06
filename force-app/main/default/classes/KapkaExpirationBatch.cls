@@ -6,6 +6,7 @@ public with sharing class KapkaExpirationBatch implements Database.Batchable<SOb
     private static final String EXPIRE = 'Expire';
     private static final String POSTED = 'Posted';
     private static final String SOURCE_EXPIRATION = 'Expiration';
+    private static final Integer EXPIRING_SOON_DAYS = 30;
 
     public Database.QueryLocator start(Database.BatchableContext context) {
         return Database.getQueryLocator([SELECT Id FROM Loyalty_Member__c WITH USER_MODE]);
@@ -16,6 +17,7 @@ public with sharing class KapkaExpirationBatch implements Database.Batchable<SOb
         KapkaPointsLedger.lockMembers(memberIds);
         Map<Id, List<Points_Transaction__c>> creditsByMember = KapkaPointsLedger.creditsByMember(memberIds);
         writeOffExpired(expiredCreditsByMember(creditsByMember));
+        update expiringSoon(memberIds, creditsByMember);
     }
 
     public void finish(Database.BatchableContext context) {
@@ -39,6 +41,31 @@ public with sharing class KapkaExpirationBatch implements Database.Batchable<SOb
             }
         }
         return expiredByMember;
+    }
+
+    /** Zbytky balíčků s expirací dnes až za EXPIRING_SOON_DAYS dnů, u členů bez nich 0 (X4). */
+    private static List<Loyalty_Member__c> expiringSoon(
+        Set<Id> memberIds,
+        Map<Id, List<Points_Transaction__c>> creditsByMember
+    ) {
+        Date today = Date.today();
+        Date horizon = today.addDays(EXPIRING_SOON_DAYS);
+        List<Loyalty_Member__c> members = new List<Loyalty_Member__c>();
+        for (Id memberId : memberIds) {
+            Decimal expiring = 0;
+            List<Points_Transaction__c> credits = creditsByMember.containsKey(memberId)
+                ? creditsByMember.get(memberId)
+                : new List<Points_Transaction__c>();
+            for (Points_Transaction__c credit : credits) {
+                Date expirationDate = credit.Expiration_Date__c;
+                if (expirationDate != null && expirationDate >= today && expirationDate <= horizon) {
+                    expiring += credit.Remaining_Points__c;
+                }
+            }
+            // Zápis v systémovém režimu: pole plní jen tento batch, uživatelé ho jen čtou.
+            members.add(new Loyalty_Member__c(Id = memberId, Points_Expiring_Next_30_Days__c = expiring));
+        }
+        return members;
     }
 
     private static void writeOffExpired(Map<Id, List<Points_Transaction__c>> expiredByMember) {

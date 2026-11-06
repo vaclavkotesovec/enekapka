@@ -125,6 +125,40 @@ private class KapkaExpirationBatchTest {
         Assert.areEqual(1, expirationsOf(jana.Id).size(), 'Opakovaný běh nesmí odepsat nic dalšího.');
     }
 
+    // AC-3.1
+    @IsTest
+    static void expiringNextThirtyDaysIsRecalculated() {
+        // Pokud Jana má balíček se zbytkem 40 kapek platný ještě 20 dnů a balíček 109 kapek platný ještě rok
+        Loyalty_Member__c jana = KapkaTestDataFactory.createMember('Jana', 'Nováková');
+        createEarn(jana.Id, 40, Date.today().addDays(20));
+        createEarn(jana.Id, 109, Date.today().addYears(1));
+
+        // Když proběhne expirace
+        runExpiration();
+
+        // Pak má Jana u členství 40 kapek, které vyprší do 30 dnů
+        Assert.areEqual(40, expiringSoonOf(jana.Id), 'Do 30 dnů má Janě vypršet 40 kapek.');
+    }
+
+    // AC-3.2
+    @IsTest
+    static void spentExpiringKapkyResetToZero() {
+        // Pokud Jana měla u členství 40 kapek k expiraci a ty už utratila
+        Loyalty_Member__c jana = KapkaTestDataFactory.makeMember(
+            KapkaTestDataFactory.createPersonAccount('Jana', 'Nováková').Id
+        );
+        jana.Points_Expiring_Next_30_Days__c = 40;
+        insert jana;
+        Points_Transaction__c earn = createEarn(jana.Id, 40, Date.today().addDays(20));
+        spend(jana.Id, earn.Id, 40);
+
+        // Když proběhne expirace
+        runExpiration();
+
+        // Pak má Jana u členství 0 kapek k expiraci
+        Assert.areEqual(0, expiringSoonOf(jana.Id), 'Utracené kapky už nemají vypršet.');
+    }
+
     private static void runExpiration() {
         Test.startTest();
         Database.executeBatch(new KapkaExpirationBatch());
@@ -154,6 +188,11 @@ private class KapkaExpirationBatchTest {
 
     private static Decimal balanceOf(Id memberId) {
         return [SELECT Points_Balance__c FROM Loyalty_Member__c WHERE Id = :memberId].Points_Balance__c;
+    }
+
+    private static Decimal expiringSoonOf(Id memberId) {
+        return [SELECT Points_Expiring_Next_30_Days__c FROM Loyalty_Member__c WHERE Id = :memberId]
+        .Points_Expiring_Next_30_Days__c;
     }
 
     private static Decimal remainingOf(Id earnId) {
