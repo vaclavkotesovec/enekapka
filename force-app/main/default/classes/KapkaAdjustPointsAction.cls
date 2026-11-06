@@ -37,6 +37,7 @@ public with sharing class KapkaAdjustPointsAction {
         for (Request request : requests) {
             validate(request);
         }
+        rejectRepeatedDebits(requests);
         Savepoint beforeAdjust = Database.setSavepoint();
         try {
             return write(requests);
@@ -52,6 +53,19 @@ public with sharing class KapkaAdjustPointsAction {
         }
         if (request.points == null || request.points == 0) {
             throw new KapkaAdjustPointsException(Label.Kapka_Adjust_Zero_Points);
+        }
+    }
+
+    /**
+     * Odpisy jednoho člena v jedné dávce by se porovnaly se stejným zůstatkem a alokovaly ze stejných
+     * zbytků balíčků (Remaining_Points__c je vzorec, v paměti se nesníží), takže se dávka odmítne celá.
+     */
+    private static void rejectRepeatedDebits(List<Request> requests) {
+        Set<Id> debitedMembers = new Set<Id>();
+        for (Request request : requests) {
+            if (request.points < 0 && !debitedMembers.add(request.memberId)) {
+                throw new KapkaAdjustPointsException(Label.Kapka_Adjust_Multiple_Debits);
+            }
         }
     }
 

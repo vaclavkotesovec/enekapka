@@ -65,6 +65,54 @@
         <value>Zadejte nenulový počet kapek.</value>
     </labels>
     <labels>
+        <fullName>Kapka_Adjust_Multiple_Debits</fullName>
+        <categories>Kapka</categories>
+        <language>cs</language>
+        <protected>false</protected>
+        <shortDescription>Víc odpisů jednoho člena v dávce</shortDescription>
+        <value>Jednomu členovi lze v jedné úpravě kapky ubrat jen jednou.</value>
+    </labels>
+    <labels>
+        <fullName>Kapka_Adjust_Whole_Points</fullName>
+        <categories>Kapka</categories>
+        <language>cs</language>
+        <protected>false</protected>
+        <shortDescription>Úprava o necelé kapky</shortDescription>
+        <value>Kapky lze upravit jen o celé číslo.</value>
+    </labels>
+    <labels>
+        <fullName>Kapka_Adjust_Reason_Too_Long</fullName>
+        <categories>Kapka</categories>
+        <language>cs</language>
+        <protected>false</protected>
+        <shortDescription>Příliš dlouhý důvod úpravy</shortDescription>
+        <value>Důvod úpravy může mít nejvýš 255 znaků.</value>
+    </labels>
+    <labels>
+        <fullName>Kapka_Adjust_Member_Not_Found</fullName>
+        <categories>Kapka</categories>
+        <language>cs</language>
+        <protected>false</protected>
+        <shortDescription>Člen pro úpravu nenalezen</shortDescription>
+        <value>Člen nebyl nalezen nebo k němu nemáte přístup.</value>
+    </labels>
+    <labels>
+        <fullName>Kapka_Adjust_Member_Closed</fullName>
+        <categories>Kapka</categories>
+        <language>cs</language>
+        <protected>false</protected>
+        <shortDescription>Úprava kapek ukončenému členovi</shortDescription>
+        <value>Ukončenému členovi nelze upravit kapky.</value>
+    </labels>
+    <labels>
+        <fullName>Kapka_Adjust_Member_Locked</fullName>
+        <categories>Kapka</categories>
+        <language>cs</language>
+        <protected>false</protected>
+        <shortDescription>Člen je zamčený jinou úpravou</shortDescription>
+        <value>Člen se právě upravuje, zkuste to za chvíli znovu.</value>
+    </labels>
+    <labels>
         <fullName>Kapka_Completed_Order_Item_Locked</fullName>
         <categories>Kapka</categories>
         <language>cs</language>

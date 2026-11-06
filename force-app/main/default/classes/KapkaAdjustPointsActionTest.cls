@@ -56,6 +56,19 @@ private class KapkaAdjustPointsActionTest {
         return error;
     }
 
+    /** Spustí dávku úprav pod uživatelem a vrátí chybovou hlášku, nebo null, když dávka prošla. */
+    private static String adjustAllAs(User user, List<KapkaAdjustPointsAction.Request> requests) {
+        String error;
+        System.runAs(user) {
+            try {
+                KapkaAdjustPointsAction.adjust(requests);
+            } catch (KapkaAdjustPointsException e) {
+                error = e.getMessage();
+            }
+        }
+        return error;
+    }
+
     private static Decimal balanceOf(Id memberId) {
         return [SELECT Points_Balance__c FROM Loyalty_Member__c WHERE Id = :memberId].Points_Balance__c;
     }
@@ -259,5 +272,28 @@ private class KapkaAdjustPointsActionTest {
 
         // Pak se pohyb neuloží a chyba ukazuje na pole Důvod
         Assert.areEqual('FIELD_CUSTOM_VALIDATION_EXCEPTION (Reason__c)', error, 'Ruční pohyb musí mít důvod.');
+    }
+
+    // AC-4 (review ST-1): dva odpisy jednoho člena v jedné dávce nesmí přečerpat balíček
+    @IsTest
+    static void twoDebitsForOneMemberInOneCallFail() {
+        // Pokud Jana má 40 kapek
+        User adjuster = createAdjuster();
+        Loyalty_Member__c jana = createJana(new Map<Date, Decimal>{ Date.newInstance(2027, 11, 6) => 40 });
+
+        // Když jí loyalty manažer v jedné dávce ubere dvakrát 30 kapek
+        Test.startTest();
+        String error = adjustAllAs(
+            adjuster,
+            new List<KapkaAdjustPointsAction.Request>{ request(jana.Id, -30, 'Oprava 1'), request(jana.Id, -30, 'Oprava 2') }
+        );
+        Test.stopTest();
+
+        // Pak se nic neuloží, Jana má dál 40 kapek a manažer vidí hlášku
+        Assert.areEqual(
+            Label.Kapka_Adjust_Multiple_Debits + ' / 40',
+            error + ' / ' + balanceOf(jana.Id),
+            'Víc odpisů jednoho člena v jedné dávce se musí odmítnout.'
+        );
     }
 }
