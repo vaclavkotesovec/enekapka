@@ -2,3 +2,5 @@
 .sf/
 .sfdx/
 node_modules/
+.work/
+.env

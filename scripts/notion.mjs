@@ -2,13 +2,15 @@
 // Notion konektor pro Kapka Klub přes oficiální REST API (bez závislostí, Node 18+).
 // Token: NOTION_TOKEN v .env (interní integrace s přístupem ke stránce Kapka).
 //
-//   node scripts/notion.mjs page <zadani|model|znacka|kapka|id|url>   stránka jako Markdown
-//   node scripts/notion.mjs kanban [--status "In progress"]      karty Kanbanu
-//   node scripts/notion.mjs card-add "<název>" [--status "Not started"]
-//   node scripts/notion.mjs card-status <id|název> "<Not started|In progress|Done>"
-//   node scripts/notion.mjs comment <id|alias> "<text>"
-//   node scripts/notion.mjs search "<dotaz>"
-//   přepínač --json vypíše surovou odpověď API
+//   page <zadani|model|znacka|kapka|karta|id|url>        stránka nebo karta jako Markdown
+//   kanban [--status "In progress"]                       karty Kanbanu
+//   card-add "<název>" [--status "Not started"] [--file spec.md]
+//   card-status <karta> "<Not started|In progress|Done>"
+//   write <stránka|karta> <soubor.md|-> [--append]        nahradí (nebo připojí) obsah; podstránky zůstanou
+//   subpage <stránka|karta> "<název>" [soubor.md|-]       nová podstránka, např. review nebo retro
+//   comment <stránka|karta> "<text>"
+//   search "<dotaz>"
+//   --json vypíše surovou odpověď API; <karta> = id nebo jednoznačná část názvu
 
 import { readFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -68,7 +70,9 @@ async function api(method, path, body) {
     }
     const json = await res.json().catch(() => ({}));
     if (!res.ok) {
-      const hint = res.status === 404 || res.status === 403
+      const hint = json.code === "restricted_resource"
+        ? " Integrace na to nemá oprávnění: v nastavení integrace (Capabilities) zapni čtení/zápis obsahu a komentáře."
+        : res.status === 404 || res.status === 403
         ? " Stránka není sdílená s integrací: v Notion na stránce Kapka … → Connections → přidej integraci."
         : res.status === 401 ? " Neplatný NOTION_TOKEN." : "";
       die(`Notion API ${res.status} ${json.code || ""}: ${(json.message || res.statusText).replace(/\.$/, "")}.${hint}`);
@@ -163,7 +167,7 @@ const title = (page) => {
 
 // ---------- příkazy ----------
 async function cmdPage(ref, json) {
-  const id = toId(ref) || die(`Neznámá stránka: ${ref}`);
+  const id = await resolvePage(ref);
   const page = await api("GET", `/pages/${id}`);
   if (json) return console.log(JSON.stringify(page, null, 2));
   console.log(`# ${title(page)}\n\n_id ${id} · upraveno ${page.last_edited_time}_\n`);
@@ -187,13 +191,14 @@ function checkStatus(s) {
   if (!STATUSES.includes(s)) die(`Neplatný stav „${s}“. Povolené: ${STATUSES.join(", ")}.`);
 }
 
-async function cmdCardAdd(name, status = "Not started", json) {
+async function cmdCardAdd(name, status = "Not started", file, json) {
   if (!name) die("Chybí název karty.");
   checkStatus(status);
   const page = await api("POST", "/pages", {
     parent: { database_id: KANBAN_DB },
     properties: { Name: { title: [{ text: { content: name } }] }, Status: { status: { name: status } } },
   });
+  if (file) await appendBlocks(page.id, mdToBlocks(readSource(file)));
   console.log(json ? JSON.stringify(page, null, 2) : `Založeno: ${name} [${status}] id ${page.id.replace(/-/g, "")}`);
 }
 
@@ -219,6 +224,138 @@ async function cmdComment(ref, text, json) {
   console.log(json ? JSON.stringify(res, null, 2) : `Komentář přidán k ${id}.`);
 }
 
+// ---------- Markdown → bloky ----------
+const LANGS = new Set(["gherkin", "java", "javascript", "typescript", "json", "sql", "shell", "bash", "markdown", "xml", "html", "css", "python", "yaml", "mermaid"]);
+
+function inline(text) {
+  const out = [];
+  const re = /(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)]+\)|_[^_\s][^_]*_)/g;
+  let last = 0, m;
+  const push = (content, ann = {}, link) => {
+    for (let i = 0; i < content.length; i += 2000) {
+      out.push({ type: "text", text: { content: content.slice(i, i + 2000), ...(link ? { link: { url: link } } : {}) }, annotations: ann });
+    }
+  };
+  while ((m = re.exec(text))) {
+    if (m.index > last) push(text.slice(last, m.index));
+    const t = m[0];
+    if (t.startsWith("**")) push(t.slice(2, -2), { bold: true });
+    else if (t.startsWith("`")) push(t.slice(1, -1), { code: true });
+    else if (t.startsWith("[")) { const [, l, u] = t.match(/\[([^\]]+)\]\(([^)]+)\)/); /^https?:/.test(u) ? push(l, {}, u) : push(l); }
+    else push(t.slice(1, -1), { italic: true });
+    last = m.index + t.length;
+  }
+  if (last < text.length) push(text.slice(last));
+  return out;
+}
+
+const blk = (type, text, extra = {}) => ({ object: "block", type, [type]: { rich_text: inline(text), ...extra } });
+
+function mdToBlocks(md) {
+  const lines = md.replace(/\r/g, "").split("\n");
+  const blocks = [];
+  let i = 0;
+  const lastList = [];
+  while (i < lines.length) {
+    const line = lines[i];
+    const fence = line.match(/^```\s*([\w+-]*)/);
+    if (fence) {
+      const body = [];
+      i++;
+      while (i < lines.length && !/^```/.test(lines[i])) body.push(lines[i++]);
+      i++;
+      const lang = LANGS.has(fence[1]) ? fence[1] : "plain text";
+      const content = body.join("\n");
+      blocks.push({ object: "block", type: "code", code: { language: lang, rich_text: chunks(content) } });
+      continue;
+    }
+    if (/^\s*\|.*\|\s*$/.test(line)) {
+      const rows = [];
+      while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) rows.push(lines[i++]);
+      const cells = rows.filter((r) => !/^\s*\|[\s:|-]+\|\s*$/.test(r))
+        .map((r) => r.trim().slice(1, -1).split(/(?<!\\)\|/).map((c) => c.trim().replace(/\\\|/g, "|")));
+      const width = Math.max(...cells.map((c) => c.length));
+      blocks.push({ object: "block", type: "table", table: {
+        table_width: width, has_column_header: rows.length > 1 && /^\s*\|[\s:|-]+\|\s*$/.test(rows[1]), has_row_header: false,
+        children: cells.map((c) => ({ object: "block", type: "table_row", table_row: { cells: Array.from({ length: width }, (_, k) => inline(c[k] ?? "")) } })),
+      } });
+      continue;
+    }
+    i++;
+    if (!line.trim()) { lastList.length = 0; continue; }
+    let m;
+    if ((m = line.match(/^(#{1,3})\s+(.*)/))) { blocks.push(blk(`heading_${m[1].length}`, m[2])); continue; }
+    if (/^(-{3,}|\*{3,})\s*$/.test(line)) { blocks.push({ object: "block", type: "divider", divider: {} }); continue; }
+    if ((m = line.match(/^>\s?(.*)/))) { blocks.push(blk("quote", m[1])); continue; }
+    if ((m = line.match(/^(\s*)(?:[-*]\s+\[([ xX])\]\s+(.*))$/))) { list(m[1], blk("to_do", m[3], { checked: m[2] !== " " })); continue; }
+    if ((m = line.match(/^(\s*)[-*]\s+(.*)/))) { list(m[1], blk("bulleted_list_item", m[2])); continue; }
+    if ((m = line.match(/^(\s*)\d+[.)]\s+(.*)/))) { list(m[1], blk("numbered_list_item", m[2])); continue; }
+    blocks.push(blk("paragraph", line.trim()));
+    lastList.length = 0;
+  }
+  return blocks;
+
+  function chunks(s) {
+    const r = [];
+    for (let k = 0; k < s.length; k += 2000) r.push({ type: "text", text: { content: s.slice(k, k + 2000) } });
+    return r;
+  }
+  function list(indent, b) {
+    const level = Math.min(1, Math.floor(indent.replace(/\t/g, "  ").length / 2));
+    if (level > 0 && lastList[0]) {
+      const parent = lastList[0][lastList[0].type];
+      (parent.children ||= []).push(b);
+    } else {
+      blocks.push(b);
+      lastList[0] = b;
+    }
+  }
+}
+
+async function appendBlocks(pageId, blocks) {
+  for (let k = 0; k < blocks.length; k += 100) {
+    await api("PATCH", `/blocks/${pageId}/children`, { children: blocks.slice(k, k + 100) });
+  }
+}
+
+function readSource(src) {
+  if (!src) die("Chybí zdroj obsahu: cesta k .md souboru nebo - pro stdin.");
+  return src === "-" ? readFileSync(0, "utf8") : readFileSync(src, "utf8");
+}
+
+async function resolvePage(ref) {
+  return toId(ref) || (await resolveCard(ref));
+}
+
+async function cmdWrite(ref, src, append, json) {
+  const id = await resolvePage(ref);
+  const blocks = mdToBlocks(readSource(src));
+  let removed = 0;
+  if (!append) {
+    const old = await paginate("GET", `/blocks/${id}/children`);
+    for (const b of old) {
+      if (["child_page", "child_database"].includes(b.type)) continue; // podstránky (review, retro) zůstávají
+      await api("DELETE", `/blocks/${b.id}`);
+      removed++;
+    }
+  }
+  await appendBlocks(id, blocks);
+  console.log(json ? JSON.stringify({ id, removed, added: blocks.length }) : `Zapsáno do ${id}: ${blocks.length} bloků${append ? " (připojeno)" : `, ${removed} starých nahrazeno`}.`);
+}
+
+async function cmdSubpage(ref, name, src, json) {
+  if (!name) die("Chybí název podstránky.");
+  const parent = await resolvePage(ref);
+  const blocks = src ? mdToBlocks(readSource(src)) : [];
+  const page = await api("POST", "/pages", {
+    parent: { page_id: parent },
+    properties: { title: { title: [{ text: { content: name } }] } },
+    children: blocks.slice(0, 100),
+  });
+  if (blocks.length > 100) await appendBlocks(page.id, blocks.slice(100));
+  console.log(json ? JSON.stringify(page, null, 2) : `Podstránka „${name}“ id ${page.id.replace(/-/g, "")} (${blocks.length} bloků).`);
+}
+
 async function cmdSearch(q, json) {
   const res = await api("POST", "/search", { query: q || "", page_size: 20 });
   if (json) return console.log(JSON.stringify(res, null, 2));
@@ -232,20 +369,28 @@ async function cmdSearch(q, json) {
 loadEnv();
 const argv = process.argv.slice(2);
 const json = argv.includes("--json");
-const si = argv.indexOf("--status");
-const status = si > -1 ? argv[si + 1] : undefined;
-const [cmd, a1, a2] = argv.filter((a, i) => a !== "--json" && (si === -1 || (i !== si && i !== si + 1)));
+const append = argv.includes("--append");
+const opt = {};
+const pos = [];
+for (let i = 0; i < argv.length; i++) {
+  if (argv[i] === "--status" || argv[i] === "--file") opt[argv[i].slice(2)] = argv[++i];
+  else if (!["--json", "--append"].includes(argv[i])) pos.push(argv[i]);
+}
+const status = opt.status;
+const [cmd, a1, a2, a3] = pos;
 
 const commands = {
   page: () => cmdPage(a1, json),
   kanban: () => cmdKanban(status, json),
-  "card-add": () => cmdCardAdd(a1, status, json),
+  "card-add": () => cmdCardAdd(a1, status, opt.file, json),
+  write: () => cmdWrite(a1, a2, append, json),
+  subpage: () => cmdSubpage(a1, a2, a3, json),
   "card-status": () => cmdCardStatus(a1, a2, json),
   comment: () => cmdComment(a1, a2, json),
   search: () => cmdSearch(a1, json),
 };
 if (!commands[cmd]) {
-  console.log(readFileSync(fileURLToPath(import.meta.url), "utf8").split("\n").slice(1, 11).map((l) => l.replace(/^\/\/ ?/, "")).join("\n"));
+  console.log(readFileSync(fileURLToPath(import.meta.url), "utf8").split("\n").slice(1, 14).map((l) => l.replace(/^\/\/ ?/, "")).join("\n"));
   process.exit(cmd ? 1 : 0);
 }
 await commands[cmd]();

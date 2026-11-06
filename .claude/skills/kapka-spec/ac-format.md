@@ -2,14 +2,13 @@
 
 Píše se pro business čtenáře (loyalty manažer, tester, porota). Žádné Apex třídy, API názvy polí ani SOQL. Každé kritérium musí jít dohledat ke zdroji v Notion.
 
-## Struktura `spec.md`
+## Struktura sekce Specifikace v kartě
 
 ````markdown
-# Specifikace – <id> (<jednořádkový popis>)
+## Specifikace
 
-**Zdroj:** Notion Zadání / Značka / karta Kanbanu. **Jazyk:** CS.
+**Zdroj:** Notion `page zadani` / `page model` / `page znacka`.
 
-## Akceptační kritéria
 
 ```gherkin
 # language: cs
@@ -26,12 +25,12 @@ Požadavek: <business schopnost>
       Pak <pozorovatelný výsledek>
 ```
 
-## Mimo rozsah
+### Mimo rozsah
 
 | Vyřazeno | Důvod |
 | --- | --- |
 
-## Otevřené otázky
+### Otevřené otázky
 
 1. <mezera nebo nejasnost, s AC, kterého se týká>
 ````

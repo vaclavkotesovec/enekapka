@@ -9,7 +9,7 @@ TDD je smyčka red → green. Tahle stránka říká, jak z ní dostat testy, kt
 
 ## Seamy
 
-**Seam** je veřejná hranice, na které pozoruješ chování bez sahání dovnitř. Testy žijí jen na seamech schválených v plánu (`.work/<id>/plan.md`). Potřebuješ seam, který plán nemá? Zeptej se uživatele.
+**Seam** je veřejná hranice, na které pozoruješ chování bez sahání dovnitř. Testy žijí jen na seamech schválených v Plánu karty v Notion (`node scripts/notion.mjs page "<id>:"`). Potřebuješ seam, který plán nemá? Zeptej se uživatele.
 
 Typické seamy Kapky:
 
