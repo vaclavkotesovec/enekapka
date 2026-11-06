@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Unit_Size_Must_Be_Positive</fullName>
+    <active>true</active>
+    <description>Jednotka musí být kladná, jinak nejde kapky spočítat.</description>
+    <errorConditionFormula>Unit_Size__c &lt;= 0</errorConditionFormula>
+    <errorDisplayField>Unit_Size__c</errorDisplayField>
+    <errorMessage>Jednotka musí být větší než 0.</errorMessage>
+</ValidationRule>

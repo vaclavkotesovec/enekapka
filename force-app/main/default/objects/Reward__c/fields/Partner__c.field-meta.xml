@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Partner__c</fullName>
+    <description>Partner programu, který odměnu poskytuje.</description>
+    <label>Partner</label>
+    <trackHistory>false</trackHistory>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Odměny</relationshipLabel>
+    <relationshipName>Rewards</relationshipName>
+    <required>true</required>
+    <type>Lookup</type>
+</CustomField>
