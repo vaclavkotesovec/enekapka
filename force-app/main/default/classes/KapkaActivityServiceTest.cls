@@ -11,6 +11,7 @@ private class KapkaActivityServiceTest {
     private static final String CONSENT = 'Consent';
     private static final String OPT_IN = 'OptIn';
     private static final String OPT_OUT = 'OptOut';
+    private static final Integer BULK_SIZE = 200;
 
     // AC-1.1
     @IsTest
@@ -249,6 +250,70 @@ private class KapkaActivityServiceTest {
         Assert.isTrue(
             result.Status__c == ACTIVE && profilePoints == 0 && consentPoints == 50,
             'Firma: aktivní, 0 kapek za profil, 50 za souhlas; je: ' + result.Status__c + ', ' + profilePoints + ', ' + consentPoints
+        );
+    }
+
+    // AC-6.1, AC-6.2
+    @IsTest
+    static void noMemberOrDeclinedConsentEarnsNothing() {
+        // Pokud osoba, která není členem, a registrovaná členka Jana Nováková
+        Map<String, DataUsePurpose> purposes = KapkaTestDataFactory.createDataUsePurposes();
+        DataUsePurpose marketing = purposes.get(KapkaTestDataFactory.MARKETING_PURPOSE);
+        Account outsider = KapkaTestDataFactory.createPersonAccount('Karel', 'Dvořák');
+        Loyalty_Member__c jana = KapkaTestDataFactory.createMember('Jana', 'Nováková');
+        PartyConsent declined = KapkaTestDataFactory.makeOptInConsent(individualOf(jana), marketing);
+        declined.PrivacyConsentStatus = OPT_OUT;
+
+        // Když nečlen udělí souhlas s marketingem a Jana ho odmítne
+        Test.startTest();
+        insert new List<PartyConsent>{
+            KapkaTestDataFactory.makeOptInConsent(
+                [SELECT PersonIndividualId FROM Account WHERE Id = :outsider.Id].PersonIndividualId,
+                marketing
+            ),
+            declined
+        };
+        Test.stopTest();
+
+        // Pak se žádné kapky nepřipíší
+        Assert.areEqual(0, [SELECT COUNT() FROM Points_Transaction__c], 'Bez členství nebo bez udělení se nic nepřipíše.');
+    }
+
+    // R11: bulk
+    @IsTest
+    static void twoHundredConsentsInOneTransaction() {
+        // Pokud 200 registrovaných členů
+        Map<String, DataUsePurpose> purposes = KapkaTestDataFactory.createDataUsePurposes();
+        List<Loyalty_Member__c> members = KapkaTestDataFactory.createPersonMembers('Hromadná', BULK_SIZE);
+        List<PartyConsent> consents = new List<PartyConsent>();
+        for (Loyalty_Member__c member : [
+            SELECT Account__r.PersonIndividualId
+            FROM Loyalty_Member__c
+            WHERE Id IN :members
+        ]) {
+            consents.add(
+                KapkaTestDataFactory.makeOptInConsent(
+                    member.Account__r.PersonIndividualId,
+                    purposes.get(KapkaTestDataFactory.LOYALTY_PURPOSE)
+                )
+            );
+        }
+
+        // Když všichni udělí souhlas s účastí v jedné transakci
+        Test.startTest();
+        insert consents;
+        Test.stopTest();
+
+        // Pak je všech 200 aktivních a každý má 100 kapek za profil
+        Integer activeCount = [SELECT COUNT() FROM Loyalty_Member__c WHERE Id IN :members AND Status__c = :ACTIVE];
+        Integer creditCount = [
+            SELECT COUNT()
+            FROM Points_Transaction__c
+            WHERE Loyalty_Member__c IN :members AND Source__c = :PROFILE AND Points__c = 100
+        ];
+        Assert.isTrue(
+            activeCount == BULK_SIZE && creditCount == BULK_SIZE,
+            'Všech 200 členů má být aktivních se 100 kapkami; aktivních ' + activeCount + ', připsání ' + creditCount
         );
     }
 

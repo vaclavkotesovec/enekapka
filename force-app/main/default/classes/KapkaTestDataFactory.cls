@@ -83,6 +83,34 @@ public class KapkaTestDataFactory {
         return account;
     }
 
+    /** Dávka členů-osob s Individual pro bulk testy (tři DML bez ohledu na počet). */
+    public static List<Loyalty_Member__c> createPersonMembers(String lastName, Integer count) {
+        List<Individual> people = new List<Individual>();
+        for (Integer i = 0; i < count; i++) {
+            people.add(new Individual(FirstName = 'Člen ' + i, LastName = lastName));
+        }
+        insert people;
+        Id recordTypeId = personAccountRecordTypeId();
+        List<Account> accounts = new List<Account>();
+        for (Individual person : people) {
+            accounts.add(
+                new Account(
+                    RecordTypeId = recordTypeId,
+                    FirstName = person.FirstName,
+                    LastName = lastName,
+                    PersonIndividualId = person.Id
+                )
+            );
+        }
+        insert accounts;
+        List<Loyalty_Member__c> members = new List<Loyalty_Member__c>();
+        for (Account account : accounts) {
+            members.add(makeMember(account.Id));
+        }
+        insert members;
+        return members;
+    }
+
     public static Account createCompany(String name) {
         Account company = new Account(Name = name);
         insert company;
