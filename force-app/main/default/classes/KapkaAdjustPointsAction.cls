@@ -54,6 +54,10 @@ public with sharing class KapkaAdjustPointsAction {
         if (request.points == null || request.points == 0) {
             throw new KapkaAdjustPointsException(Label.Kapka_Adjust_Zero_Points);
         }
+        // Points__c má 0 desetinných míst: necelé kapky by se při uložení zaokrouhlily jinak než v alokaci.
+        if (request.points != request.points.round(System.RoundingMode.DOWN)) {
+            throw new KapkaAdjustPointsException(Label.Kapka_Adjust_Whole_Points);
+        }
     }
 
     /**

@@ -296,4 +296,49 @@ private class KapkaAdjustPointsActionTest {
             'Víc odpisů jednoho člena v jedné dávce se musí odmítnout.'
         );
     }
+
+    private static Integer movementCountOf(Id memberId) {
+        return [SELECT COUNT() FROM Points_Transaction__c WHERE Loyalty_Member__c = :memberId];
+    }
+
+    // Hranice 0 kapek (review ST-2, rozhodnutí v plánu)
+    @IsTest
+    static void zeroPointsAdjustmentFails() {
+        // Pokud loyalty manažer s oprávněním k úpravám
+        User adjuster = createAdjuster();
+        Loyalty_Member__c jana = createJana(new Map<Date, Decimal>());
+
+        // Když Janě upraví kapky o 0
+        Test.startTest();
+        String error = adjustAs(adjuster, jana.Id, 0, 'Oprava');
+        Test.stopTest();
+
+        // Pak se nic neuloží a manažer vidí hlášku
+        Assert.areEqual(
+            Label.Kapka_Adjust_Zero_Points + ' / 0',
+            error + ' / ' + movementCountOf(jana.Id),
+            'Úprava o 0 kapek se nesmí uložit.'
+        );
+    }
+
+    // Jen celé kapky (review ST-3; Points__c má 0 desetinných míst)
+    @IsTest
+    static void fractionalPointsAdjustmentFails() {
+        // Pokud loyalty manažer s oprávněním k úpravám
+        User adjuster = createAdjuster();
+        Loyalty_Member__c jana = createJana(new Map<Date, Decimal>());
+
+        // Když Janě přidá 10,5 kapky
+        Test.startTest();
+        String error = adjustAs(adjuster, jana.Id, 10.5, 'Oprava');
+        Test.stopTest();
+
+        // Pak se nic neuloží a manažer vidí, že kapky jsou jen celé
+        Assert.areEqual(
+            Label.Kapka_Adjust_Whole_Points + ' / 0',
+            error + ' / ' + movementCountOf(jana.Id),
+            'Necelé kapky se nesmí uložit.'
+        );
+    }
+
 }
