@@ -16,6 +16,7 @@ Na repu i v Notion pracuje víc lidí najednou. Aby se nic nedělalo dvakrát:
 - **Na čem pracuješ, je In progress – hned, ne až na konci.** Jakmile začneš na kartě cokoli dělat (specifikaci i vývoj), spusť `card-start "<id>:" "<tvé jméno>"`. Když práci předáš (vývoj → analytik k akceptaci) nebo přerušíš, hned uprav Řešitele nebo stav (Business ready / Not started / Done). Kanban musí v každou chvíli ukazovat, kdo na čem dělá.
 - Commituj a pushuj po malých kusech (po řezu), ať ostatní vidí rozdělanou práci.
 - **Org je jeden pro celý tým.** Nasazuj jen soubory své karty (`sf project deploy start --source-dir <soubor> …`), nikdy celý `force-app` – přepsal bys cizí nasazenou práci. Před deployem `bash scripts/git-sync.sh`, po zeleném řezu hned commit a push, ať další deploy kohokoli obsahuje i tvou změnu.
+- Deploy celého `force-app`, přes manifest nebo z větve pozadu za `origin` zablokuje hook `scripts/guard-deploy.sh`. Testy pouštěj přes `bash scripts/apex-test.sh <Třída…>` (po třídách, opakuje při zahlcené frontě).
 - Když ti v orgu najednou spadnou dřív zelené testy, nejdřív ověř, kdo třídu přepsal (`sf data query -q "SELECT Name, LastModifiedBy.Name, LastModifiedDate FROM ApexClass WHERE Name = '<Třída>'"`), a ozvi se mu.
 
 ## ADLC – každá funkce = jedna karta v Kanbanu, fáze v pořadí

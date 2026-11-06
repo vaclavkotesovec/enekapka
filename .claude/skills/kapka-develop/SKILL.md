@@ -22,7 +22,7 @@ Karta v Kanbanu ve stavu **Business ready** (`node scripts/notion.mjs page "<id>
    - **Green:** nasaď soubory řezu a pusť testy karty:
      ```bash
      sf project deploy start --source-dir <soubory řezu> --wait 10
-     sf apex run test --class-names <TestyKarty> --result-format human --wait 10
+     bash scripts/apex-test.sh <TestyKarty…>   # po třídách, sám opakuje při zahlcené frontě orgu
      ```
    - Stejná chyba po třech různých pokusech → stop a reportuj s důkazy.
 3. **Po zeleném řezu** naráz: `node scripts/notion.mjs card-check "<id>:" "R<n>"`, `bash scripts/git-sync.sh`, commit `feat(<id>): R<n> <co>` a push.
