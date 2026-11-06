@@ -63,6 +63,15 @@ public class KapkaTestDataFactory {
         );
     }
 
+    /** Kampaň uplatněná na připsání (karta model-nabidka, R3). */
+    public static Applied_Campaign__c makeAppliedCampaign(Id earnTransactionId, Id campaignId, Decimal points) {
+        return new Applied_Campaign__c(
+            Points_Transaction__c = earnTransactionId,
+            Loyalty_Campaign__c = campaignId,
+            Points__c = points
+        );
+    }
+
     // ---- model-jadro: člen, nákup, kniha kapek, souhlasy ----
 
     public static final Datetime DEFAULT_PURCHASE_DATE = Datetime.newInstance(2026, 11, 6, 8, 30, 0);
