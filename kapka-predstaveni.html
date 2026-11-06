@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kapka Klub · představení</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@600&display=swap">
+<style>
+:root{--kapka:#0b6e73;--kapka-soft:#ddf0ee;--jantar:#f0a830;--jantar-soft:#fcefd6;--on-jantar:#0a2e33;--jantar-ink:#8a5300;
+--hlubina:#0a2e33;--hlubina-2:#123f45;--surface:#f6f8f7;--raised:#fff;--line:#d5e0df;--ink:#0f2226;--muted:#4d6366;
+--f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;--f-sans:"Instrument Sans","Segoe UI",system-ui,sans-serif;--f-mono:"JetBrains Mono",ui-monospace,Consolas,monospace;
+--r-hrot:2px;--r:20px}
+*{box-sizing:border-box}
+html{scroll-snap-type:y mandatory}
+body{margin:0;background:var(--surface);color:var(--ink);font:18px/1.5 var(--f-sans)}
+h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance}
+p{margin:0}
+.num{font-variant-numeric:tabular-nums}
+.kcard{border-radius:var(--r-hrot) var(--r) var(--r) var(--r)}
+.j{color:var(--jantar)}
+.eyebrow{font:600 13px/16px var(--f-sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.eyebrow.light{color:rgba(255,255,255,.6)}
+.slide{position:relative;width:100vw;height:100vh;min-height:600px;scroll-snap-align:start;overflow:hidden;padding:7vh 6vw 13vh;display:flex;flex-direction:column;justify-content:center;background:var(--surface)}
+.slide h2{font-size:clamp(30px,3.6vw,52px);line-height:1.05;letter-spacing:-.025em;font-weight:700;margin-bottom:36px;max-width:22em}
+.slide h3{font-size:22px;letter-spacing:-.01em;font-weight:700;line-height:1.15}
+.lockup{display:flex;align-items:center;gap:10px;font:800 26px/1 var(--f-display);letter-spacing:-.03em}
+.lockup svg{width:30px;height:30px;flex:none;display:block;overflow:visible}
+/* hero */
+.hero{background:var(--hlubina);color:#fff}
+.hero>.lockup{position:absolute;top:6vh;left:6vw}
+.hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:32px;align-items:end;position:relative;z-index:1}
+.mega{font-size:clamp(96px,15vw,210px);line-height:.82;font-weight:800;letter-spacing:-.05em;margin-top:10px}
+.equation{margin-top:28px;display:flex;flex-wrap:wrap;gap:10px 16px;font:600 clamp(24px,3vw,36px)/1.1 var(--f-display);letter-spacing:-.01em}
+.hero-sub{margin-top:18px;max-width:44ch;color:rgba(255,255,255,.76);font-size:19px}
+.hero-mark{justify-self:center;position:relative;width:300px;height:300px}
+.hero-mark .big,.end-mark .big{width:100%;height:100%}
+.badge{position:absolute;right:-4%;bottom:8%;background:#fff;color:var(--hlubina);padding:12px 16px;border-radius:var(--r-hrot) 16px 16px 16px}
+.badge b{display:block;font:800 36px/1 var(--f-display);letter-spacing:-.02em}
+.badge span{font-size:13px;color:var(--muted)}
+.rain{position:absolute;inset:0;pointer-events:none}
+.rain i{position:absolute;top:-20px;background:var(--jantar);opacity:.5;border-radius:0 50% 50% 50%;transform:rotate(45deg);animation:fall linear infinite}
+@keyframes fall{from{transform:translateY(-40px) rotate(45deg)}to{transform:translateY(110vh) rotate(45deg)}}
+@media (prefers-reduced-motion:reduce){.rain i{animation:none}}
+.center{align-items:center;text-align:center}
+.center .hero-sub{margin-inline:auto}
+.end-mark{width:120px;height:120px;margin-bottom:28px}
+/* cards */
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.card{background:var(--raised);border:1px solid var(--line);padding:26px;display:grid;gap:12px;align-content:start}
+.card p{color:var(--muted);font-size:16px}
+.ico{width:52px;height:52px}
+.tagn{font:800 34px/1 var(--f-display);color:var(--kapka);letter-spacing:-.02em}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px}
+.stats-row div{border-top:2px solid var(--ink);padding-top:12px}
+.stats-row b{display:block;font:800 56px/1 var(--f-display);letter-spacing:-.03em}
+.stats-row b.k{color:var(--kapka)}
+.stats-row span{font-size:15px;color:var(--muted)}
+/* calc */
+.calc{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr auto 1.15fr;gap:12px;align-items:stretch}
+.ccard{background:var(--raised);border:1px solid var(--line);padding:22px;display:grid;gap:6px;align-content:start}
+.ccard b{font:800 64px/1 var(--f-display);letter-spacing:-.04em}
+.ccard h3{font-size:19px}
+.ccard p{font-size:14px;color:var(--muted)}
+.ccard.ksoft{background:var(--kapka-soft);border-color:var(--kapka-soft)} .ccard.ksoft b{color:var(--kapka)}
+.ccard.jsoft{background:var(--jantar-soft);border-color:var(--jantar-soft)} .ccard.jsoft b{color:var(--jantar-ink)}
+.ccard.total{background:var(--hlubina);border-color:var(--hlubina);color:#fff} .ccard.total b{color:var(--jantar);font-size:76px} .ccard.total p{color:rgba(255,255,255,.72)}
+.op{align-self:center;font:700 34px/1 var(--f-display);color:var(--muted)}
+.note{margin-top:28px;color:var(--muted);font-size:17px;max-width:60em}
+.note b{color:var(--ink)}
+/* model */
+.model{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:14px;align-items:center}
+.col{display:grid;gap:12px}
+.obj{background:var(--raised);border:1px solid var(--line);padding:14px 18px;display:grid;gap:2px}
+.obj b{font:700 17px/1.2 var(--f-display)}
+.obj span{font-size:14px;color:var(--muted)}
+.obj.std{background:transparent;border-style:dashed}
+.obj.hero-o{background:var(--kapka);border-color:var(--kapka);color:#fff} .obj.hero-o span{color:rgba(255,255,255,.82)}
+.obj.hero-j{background:var(--jantar);border-color:var(--jantar);color:var(--on-jantar)} .obj.hero-j span{color:var(--on-jantar)}
+.arr{font:700 40px/1 var(--f-display);color:var(--kapka)}
+/* brief */
+.brief{margin-top:20px;background:var(--hlubina);color:#fff;padding:20px 24px}
+.brief .eyebrow{margin-bottom:8px}
+.mono{font:600 15px/1.5 var(--f-mono);letter-spacing:.02em}
+/* flow + kanban */
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:28px}
+.step{border-top:3px solid var(--kapka);padding-top:14px;display:grid;gap:6px;align-content:start}
+.step .n{display:inline-grid;place-items:center;width:34px;height:34px;background:var(--jantar);color:var(--on-jantar);font:800 16px/1 var(--f-display);border-radius:var(--r-hrot) 12px 12px 12px}
+.step p{font-size:15px;color:var(--muted)}
+.kanban{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;background:var(--raised);border:1px solid var(--line);padding:18px;border-radius:var(--r-hrot) var(--r) var(--r) var(--r)}
+.khead{font:600 12px/16px var(--f-sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.d{width:10px;height:10px;border-radius:0 50% 50% 50%;transform:rotate(45deg);display:inline-block}
+.d.muted{background:var(--muted)}.d.k{background:var(--kapka)}.d.j{background:var(--jantar)}
+.kc{background:var(--surface);border:1px solid var(--line);padding:10px 14px;margin-top:8px;font-size:15px}
+/* win */
+.big-h{font-size:clamp(48px,6vw,88px) !important;line-height:.95 !important;letter-spacing:-.04em !important;font-weight:800 !important;color:#fff}
+.win{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin:8px 0 32px}
+.win div{border-top:2px solid rgba(255,255,255,.25);padding-top:14px}
+.win b{display:block;font:800 clamp(56px,6.5vw,96px)/1 var(--f-display);letter-spacing:-.04em;color:var(--jantar)}
+.win span{color:rgba(255,255,255,.78);font-size:17px;display:block;max-width:18em;margin-top:6px}
+.closing{font:600 22px/1.3 var(--f-display);color:#fff}
+/* foot */
+.foot{position:absolute;left:6vw;right:6vw;bottom:32px;border-top:1px solid var(--line);padding-top:14px;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted)}
+.foot .lockup{font-size:17px;gap:6px;color:var(--ink)} .foot .lockup svg{width:18px;height:18px}
+.foot.dark{border-top-color:rgba(255,255,255,.18);color:rgba(255,255,255,.6)} .foot.dark .lockup{color:#fff}
+@media screen and (max-width:900px){
+ .slide{height:auto;min-height:100vh;padding:80px 16px 96px}
+ .hero-grid,.grid3,.grid4,.stats-row,.flow,.kanban,.win,.model{grid-template-columns:1fr}
+ .calc{grid-template-columns:1fr}.op,.arr{justify-self:center}.arr{transform:rotate(90deg)}
+ .hero-mark{width:min(70%,240px)} .foot span:nth-child(2){display:none}}
+@page{size:1280px 720px;margin:0}
+@media print{body{font-size:16px}.slide{width:1280px;height:720px;min-height:0;page-break-after:always;padding:56px 76px 96px}.rain{display:none}
+ .mega{font-size:170px}.hero>.lockup{top:44px;left:76px}.foot{left:76px;right:76px}.big-h{font-size:76px !important}.win b{font-size:84px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><path id="drop" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></defs></svg>
+
+<section class="slide hero">
+  <div class="rain" aria-hidden="true"></div>
+  <div class="lockup"><svg viewBox="0 0 64 64" aria-hidden="true" class=""><path fill="#f0a830" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</div>
+  <div class="hero-grid">
+    <div>
+      <p class="eyebrow light">AI Hackathon · 6. 11. 2026 · tým 2</p>
+      <h1 class="mega">kapka<span class="j">.</span></h1>
+      <div class="equation"><span>1 litr</span><span class="j">=</span><span>1 kapka</span><span class="j">=</span><span>1 bod</span></div>
+      <p class="hero-sub">Věrnostní program Kapka Klub pro síť 120 čerpacích stanic. Postavený na Salesforce, navržený a&nbsp;vyvinutý s&nbsp;AI agenty.</p>
+    </div>
+    <div class="hero-mark"><svg viewBox="0 0 64 64" aria-hidden="true" class="big"><path fill="#f0a830" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg><div class="badge"><b class="num">+109</b><span>kapek za 45&nbsp;l a&nbsp;kafe</span></div></div>
+  </div>
+</section>
+
+<section class="slide">
+  <p class="eyebrow">01 · Co děláme</p>
+  <h2>Kapka Klub: kapky za tankování, odměny v&nbsp;servisu</h2>
+  <div class="grid3">
+    <div class="card kcard"><svg viewBox="0 0 64 64" aria-hidden="true" class="ico"><path fill="#0b6e73" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg><h3>Kapky sbíráš</h3><p>Za každý litr paliva, za nákup v&nbsp;obchodě a&nbsp;za aktivity v&nbsp;portálu. Kampaně přidávají kapky navíc.</p></div>
+    <div class="card kcard"><svg viewBox="0 0 64 64" aria-hidden="true" class="ico"><path fill="#f0a830" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg><h3>Kapky utrácíš</h3><p>Za vouchery partnera EneServis. Kód KPK-XXXX-XXXX přijde e-mailem a&nbsp;v&nbsp;servisu se nadiktuje.</p></div>
+    <div class="card kcard"><svg viewBox="0 0 64 64" aria-hidden="true" class="ico"><path fill="#0a2e33" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg><h3>Každá kapka dohledatelná</h3><p>Kapky vedeme jako účetní knihu. Každý pohyb je samostatný záznam, zůstatek je jejich součet.</p></div>
+  </div>
+  <div class="stats-row">
+    <div><b class="num">120</b><span>stanic v&nbsp;programu od prvního dne</span></div>
+    <div><b class="num">1</b><span>platforma: Salesforce, který Kapka už má</span></div>
+    <div><b class="num k">0</b><span>přepsaných transakcí, jen nové záznamy</span></div>
+  </div>
+  <div class="foot"><div class="lockup"><svg viewBox="0 0 64 64" aria-hidden="true" class=""><path fill="#0b6e73" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</div><span>Kapka Klub · AI Hackathon 6. 11. 2026 · tým 2</span><span class="num">02</span></div>
+</section>
+
+<section class="slide">
+  <p class="eyebrow">02 · Jak se počítají kapky</p>
+  <h2>Jana natankuje 45&nbsp;l a&nbsp;koupí kávu se sušenkou za 180&nbsp;Kč</h2>
+  <div class="calc">
+    <div class="ccard kcard"><b class="num">45</b><h3>Palivo</h3><p>1 kapka za celý litr</p></div>
+    <div class="op">+</div>
+    <div class="ccard kcard"><b class="num">9</b><h3>Obchod</h3><p>1 kapka za celých 20&nbsp;Kč</p></div>
+    <div class="op">+</div>
+    <div class="ccard kcard jsoft"><b class="num">5</b><h3>Zastávka na cestě</h3><p>(45 + 9) × 1,1 = 59</p></div>
+    <div class="op">+</div>
+    <div class="ccard kcard ksoft"><b class="num">50</b><h3>Natankuj plnou</h3><p>aspoň 40&nbsp;l v&nbsp;transakci</p></div>
+    <div class="op">=</div>
+    <div class="ccard kcard total"><b class="num">109</b><h3>kapek</h3><p>připsáno hned po nákupu</p></div>
+  </div>
+  <p class="note">Kampaně jsou záznamy, ne kód. Loyalty manažer nastaví období, podmínku a&nbsp;odměnu bez vývojáře.</p>
+  <div class="foot"><div class="lockup"><svg viewBox="0 0 64 64" aria-hidden="true" class=""><path fill="#0b6e73" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</div><span>Kapka Klub · AI Hackathon 6. 11. 2026 · tým 2</span><span class="num">03</span></div>
+</section>
+
+<section class="slide">
+  <p class="eyebrow">03 · Datový model</p>
+  <h2>Člen Kapka Klubu je středem modelu</h2>
+  <div class="model">
+    <div class="col">
+      <div class="obj std kcard"><b>Account · Contact</b><span>zákazník, domácnost, flotila</span></div>
+      <div class="obj std kcard"><b>Order · OrderItem</b><span>nákup na stanici</span></div>
+      <div class="obj kcard"><b>Fuel_Station__c</b><span>Kapka Brno – Vídeňská, KPK-001 až KPK-120</span></div>
+    </div>
+    <div class="arr">›</div>
+    <div class="col">
+      <div class="obj hero-o kcard"><b>Loyalty_Member__c</b><span>člen Kapka Klubu, zůstatek kapek</span></div>
+      <div class="obj kcard"><b>Loyalty_Card__c</b><span>karta načtená u&nbsp;pokladny</span></div>
+      <div class="obj kcard"><b>Earning_Rule__c</b><span>kolik kapek za kategorii, od–do</span></div>
+    </div>
+    <div class="arr">›</div>
+    <div class="col">
+      <div class="obj hero-j kcard"><b>Points_Transaction__c</b><span>pohyb kapek: Earn, Redeem, Expire, Reversal</span></div>
+      <div class="obj kcard"><b>Points_Allocation__c</b><span>z&nbsp;kterých kapek se čerpalo</span></div>
+      <div class="obj kcard"><b>Points_Statement__c</b><span>periodický výpis s&nbsp;historií</span></div>
+    </div>
+  </div>
+  <p class="note"><b>Pravidlo knihy:</b> pohyb kapek se nikdy nemaže ani nepřepisuje. Mění se jen stav: Pending, Posted, Cancelled.</p>
+  <div class="foot"><div class="lockup"><svg viewBox="0 0 64 64" aria-hidden="true" class=""><path fill="#0b6e73" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</div><span>Kapka Klub · AI Hackathon 6. 11. 2026 · tým 2</span><span class="num">04</span></div>
+</section>
+
+<section class="slide">
+  <p class="eyebrow">04 · Jak na to jdeme</p>
+  <h2>AI agent dostane mantinely, ne volnou ruku</h2>
+  <div class="grid4">
+    <div class="card kcard"><span class="tagn">01</span><h3>Notion jako zdroj pravdy</h3><p>Zadání, analýza, datový model, brand i&nbsp;úkoly na jednom místě. Čte z&nbsp;něj tým i&nbsp;agent.</p></div>
+    <div class="card kcard"><span class="tagn">02</span><h3>ADLC</h3><p>Vývoj s&nbsp;AI agenty v&nbsp;pevných fázích: zadání, specifikace, implementace, kontrola.</p></div>
+    <div class="card kcard"><span class="tagn">03</span><h3>Agent dostane datový model</h3><p>Objekty, pole, vazby a&nbsp;pravidla jsou dané předem. Agent je nevymýšlí, jen implementuje.</p></div>
+    <div class="card kcard"><span class="tagn">04</span><h3>Striktně utažené</h3><p>Brand, názvosloví i&nbsp;tón jsou v&nbsp;briefu pro AI. Hotovo znamená ověřeno proti specifikaci.</p></div>
+  </div>
+  <div class="brief kcard"><p class="eyebrow light">Brief pro AI · výňatek</p><p class="mono">Body se jmenují kapky. Barvy: kapka #0b6e73, jantar #f0a830, hlubina #0a2e33. Karty mají levý horní roh ostrý.</p></div>
+  <div class="foot"><div class="lockup"><svg viewBox="0 0 64 64" aria-hidden="true" class=""><path fill="#0b6e73" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</div><span>Kapka Klub · AI Hackathon 6. 11. 2026 · tým 2</span><span class="num">05</span></div>
+</section>
+
+<section class="slide">
+  <p class="eyebrow">05 · Spec driven development</p>
+  <h2>Ze zadání přes kanban rovnou do vývoje</h2>
+  <div class="flow">
+    <div class="step"><span class="n num">1</span><h3>Zadání</h3><p>Rozbor zadání a&nbsp;nalezeného kódu</p></div>
+    <div class="step"><span class="n num">2</span><h3>Specifikace</h3><p>Datový model, procesy, otevřené otázky</p></div>
+    <div class="step"><span class="n num">3</span><h3>Kanban v&nbsp;Notion</h3><p>Rozpad na malé, ověřitelné úkoly</p></div>
+    <div class="step"><span class="n num">4</span><h3>Vývoj</h3><p>Agent implementuje podle specifikace</p></div>
+    <div class="step"><span class="n num">5</span><h3>Kontrola</h3><p>Výsledek proti specifikaci, pak Done</p></div>
+  </div>
+  <div class="kanban">
+    <div><p class="khead"><i class="d muted"></i>Not started</p><div class="kc kcard">Objekty a&nbsp;pole</div><div class="kc kcard">Kampaně a&nbsp;pravidla</div></div>
+    <div><p class="khead"><i class="d k"></i>In progress</p><div class="kc kcard">Kniha kapek a&nbsp;FIFO čerpání</div></div>
+    <div><p class="khead"><i class="d j"></i>Done</p><div class="kc kcard">Zadání, datový model, brand</div></div>
+  </div>
+  <div class="foot"><div class="lockup"><svg viewBox="0 0 64 64" aria-hidden="true" class=""><path fill="#0b6e73" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</div><span>Kapka Klub · AI Hackathon 6. 11. 2026 · tým 2</span><span class="num">06</span></div>
+</section>
+
+<section class="slide hero">
+  <p class="eyebrow light">06 · Cíl</p>
+  <h2 class="big-h">Jdeme si pro <span class="j">výhru.</span></h2>
+  <div class="win">
+    <div><b class="num">1</b><span>zdroj pravdy v&nbsp;Notion pro tým i&nbsp;agenta</span></div>
+    <div><b class="num">7</b><span>vlastních objektů navržených dřív, než padl první řádek kódu</span></div>
+    <div><b class="num">100&nbsp;%</b><span>pohybů kapek dohledatelných od nákupu po voucher</span></div>
+  </div>
+  <p class="closing">Nejdřív přemýšlíme, pak stavíme. Proto stavíme rychle a&nbsp;správně.</p>
+  <div class="foot dark"><div class="lockup"><svg viewBox="0 0 64 64" aria-hidden="true" class=""><path fill="#f0a830" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg>kapka</div><span>Kapka Klub · AI Hackathon 6. 11. 2026 · tým 2</span><span class="num">07</span></div>
+</section>
+
+<section class="slide hero center">
+  <div class="rain" aria-hidden="true"></div>
+  <div class="end-mark"><svg viewBox="0 0 64 64" aria-hidden="true" class="big"><path fill="#f0a830" fill-rule="evenodd" d="M32 4 L48.4 20.4 A23.2 23.2 0 1 1 15.6 20.4 Z M23 36.8 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0 Z"/></svg></div>
+  <h1 class="mega">díky<span class="j">.</span></h1>
+  <p class="hero-sub">Tým 2 · Kapka Klub · AI Hackathon 2026</p>
+</section>
+<script>
+document.querySelectorAll('.rain').forEach(function(rain){
+  for (var i=0;i<24;i++){var d=document.createElement('i');d.style.left=(Math.random()*100).toFixed(1)+'%';var s=6+Math.random()*8;d.style.width=d.style.height=s.toFixed(0)+'px';
+  d.style.animationDuration=(5+Math.random()*7).toFixed(1)+'s';d.style.animationDelay=(-Math.random()*10).toFixed(1)+'s';rain.appendChild(d);}
+});
+document.addEventListener('keydown', function(e){
+  var slides=[].slice.call(document.querySelectorAll('.slide'));
+  var i=slides.findIndex(function(s){return s.getBoundingClientRect().top>-window.innerHeight/2;});
+  if(['ArrowDown','ArrowRight',' ','PageDown'].indexOf(e.key)>-1){e.preventDefault();(slides[Math.min(i+1,slides.length-1)]).scrollIntoView({behavior:'smooth'});}
+  if(['ArrowUp','ArrowLeft','PageUp'].indexOf(e.key)>-1){e.preventDefault();(slides[Math.max(i-1,0)]).scrollIntoView({behavior:'smooth'});}
+});
+</script>
+</body>
+</html>
