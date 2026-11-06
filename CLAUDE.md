@@ -14,6 +14,6 @@ Bez schváleného `plan.md` se nepíše kód. Plán je jediný zdroj pravdy pro 
 
 ## Kde co je
 
-- Notion Kapka `4103881e844c8013a1a1d7615ec0555d`: Zadání (datový model, procesy, otevřené otázky), Značka (brand kit a názvosloví), Kanban `collection://4103881e-844c-8042-bcff-000b2ffb8322`.
+- Notion (Zadání, Značka, Kanban) jen přes `/notion-api` → `node scripts/notion.mjs`; token v `.env` podle `.env.example`.
 - Apex a doménová pravidla knihy kapek: `.claude/skills/kapka-develop/apex-standards.md`.
 - Salesforce metadata: `/platform-*` skilly.

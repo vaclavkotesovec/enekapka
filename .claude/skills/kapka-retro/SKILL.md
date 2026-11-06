@@ -17,7 +17,7 @@ Zlepšuje **prostředí agenta** (skilly, CLAUDE.md, kontroly) a **specifikace**
 4. **Předlož** je seřazené podle závažnosti, s id `R1`, `R2`…, kategorií, cílovým souborem a navrženou změnou. Uživatel schválí nebo zamítne každý („vše“ platí).
 5. **Zapiš** schválené do cílových souborů.
 6. **Zaznamenej** všechny do `.work/<id>/retro-<timestamp>.md`: id, kategorie, cíl, změna, stav (`schváleno` / `zamítnuto`).
-7. **Notion:** nabídni krátké shrnutí retra jako komentář ke kartě v Kanbanu (`notion-create-comment`); zapiš jen po souhlasu.
+7. **Notion:** nabídni krátké shrnutí retra jako komentář ke kartě v Kanbanu (`node scripts/notion.mjs comment "<název karty>" "<text>"`); zapiš jen po souhlasu.
 8. **Report:** cesta k záznamu, změněné soubory, počet schválených a zamítnutých.
 
 ## Kategorie
