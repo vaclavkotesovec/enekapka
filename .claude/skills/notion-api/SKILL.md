@@ -29,6 +29,8 @@ Notion je znalostní báze projektu; repo nese jen skilly a kód. Jediná cesta 
 | Nová podstránka | `subpage <stránka \| karta> "<název>" report.md` |
 | Změnit stav | `card-status <karta> "In progress"` |
 | Řešitel | `card-assign <karta> "Jakub"` (víc jmen čárkou) |
+| Začít kartu | `card-start <karta> "Jakub"` (In progress + Řešitel jedním voláním) |
+| Odškrtnout řez | `card-check <karta> "R3"` (víc čárkou; nepřepisuje kartu) |
 | Komentář | `comment <stránka \| karta> "<text>"` |
 | Hledat | `search "<dotaz>"` |
 

@@ -1,6 +1,6 @@
 ---
 name: kapka-retro
-description: "ADLC fáze 5 – retrospektiva po dokončení karty nebo konci session Kapka Klubu: najde zlepšení skillů, CLAUDE.md, automatických kontrol a drift mezi znalostmi v Notion a kódem, nechá je schválit, zapíše schválené a záznam uloží jako podstránku karty. Použij po /kapka-review nebo když uživatel řekne retro."
+description: "ADLC fáze 5 – retrospektiva na konci session Kapka Klubu (ne po každé kartě): najde zlepšení skillů, CLAUDE.md, automatických kontrol a drift mezi znalostmi v Notion a kódem, nechá je schválit, zapíše schválené a záznam uloží jako podstránku karty. Použij na konci session, po kartě, která se zadrhla, nebo když uživatel řekne retro."
 argument-hint: "Volitelně karta v Kanbanu, např. \"earn-kapky:\""
 ---
 

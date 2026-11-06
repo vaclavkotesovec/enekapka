@@ -9,6 +9,8 @@
 //   write <stránka|karta> <soubor.md|-> [--append]        nahradí (nebo připojí) obsah; podstránky zůstanou
 //   subpage <stránka|karta> "<název>" [soubor.md|-]       nová podstránka, např. review nebo retro
 //   card-assign <karta> "<Jakub[, Veronika]>"           nastaví Řešitele (nahradí)
+//   card-start <karta> "<jméno>"                          In progress + Řešitel jedním voláním
+//   card-check <karta> "R3[,R4]"                          zaškrtne řezy v Plánu bez přepisu karty
 //   comment <stránka|karta> "<text>"
 //   search "<dotaz>"
 //   --json vypíše surovou odpověď API; <karta> = id nebo jednoznačná část názvu
@@ -350,6 +352,45 @@ async function cmdAssign(ref, names, json) {
   );
 }
 
+async function cmdCardStart(ref, names, json) {
+  if (!names) die("Chybí jméno řešitele.");
+  const id = await resolveCard(ref);
+  const page = await api("PATCH", `/pages/${id}`, {
+    properties: {
+      Status: { status: { name: "In progress" } },
+      Řešitel: {
+        multi_select: names
+          .split(",")
+          .map((n) => ({ name: n.trim() }))
+          .filter((o) => o.name),
+      },
+    },
+  });
+  console.log(
+    json ? JSON.stringify(page, null, 2) : `${title(page)} → In progress, ${names}`,
+  );
+}
+
+async function cmdCardCheck(ref, slices) {
+  if (!slices) die('Chybí řezy, např. "R3" nebo "R3,R4".');
+  const want = slices.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean);
+  const id = await resolveCard(ref);
+  const todos = (await paginate("GET", `/blocks/${id}/children`)).filter(
+    (b) => b.type === "to_do",
+  );
+  const done = [];
+  for (const r of want) {
+    const b = todos.find((t) =>
+      new RegExp(`^${r}\\b`, "i").test(rt(t.to_do.rich_text).replace(/^[*_`~]+/, "")),
+    );
+    if (!b) die(`Řez ${r} v kartě nenalezen (hledám zaškrtávací řádek začínající „${r}“).`);
+    if (!b.to_do.checked)
+      await api("PATCH", `/blocks/${b.id}`, { to_do: { checked: true } });
+    done.push(r);
+  }
+  console.log(`Zaškrtnuto: ${done.join(", ")}`);
+}
+
 async function cmdComment(ref, text, json) {
   if (!text) die("Chybí text komentáře.");
   const id = toId(ref) || (await resolveCard(ref));
@@ -618,6 +659,8 @@ const commands = {
   subpage: () => cmdSubpage(a1, a2, a3, json),
   "card-status": () => cmdCardStatus(a1, a2, json),
   "card-assign": () => cmdAssign(a1, a2, json),
+  "card-start": () => cmdCardStart(a1, a2, json),
+  "card-check": () => cmdCardCheck(a1, a2),
   comment: () => cmdComment(a1, a2, json),
   search: () => cmdSearch(a1, json),
 };
@@ -625,7 +668,7 @@ if (!commands[cmd]) {
   console.log(
     readFileSync(fileURLToPath(import.meta.url), "utf8")
       .split("\n")
-      .slice(1, 15)
+      .slice(1, 17)
       .map((l) => l.replace(/^\/\/ ?/, ""))
       .join("\n"),
   );
