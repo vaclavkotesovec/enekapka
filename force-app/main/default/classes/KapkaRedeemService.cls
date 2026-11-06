@@ -25,7 +25,15 @@ public with sharing class KapkaRedeemService {
 
     private static Voucher__c issueVoucher(Id memberId, Id rewardId) {
         Loyalty_Member__c member = lockMember(memberId);
-        Reward__c reward = [SELECT Id, Points_Cost__c FROM Reward__c WHERE Id = :rewardId WITH USER_MODE];
+        Reward__c reward = [
+            SELECT Id, Points_Cost__c, Is_Active__c
+            FROM Reward__c
+            WHERE Id = :rewardId
+            WITH USER_MODE
+        ];
+        if (!reward.Is_Active__c) {
+            throw new KapkaRedeemException(Label.Kapka_Redeem_RewardInactive);
+        }
         List<Points_Transaction__c> credits = creditsOf(member.Id);
         Decimal missing = reward.Points_Cost__c - remainingPoints(credits);
         if (missing > 0) {

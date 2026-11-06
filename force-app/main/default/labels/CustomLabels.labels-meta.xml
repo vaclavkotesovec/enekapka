@@ -8,4 +8,12 @@
         <shortDescription>Čerpání: chybí kapky</shortDescription>
         <value>Na tuhle odměnu ti chybí {0} kapek.</value>
     </labels>
+    <labels>
+        <fullName>Kapka_Redeem_RewardInactive</fullName>
+        <categories>Kapka,Cerpani</categories>
+        <language>cs</language>
+        <protected>false</protected>
+        <shortDescription>Čerpání: odměna není v nabídce</shortDescription>
+        <value>Tahle odměna už není v nabídce.</value>
+    </labels>
 </CustomLabels>

@@ -89,6 +89,25 @@ private class KapkaRedeemServiceTest {
         );
     }
 
+    // AC-4.1
+    @IsTest
+    static void inactiveRewardIsRefused() {
+        // Pokud odměna Sleva 500 Kč na servis je vypnutá
+        Loyalty_Member__c member = createActiveMember('Petr', 'Svoboda');
+        insert KapkaTestDataFactory.makeTransaction(member.Id, EARN, POSTED, 2000);
+        Reward__c servis = createReward('Sleva 500 Kč na servis', 1200);
+        servis.Is_Active__c = false;
+        update servis;
+
+        // Když ji aktivní člen s 2 000 kapkami uplatní
+        Test.startTest();
+        String refusal = refusalOf(member.Id, servis.Id);
+        Test.stopTest();
+
+        // Pak uvidí „Tahle odměna už není v nabídce.“
+        Assert.areEqual('Tahle odměna už není v nabídce.', refusal, 'Vypnutou odměnu nejde uplatnit.');
+    }
+
     /** Hláška odmítnutého čerpání; null, když čerpání prošlo. */
     private static String refusalOf(Id memberId, Id rewardId) {
         try {
