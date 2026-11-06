@@ -16,4 +16,12 @@
         <shortDescription>Čerpání: odměna není v nabídce</shortDescription>
         <value>Tahle odměna už není v nabídce.</value>
     </labels>
+    <labels>
+        <fullName>Kapka_Redeem_MemberInactive</fullName>
+        <categories>Kapka,Cerpani</categories>
+        <language>cs</language>
+        <protected>false</protected>
+        <shortDescription>Čerpání: členství není aktivní</shortDescription>
+        <value>Tvoje členství v Kapka Klubu není aktivní.</value>
+    </labels>
 </CustomLabels>

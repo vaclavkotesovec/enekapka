@@ -3,6 +3,7 @@
  * vše proběhne v jedné transakci, chyba vrátí vše zpět (C2).
  */
 public with sharing class KapkaRedeemService {
+    private static final String MEMBER_ACTIVE = 'Active';
     private static final String EARN = 'Earn';
     private static final String REDEEM = 'Redeem';
     private static final String POSTED = 'Posted';
@@ -25,6 +26,9 @@ public with sharing class KapkaRedeemService {
 
     private static Voucher__c issueVoucher(Id memberId, Id rewardId) {
         Loyalty_Member__c member = lockMember(memberId);
+        if (member.Status__c != MEMBER_ACTIVE) {
+            throw new KapkaRedeemException(Label.Kapka_Redeem_MemberInactive);
+        }
         Reward__c reward = [
             SELECT Id, Points_Cost__c, Is_Active__c
             FROM Reward__c
