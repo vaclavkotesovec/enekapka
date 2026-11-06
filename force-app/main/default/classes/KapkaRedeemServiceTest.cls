@@ -37,6 +37,42 @@ private class KapkaRedeemServiceTest {
         Assert.areEqual(109, balanceOf(jana.Id), 'Po uplatnění za 500 kapek má Janě zbýt 109 kapek.');
     }
 
+    // AC-2.1
+    @IsTest
+    static void redeemTakesEarliestExpiringKapkyFirst() {
+        // Pokud má člen připsání 300 kapek platné do 1. 3. 2027 a 400 kapek platné do 1. 6. 2027
+        Loyalty_Member__c member = createActiveMember('Petr', 'Svoboda');
+        Points_Transaction__c laterExpiring = makeEarn(member.Id, 400, Date.newInstance(2027, 6, 1));
+        insert laterExpiring;
+        Points_Transaction__c earlierExpiring = makeEarn(member.Id, 300, Date.newInstance(2027, 3, 1));
+        insert earlierExpiring;
+        Reward__c reward = createReward(SLEVA_NA_PREZUTI, SLEVA_NA_PREZUTI_COST);
+
+        // Když uplatní odměnu za 500 kapek
+        Test.startTest();
+        KapkaRedeemService.redeem(member.Id, reward.Id);
+        Test.stopTest();
+
+        // Pak z připsání do 1. 3. 2027 zbývá 0 kapek a z připsání do 1. 6. 2027 zbývá 200 kapek
+        Map<Id, Points_Transaction__c> earns = new Map<Id, Points_Transaction__c>(
+            [SELECT Remaining_Points__c FROM Points_Transaction__c WHERE Type__c = :EARN]
+        );
+        Assert.areEqual(
+            new List<Decimal>{ 0, 200 },
+            new List<Decimal>{
+                earns.get(earlierExpiring.Id).Remaining_Points__c,
+                earns.get(laterExpiring.Id).Remaining_Points__c
+            },
+            'Kapky se berou nejdřív z připsání, které vyprší dřív.'
+        );
+    }
+
+    private static Points_Transaction__c makeEarn(Id memberId, Decimal points, Date expirationDate) {
+        Points_Transaction__c earn = KapkaTestDataFactory.makeTransaction(memberId, EARN, POSTED, points);
+        earn.Expiration_Date__c = expirationDate;
+        return earn;
+    }
+
     private static Loyalty_Member__c createActiveMember(String firstName, String lastName) {
         Loyalty_Member__c member = KapkaTestDataFactory.makeMember(
             KapkaTestDataFactory.createPersonAccount(firstName, lastName).Id
