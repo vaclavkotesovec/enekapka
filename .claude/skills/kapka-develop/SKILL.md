@@ -15,7 +15,7 @@ Karta v Kanbanu ve stavu **Business ready** (`node scripts/notion.mjs page "<id>
 ## Postup
 
 1. **Načti kartu** celou a [apex-standards.md](apex-standards.md). Hotovo, když má každé AC řez s testem.
-2. **Začni:** `node scripts/notion.mjs card-status "<id>:" "In progress"`. Todo list z řezů karty v jejich pořadí.
+2. **Začni hned In progress:** `node scripts/notion.mjs card-status "<id>:" "In progress"` a `card-assign "<id>:" "<tvé jméno>"` dřív, než napíšeš první řádek. Todo list z řezů karty v jejich pořadí.
 3. **Implementuj řez po řezu** podle `/kapka-tdd`: padající test, ověř, že padá; minimální kód; zelená. Na metadata použij platform skilly:
    - objekty `/platform-custom-object-generate`, pole `/platform-custom-field-generate`, validace `/platform-validation-rule-generate`, oprávnění `/platform-permission-set-generate`, dotazy `/platform-soql-query`.
 4. **Validuj a opravuj**, dokud není *zeleno*:

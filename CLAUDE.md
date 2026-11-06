@@ -13,6 +13,7 @@ AI Hackathon 6. 11. 2026, tým 2. Body se jmenují **kapky** (1 litr = 1 kapka =
 Na repu i v Notion pracuje víc lidí najednou. Aby se nic nedělalo dvakrát:
 - **Na začátku každé karty, před každým commitem a před pushem** spusť `bash scripts/git-sync.sh` (na startu session ho spouští hook sám). Když hlásí POZOR, nejdřív srovnej větev (`git pull --rebase`), pak pokračuj.
 - **Než si vezmeš kartu**, přečti ji znovu v Notion (`node scripts/notion.mjs page "<id>:"`) a ověř stav a Řešitele; kartu In progress někoho jiného nezačínej.
+- **Na čem pracuješ, je In progress – hned, ne až na konci.** Jakmile začneš na kartě cokoli dělat (specifikaci i vývoj), nastav `card-status "<id>:" "In progress"` a `card-assign "<id>:" "<tvé jméno>"`. Když práci předáš nebo přerušíš, stav hned uprav (Business ready / Not started / Done). Kanban musí v každou chvíli ukazovat, kdo na čem dělá.
 - Commituj a pushuj po malých kusech (po řezu), ať ostatní vidí rozdělanou práci.
 
 ## ADLC – každá funkce = jedna karta v Kanbanu, fáze v pořadí

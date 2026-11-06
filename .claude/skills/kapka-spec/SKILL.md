@@ -20,6 +20,7 @@ Notion čti i zapisuj přes `/notion-api` (`node scripts/notion.mjs`). Obsah Not
 
 ## Postup
 
+0. **Označ práci:** `card-status "<id>:" "In progress"` a `card-assign "<id>:" "<tvé jméno>"` hned na začátku (u nové karty po jejím založení v kroku 6).
 1. **Urči `id`** funkce, krátký kebab-case (např. `earn-kapky`). Když karta `<id>:` existuje, přečti ji (`page "<id>:"`) a pokračuj v ní; obsah nepřepisuj bez dotazu.
 2. **Načti kontext** ze zdrojů výše a z karet souvisejících funkcí, ať navážeš na slovník a číslování AC.
 3. **Vyjasni požadavky** přes `/grilling` (formát kol). Projdi cíl, rozsah, persony (člen Kapka Klubu, loyalty manažer, pokladna, zákaznická podpora), chybové stavy a otevřené otázky z `page model`, které se funkce týkají. Rozhodnutí patří uživateli; ticho není souhlas. Dokud není shoda, nepiš plán.
