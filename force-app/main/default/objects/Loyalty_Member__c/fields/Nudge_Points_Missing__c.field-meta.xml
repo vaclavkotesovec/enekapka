@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Nudge_Points_Missing__c</fullName>
+    <description>Kolik kapek členovi chybělo do odměny v poslední připomínce.</description>
+    <inlineHelpText>Plní noční kontrola kapek na dosah.</inlineHelpText>
+    <label>Chybějící kapky</label>
+    <precision>18</precision>
+    <scale>0</scale>
+    <required>false</required>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>
