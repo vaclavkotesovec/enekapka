@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Completed_Order_Locked</fullName>
+    <active>true</active>
+    <description>Dokončený nákup je zamčený (ST-15): nejde ho vrátit na Rozpracovaný ani změnit člena, účtenku, datum a stanici, protože z něj jsou připsané kapky. Platí i pro admina; admin smí jen smazat celý nákup. Oprava nákupu je vratka (mimo rozsah, Q8).</description>
+    <errorConditionFormula><![CDATA[AND(
+    ISPICKVAL(PRIORVALUE(Status__c), 'Completed'),
+    OR(
+        ISCHANGED(Status__c),
+        ISCHANGED(Loyalty_Member__c),
+        ISCHANGED(Receipt_Number__c),
+        ISCHANGED(Purchase_Date__c),
+        ISCHANGED(Fuel_Station__c)
+    )
+)]]></errorConditionFormula>
+    <errorMessage>Nákup je dokončený a kapky z něj jsou připsané. Stav, člena, účtenku, datum ani stanici už nelze měnit.</errorMessage>
+</ValidationRule>

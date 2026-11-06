@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Completed_Order_Items_Locked</fullName>
+    <active>true</active>
+    <description>Dokončený nákup je zamčený (ST-15): z jeho součtů jsou připsané kapky, proto k němu nejde přidat položku ani žádnou měnit. Platí i pro admina; oprava nákupu je vratka (mimo rozsah, Q8).</description>
+    <errorConditionFormula><![CDATA[ISPICKVAL(Order__r.Status__c, 'Completed')]]></errorConditionFormula>
+    <errorMessage>Nákup je dokončený, jeho položky už nelze přidávat ani měnit.</errorMessage>
+</ValidationRule>

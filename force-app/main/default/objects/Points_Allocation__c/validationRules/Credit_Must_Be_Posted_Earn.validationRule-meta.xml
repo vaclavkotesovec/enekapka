@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Credit_Must_Be_Posted_Earn</fullName>
+    <active>true</active>
+    <description>Alokace smí brát jen ze zaúčtovaného připsání (R28); ze zrušeného nebo čekajícího by šlo čerpat kapky, které člen nemá.</description>
+    <errorConditionFormula><![CDATA[NOT(AND(ISPICKVAL(Credit_Transaction__r.Type__c, 'Earn'), ISPICKVAL(Credit_Transaction__r.Status__c, 'Posted')))]]></errorConditionFormula>
+    <errorDisplayField>Credit_Transaction__c</errorDisplayField>
+    <errorMessage>Kapky lze brát jen ze zaúčtovaného připsání.</errorMessage>
+</ValidationRule>

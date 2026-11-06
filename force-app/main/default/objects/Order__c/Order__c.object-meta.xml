@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
     <deploymentStatus>Deployed</deploymentStatus>
-    <description>Objekt Nákup je jedna účtenka člena Kapka Klubu na stanici: Číslo účtenky (povinné, unikátní externí ID), datum a stav. Člen je povinný. Celková částka, částka a litry paliva i částka za ostatní zboží se sčítají z položek. Používá se jako zdroj připsání kapek.</description>
+    <description>Objekt Nákup je jedna účtenka člena Kapka Klubu na stanici: Číslo účtenky (povinné, unikátní externí ID), datum a stav. Člen je povinný. Celková částka, částka a litry paliva i částka za ostatní zboží se sčítají z položek. Používá se jako zdroj připsání kapek. Účet se při vložení doplní z člena, když není vyplněný. Dokončený nákup je zamčený (stav, člen, účtenka, datum, stanice); smazat ho smí jen admin.</description>
     <enableActivities>true</enableActivities>
     <enableHistory>true</enableHistory>
     <enableReports>true</enableReports>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Points_Not_Overdrawn</fullName>
+    <active>true</active>
+    <description>Z připsání nejde vzít víc kapek, než má (rozhodnutí 6. 11. 2026, R28). Spouští se při přepočtu roll-upu Consumed_Points__c, takže alokace, která by připsání přečerpala, neprojde.</description>
+    <errorConditionFormula><![CDATA[AND(ISPICKVAL(Type__c, 'Earn'), Consumed_Points__c > Points__c)]]></errorConditionFormula>
+    <errorMessage>Z připsání nelze vzít víc kapek, než na něm zbývá.</errorMessage>
+</ValidationRule>

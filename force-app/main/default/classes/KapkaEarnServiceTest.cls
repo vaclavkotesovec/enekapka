@@ -94,11 +94,14 @@ private class KapkaEarnServiceTest {
         Order__c purchase = createOrder(member.Id, 'KPK-001-000004');
         addItem(purchase.Id, 'Natural 95', FUEL, 38, 10);
         complete(purchase);
-        update new Order__c(Id = purchase.Id, Status__c = 'Draft');
 
-        // Když se nákup dokončí znovu
+        // Když přijde dokončení stejného nákupu znovu (dokončený nákup nejde vrátit na Rozpracovaný,
+        // Completed_Order_Locked – proto se opakovaný přechod Draft → Completed volá přímo na službě)
         Test.startTest();
-        complete(purchase);
+        KapkaEarnService.earnForCompletedOrders(
+            new List<Order__c>{ new Order__c(Id = purchase.Id, Status__c = COMPLETED) },
+            new Map<Id, Order__c>{ purchase.Id => new Order__c(Id = purchase.Id, Status__c = 'Draft') }
+        );
         Test.stopTest();
 
         // Pak má člen za tento nákup pořád jen jedno připsání

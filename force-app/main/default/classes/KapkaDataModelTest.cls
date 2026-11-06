@@ -15,6 +15,7 @@ private class KapkaDataModelTest {
     private static final String TYPE_EARN = 'Earn';
     private static final String TYPE_REDEEM = 'Redeem';
     private static final String POSTED = 'Posted';
+    private static final String COMPLETED = 'Completed';
     private static final Decimal FUEL_PRICE = 38;
     private static final Decimal FUEL_LITERS = 45;
     private static final Decimal JANA_EARN = 109;
@@ -460,6 +461,281 @@ private class KapkaDataModelTest {
 
         // Pak pohyb zůstane v knize
         Assert.isFalse(deleted, 'Loyalty manažer nesmí mazat pohyby kapek.');
+    }
+
+    // R22 (ST-13)
+    @IsTest
+    static void managerCannotDeletePurchase() {
+        // Pokud loyalty manažer zapsal Janě nákup
+        User manager = KapkaTestDataFactory.createLoyaltyManager();
+        Order__c purchase;
+        System.runAs(manager) {
+            purchase = createJanaOrder();
+        }
+
+        // Když se ho pokusí smazat
+        Boolean deleted = true;
+        Test.startTest();
+        System.runAs(manager) {
+            try {
+                Database.delete(purchase, AccessLevel.USER_MODE);
+            } catch (Exception denied) {
+                deleted = false;
+            }
+        }
+        Test.stopTest();
+
+        // Pak nákup zůstane (připsání by ztratilo vazbu a účtenka by šla připsat znovu); mazat smí jen admin
+        Assert.isFalse(deleted, 'Loyalty manažer nesmí mazat nákupy.');
+    }
+
+    // R23 (ST-15)
+    @IsTest
+    static void managerCannotDeleteItem() {
+        // Pokud loyalty manažer zapsal Janě nákup s položkou Natural 95
+        User manager = KapkaTestDataFactory.createLoyaltyManager();
+        Product2 natural = createNatural();
+        Order_Item__c item;
+        System.runAs(manager) {
+            item = KapkaTestDataFactory.makeOrderItem(createJanaOrder().Id, natural.Id, FUEL_LITERS);
+            insert item;
+        }
+
+        // Když se pokusí položku smazat
+        Boolean deleted = true;
+        Test.startTest();
+        System.runAs(manager) {
+            try {
+                Database.delete(item, AccessLevel.USER_MODE);
+            } catch (Exception denied) {
+                deleted = false;
+            }
+        }
+        Test.stopTest();
+
+        // Pak položka zůstane (smazání by měnilo součty nákupu, ze kterých jsou kapky)
+        Assert.isFalse(deleted, 'Loyalty manažer nesmí mazat položky nákupu.');
+    }
+
+    // R24 (ST-15)
+    @IsTest
+    static void completedPurchaseItemQuantityCannotChange() {
+        // Pokud Jana dokončila nákup 45 l Natural 95
+        Order_Item__c item = createNaturalItem();
+        update new Order__c(Id = item.Order__c, Status__c = COMPLETED);
+
+        // Když někdo u položky změní množství na 90 l
+        Test.startTest();
+        Database.SaveResult result = Database.update(new Order_Item__c(Id = item.Id, Quantity__c = 90), false);
+        Test.stopTest();
+
+        // Pak se změna neuloží (kapky jsou připsané z původních součtů)
+        assertRejected(result, StatusCode.FIELD_CUSTOM_VALIDATION_EXCEPTION, null, 'Položku dokončeného nákupu nelze měnit.');
+    }
+
+    // R24 (ST-15)
+    @IsTest
+    static void itemCannotBeAddedToCompletedPurchase() {
+        // Pokud Jana dokončila nákup 45 l Natural 95
+        Order_Item__c item = createNaturalItem();
+        update new Order__c(Id = item.Order__c, Status__c = COMPLETED);
+        Product2 coffee = KapkaTestDataFactory.createProduct('Káva a bageta', OTHER, 180);
+
+        // Když se k nákupu dodatečně přidá káva
+        Test.startTest();
+        Database.SaveResult result = Database.insert(KapkaTestDataFactory.makeOrderItem(item.Order__c, coffee.Id, 1), false);
+        Test.stopTest();
+
+        // Pak se položka neuloží
+        assertRejected(result, StatusCode.FIELD_CUSTOM_VALIDATION_EXCEPTION, null, 'K dokončenému nákupu nelze přidat položku.');
+    }
+
+    // R25 (ST-15)
+    @IsTest
+    static void completedPurchaseItemCannotBeDeleted() {
+        // Pokud Jana dokončila nákup 45 l Natural 95
+        Order_Item__c item = createNaturalItem();
+        update new Order__c(Id = item.Order__c, Status__c = COMPLETED);
+
+        // Když se položku pokusí smazat i admin
+        Test.startTest();
+        Database.DeleteResult result = Database.delete(item, false);
+        Test.stopTest();
+
+        // Pak položka zůstane (součty nákupu jsou podklad připsaných kapek)
+        Assert.isFalse(result.isSuccess(), 'Položku dokončeného nákupu nesmí smazat nikdo.');
+        Assert.areEqual(
+            System.Label.Kapka_Completed_Order_Item_Locked,
+            result.getErrors()[0].getMessage(),
+            'Smazání má odmítnout zámek dokončeného nákupu.'
+        );
+    }
+
+    private static Order__c createCompletedJanaOrder() {
+        Order_Item__c item = createNaturalItem();
+        update new Order__c(Id = item.Order__c, Status__c = COMPLETED);
+        return [SELECT Id, Loyalty_Member__c FROM Order__c WHERE Id = :item.Order__c];
+    }
+
+    // R26 (ST-15)
+    @IsTest
+    static void completedPurchaseCannotReturnToDraft() {
+        // Pokud Jana dokončila nákup
+        Order__c purchase = createCompletedJanaOrder();
+
+        // Když ho někdo vrátí na Rozpracovaný
+        Test.startTest();
+        Database.SaveResult result = Database.update(new Order__c(Id = purchase.Id, Status__c = 'Draft'), false);
+        Test.stopTest();
+
+        // Pak se změna neuloží (oprava nákupu je vratka, ta je mimo rozsah)
+        assertRejected(result, StatusCode.FIELD_CUSTOM_VALIDATION_EXCEPTION, null, 'Dokončený nákup nejde vrátit na Rozpracovaný.');
+    }
+
+    // R26 (ST-15)
+    @IsTest
+    static void completedPurchaseReceiptCannotChange() {
+        // Pokud Jana dokončila nákup s účtenkou KPK-001-000123
+        Order__c purchase = createCompletedJanaOrder();
+
+        // Když někdo přepíše číslo účtenky
+        Test.startTest();
+        Database.SaveResult result = Database.update(new Order__c(Id = purchase.Id, Receipt_Number__c = 'KPK-001-999999'), false);
+        Test.stopTest();
+
+        // Pak se změna neuloží (stejnou účtenku by šlo naimportovat znovu a připsat podruhé)
+        assertRejected(result, StatusCode.FIELD_CUSTOM_VALIDATION_EXCEPTION, null, 'Účtenka dokončeného nákupu se nesmí měnit.');
+    }
+
+    // R27 (ST-15, ST-13 přijaté riziko)
+    @IsTest
+    static void adminCanDeleteCompletedPurchase() {
+        // Pokud Jana dokončila nákup a má za něj připsání 109 kapek
+        Order__c purchase = createCompletedJanaOrder();
+        Points_Transaction__c earn = KapkaTestDataFactory.makeTransaction(purchase.Loyalty_Member__c, TYPE_EARN, POSTED, JANA_EARN);
+        earn.Order__c = purchase.Id;
+        insert earn;
+
+        // Když admin smaže celý nákup
+        Test.startTest();
+        Database.DeleteResult result = Database.delete(purchase, false);
+        Test.stopTest();
+
+        // Pak nákup i jeho položky zmizí a připsání zůstane v knize bez vazby na nákup
+        Assert.isTrue(result.isSuccess(), 'Admin smí smazat celý dokončený nákup: ' + result.getErrors());
+        Points_Transaction__c saved = [SELECT Order__c, Points__c FROM Points_Transaction__c WHERE Id = :earn.Id];
+        Assert.areEqual(
+            'null / 109',
+            saved.Order__c + ' / ' + saved.Points__c.stripTrailingZeros().toPlainString(),
+            'Připsání má po smazání nákupu zůstat v knize s prázdnou vazbou na nákup.'
+        );
+    }
+
+    // R28
+    @IsTest
+    static void allocationOverRemainingPointsIsRejected() {
+        // Pokud má Jana připsání 109 kapek a čerpání
+        Points_Transaction__c earn = createJanaTransaction(TYPE_EARN, POSTED, JANA_EARN);
+        Points_Transaction__c redeem = KapkaTestDataFactory.makeTransaction(earn.Loyalty_Member__c, TYPE_REDEEM, POSTED, -110);
+        insert redeem;
+
+        // Když se z připsání alokuje 110 kapek
+        Test.startTest();
+        Database.SaveResult result = Database.insert(KapkaTestDataFactory.makeAllocation(earn.Id, redeem.Id, 110), false);
+        Test.stopTest();
+
+        // Pak se alokace neuloží (zbývající kapky by klesly pod nulu)
+        assertRejected(result, StatusCode.FIELD_CUSTOM_VALIDATION_EXCEPTION, null, 'Z připsání nejde vzít víc, než zbývá.');
+    }
+
+    // R28
+    @IsTest
+    static void allocationFromCancelledEarnIsRejected() {
+        // Pokud má Jana zrušené připsání 109 kapek a čerpání
+        Points_Transaction__c earn = createJanaTransaction(TYPE_EARN, 'Cancelled', JANA_EARN);
+        Points_Transaction__c redeem = KapkaTestDataFactory.makeTransaction(earn.Loyalty_Member__c, TYPE_REDEEM, POSTED, -50);
+        insert redeem;
+
+        // Když se ze zrušeného připsání alokuje 50 kapek
+        Test.startTest();
+        Database.SaveResult result = Database.insert(KapkaTestDataFactory.makeAllocation(earn.Id, redeem.Id, 50), false);
+        Test.stopTest();
+
+        // Pak se alokace neuloží
+        assertRejected(
+            result,
+            StatusCode.FIELD_CUSTOM_VALIDATION_EXCEPTION,
+            Points_Allocation__c.Credit_Transaction__c,
+            'Brát jde jen ze zaúčtovaného připsání.'
+        );
+    }
+
+    // R28
+    @IsTest
+    static void allocationUpToRemainingPointsIsAccepted() {
+        // Pokud má Jana připsání 109 kapek a čerpání
+        Points_Transaction__c earn = createJanaTransaction(TYPE_EARN, POSTED, JANA_EARN);
+        Points_Transaction__c redeem = KapkaTestDataFactory.makeTransaction(earn.Loyalty_Member__c, TYPE_REDEEM, POSTED, -109);
+        insert redeem;
+
+        // Když se z připsání alokuje přesně 109 kapek
+        Test.startTest();
+        insert KapkaTestDataFactory.makeAllocation(earn.Id, redeem.Id, 109);
+        Test.stopTest();
+
+        // Pak z připsání nezbývá nic
+        Assert.areEqual(
+            0,
+            [SELECT Remaining_Points__c FROM Points_Transaction__c WHERE Id = :earn.Id].Remaining_Points__c,
+            'Alokace celého připsání má projít a nechat 0 kapek.'
+        );
+    }
+
+    // R29
+    @IsTest
+    static void purchaseTakesAccountFromMember() {
+        // Pokud je Jana členkou se svým osobním účtem
+        Loyalty_Member__c jana = KapkaTestDataFactory.createMember(JANA_FIRST, JANA_LAST);
+        Fuel_Station__c station = KapkaTestDataFactory.createStation(STATION_NAME, STATION_CODE);
+        List<Order__c> purchases = new List<Order__c>();
+        for (Integer i = 0; i < 200; i++) {
+            purchases.add(KapkaTestDataFactory.makeOrder(jana.Id, station.Id, RECEIPT + '-' + i));
+        }
+
+        // Když se jí zapíše 200 nákupů bez účtu
+        Test.startTest();
+        insert purchases;
+        Test.stopTest();
+
+        // Pak mají všechny nákupy účet Jany
+        Assert.areEqual(
+            200,
+            [SELECT COUNT() FROM Order__c WHERE Account__c = :jana.Account__c],
+            'Nákup bez účtu má převzít účet člena.'
+        );
+    }
+
+    // R29
+    @IsTest
+    static void purchaseKeepsExplicitAccount() {
+        // Pokud je Jana členkou a firma ENE Servis má vlastní účet
+        Loyalty_Member__c jana = KapkaTestDataFactory.createMember(JANA_FIRST, JANA_LAST);
+        Account company = new Account(Name = 'ENE Servis s.r.o.');
+        insert company;
+        Order__c purchase = KapkaTestDataFactory.makeOrder(jana.Id, null, RECEIPT);
+        purchase.Account__c = company.Id;
+
+        // Když se zapíše nákup s účtem firmy
+        Test.startTest();
+        insert purchase;
+        Test.stopTest();
+
+        // Pak účet zůstane firmy
+        Assert.areEqual(
+            company.Id,
+            [SELECT Account__c FROM Order__c WHERE Id = :purchase.Id].Account__c,
+            'Vyplněný účet nákupu se nesmí přepsat účtem člena.'
+        );
     }
 
     // R14
