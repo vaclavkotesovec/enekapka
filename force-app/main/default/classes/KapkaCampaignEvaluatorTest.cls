@@ -201,6 +201,26 @@ private class KapkaCampaignEvaluatorTest {
         Assert.areEqual(400, [SELECT COUNT() FROM Applied_Campaign__c], 'Každý nákup má dvě uplatněné kampaně.');
     }
 
+    // R8 (review T1): kampaň nesmí dávat necelé kapky
+    @IsTest
+    static void fractionalFixedRewardIsRejected() {
+        Loyalty_Campaign__c campaign = makeCampaign('Půl kapky', MIN_OTHER_AMOUNT, 100, FIXED_POINTS, 2.5);
+
+        Database.SaveResult result = Database.insert(campaign, false);
+
+        Assert.isFalse(result.isSuccess(), 'Pevná odměna 2,5 kapky se nesmí uložit – kniha kapek drží jen celé kapky.');
+    }
+
+    // R8 (review T1): násobek musí kapky přidávat
+    @IsTest
+    static void multiplierNotAboveOneIsRejected() {
+        Loyalty_Campaign__c campaign = makeCampaign('Bez efektu', MIN_OTHER_AMOUNT, 100, BASE_MULTIPLIER, 1);
+
+        Database.SaveResult result = Database.insert(campaign, false);
+
+        Assert.isFalse(result.isSuccess(), 'Násobek 1 nic nepřidá, kampaň se nesmí uložit.');
+    }
+
     // ---------- pomocníci ----------
 
     private static Loyalty_Member__c setUpMember() {

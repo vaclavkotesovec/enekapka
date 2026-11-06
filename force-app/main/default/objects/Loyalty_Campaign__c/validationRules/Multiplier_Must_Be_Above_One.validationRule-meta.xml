@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Multiplier_Must_Be_Above_One</fullName>
+    <active>true</active>
+    <description>R8 (review T1): násobek základu musí kapky přidávat, proto musí být větší než 1.</description>
+    <errorConditionFormula>AND(ISPICKVAL(Reward_Type__c, &quot;Base Multiplier&quot;), NOT(ISBLANK(Reward_Value__c)), Reward_Value__c &lt;= 1)</errorConditionFormula>
+    <errorDisplayField>Reward_Value__c</errorDisplayField>
+    <errorMessage>Násobek základu musí být větší než 1.</errorMessage>
+</ValidationRule>
