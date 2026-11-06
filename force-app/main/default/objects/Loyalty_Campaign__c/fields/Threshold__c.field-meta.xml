@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Threshold__c</fullName>
+    <description>Minimální hodnota podmínky (litry nebo Kč).</description>
+    <label>Práh</label>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <precision>10</precision>
+    <scale>2</scale>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

@@ -35,7 +35,8 @@ function loadEnv() {
   if (!existsSync(f)) return;
   for (const line of readFileSync(f, "utf8").split(/\r?\n/)) {
     const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
-    if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
+    if (m && !process.env[m[1]])
+      process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
   }
 }
 
@@ -53,7 +54,10 @@ function toId(ref) {
 
 async function api(method, path, body) {
   const token = process.env.NOTION_TOKEN;
-  if (!token) die("Chybí NOTION_TOKEN. Zkopíruj .env.example do .env a doplň token (viz .claude/skills/notion-api/SKILL.md).");
+  if (!token)
+    die(
+      "Chybí NOTION_TOKEN. Zkopíruj .env.example do .env a doplň token (viz .claude/skills/notion-api/SKILL.md).",
+    );
   for (let attempt = 0; attempt < 4; attempt++) {
     const res = await fetch(API + path, {
       method,
@@ -65,17 +69,24 @@ async function api(method, path, body) {
       body: body ? JSON.stringify(body) : undefined,
     });
     if (res.status === 429) {
-      await new Promise((r) => setTimeout(r, (Number(res.headers.get("retry-after")) || 1) * 1000));
+      await new Promise((r) =>
+        setTimeout(r, (Number(res.headers.get("retry-after")) || 1) * 1000),
+      );
       continue;
     }
     const json = await res.json().catch(() => ({}));
     if (!res.ok) {
-      const hint = json.code === "restricted_resource"
-        ? " Integrace na to nemá oprávnění: v nastavení integrace (Capabilities) zapni čtení/zápis obsahu a komentáře."
-        : res.status === 404 || res.status === 403
-        ? " Stránka není sdílená s integrací: v Notion na stránce Kapka … → Connections → přidej integraci."
-        : res.status === 401 ? " Neplatný NOTION_TOKEN." : "";
-      die(`Notion API ${res.status} ${json.code || ""}: ${(json.message || res.statusText).replace(/\.$/, "")}.${hint}`);
+      const hint =
+        json.code === "restricted_resource"
+          ? " Integrace na to nemá oprávnění: v nastavení integrace (Capabilities) zapni čtení/zápis obsahu a komentáře."
+          : res.status === 404 || res.status === 403
+            ? " Stránka není sdílená s integrací: v Notion na stránce Kapka … → Connections → přidej integraci."
+            : res.status === 401
+              ? " Neplatný NOTION_TOKEN."
+              : "";
+      die(
+        `Notion API ${res.status} ${json.code || ""}: ${(json.message || res.statusText).replace(/\.$/, "")}.${hint}`,
+      );
     }
     return json;
   }
@@ -87,9 +98,17 @@ async function paginate(method, path, body = {}) {
   let cursor;
   do {
     const sep = path.includes("?") ? "&" : "?";
-    const res = method === "GET"
-      ? await api("GET", `${path}${sep}page_size=100${cursor ? `&start_cursor=${cursor}` : ""}`)
-      : await api(method, path, { ...body, page_size: 100, ...(cursor ? { start_cursor: cursor } : {}) });
+    const res =
+      method === "GET"
+        ? await api(
+            "GET",
+            `${path}${sep}page_size=100${cursor ? `&start_cursor=${cursor}` : ""}`,
+          )
+        : await api(method, path, {
+            ...body,
+            page_size: 100,
+            ...(cursor ? { start_cursor: cursor } : {}),
+          });
     out.push(...res.results);
     cursor = res.has_more ? res.next_cursor : null;
   } while (cursor);
@@ -98,22 +117,28 @@ async function paginate(method, path, body = {}) {
 
 // ---------- bloky → Markdown ----------
 const rt = (arr = []) =>
-  arr.map((t) => {
-    let s = t.plain_text ?? "";
-    if (!s) return "";
-    const a = t.annotations || {};
-    if (a.code) s = "`" + s + "`";
-    if (a.bold) s = `**${s}**`;
-    if (a.italic) s = `_${s}_`;
-    if (a.strikethrough) s = `~~${s}~~`;
-    if (t.href) s = `[${s}](${t.href})`;
-    return s;
-  }).join("");
+  arr
+    .map((t) => {
+      let s = t.plain_text ?? "";
+      if (!s) return "";
+      const a = t.annotations || {};
+      if (a.code) s = "`" + s + "`";
+      if (a.bold) s = `**${s}**`;
+      if (a.italic) s = `_${s}_`;
+      if (a.strikethrough) s = `~~${s}~~`;
+      if (t.href) s = `[${s}](${t.href})`;
+      return s;
+    })
+    .join("");
 
 function fileName(b) {
   const f = b[b.type] || {};
   const url = f.file?.url || f.external?.url || f.url || "";
-  return f.name || rt(f.caption) || decodeURIComponent((url.split("?")[0].split("/").pop()) || b.type);
+  return (
+    f.name ||
+    rt(f.caption) ||
+    decodeURIComponent(url.split("?")[0].split("/").pop() || b.type)
+  );
 }
 
 async function blocksToMd(blockId, depth = 0) {
@@ -125,35 +150,89 @@ async function blocksToMd(blockId, depth = 0) {
     const v = b[b.type] || {};
     num = b.type === "numbered_list_item" ? num + 1 : 0;
     switch (b.type) {
-      case "paragraph": lines.push(ind + rt(v.rich_text)); break;
-      case "heading_1": lines.push(`\n# ${rt(v.rich_text)}`); break;
-      case "heading_2": lines.push(`\n## ${rt(v.rich_text)}`); break;
-      case "heading_3": lines.push(`\n### ${rt(v.rich_text)}`); break;
-      case "bulleted_list_item": lines.push(`${ind}- ${rt(v.rich_text)}`); break;
-      case "numbered_list_item": lines.push(`${ind}${num}. ${rt(v.rich_text)}`); break;
-      case "to_do": lines.push(`${ind}- [${v.checked ? "x" : " "}] ${rt(v.rich_text)}`); break;
-      case "toggle": lines.push(`${ind}▸ ${rt(v.rich_text)}`); break;
-      case "quote": lines.push(`${ind}> ${rt(v.rich_text)}`); break;
-      case "callout": lines.push(`${ind}> ${v.icon?.emoji ? v.icon.emoji + " " : ""}${rt(v.rich_text)}`); break;
-      case "code": lines.push("```" + (v.language || "") + "\n" + rt(v.rich_text) + "\n```"); break;
-      case "divider": lines.push("---"); break;
-      case "child_page": lines.push(`${ind}- 📄 ${v.title} (id ${b.id.replace(/-/g, "")})`); break;
-      case "child_database": lines.push(`${ind}- 🗂 ${v.title} (databáze, id ${b.id.replace(/-/g, "")})`); break;
+      case "paragraph":
+        lines.push(ind + rt(v.rich_text));
+        break;
+      case "heading_1":
+        lines.push(`\n# ${rt(v.rich_text)}`);
+        break;
+      case "heading_2":
+        lines.push(`\n## ${rt(v.rich_text)}`);
+        break;
+      case "heading_3":
+        lines.push(`\n### ${rt(v.rich_text)}`);
+        break;
+      case "bulleted_list_item":
+        lines.push(`${ind}- ${rt(v.rich_text)}`);
+        break;
+      case "numbered_list_item":
+        lines.push(`${ind}${num}. ${rt(v.rich_text)}`);
+        break;
+      case "to_do":
+        lines.push(`${ind}- [${v.checked ? "x" : " "}] ${rt(v.rich_text)}`);
+        break;
+      case "toggle":
+        lines.push(`${ind}▸ ${rt(v.rich_text)}`);
+        break;
+      case "quote":
+        lines.push(`${ind}> ${rt(v.rich_text)}`);
+        break;
+      case "callout":
+        lines.push(
+          `${ind}> ${v.icon?.emoji ? v.icon.emoji + " " : ""}${rt(v.rich_text)}`,
+        );
+        break;
+      case "code":
+        lines.push(
+          "```" + (v.language || "") + "\n" + rt(v.rich_text) + "\n```",
+        );
+        break;
+      case "divider":
+        lines.push("---");
+        break;
+      case "child_page":
+        lines.push(`${ind}- 📄 ${v.title} (id ${b.id.replace(/-/g, "")})`);
+        break;
+      case "child_database":
+        lines.push(
+          `${ind}- 🗂 ${v.title} (databáze, id ${b.id.replace(/-/g, "")})`,
+        );
+        break;
       case "table": {
         const rows = await paginate("GET", `/blocks/${b.id}/children`);
         rows.forEach((r, i) => {
-          lines.push("| " + r.table_row.cells.map((c) => rt(c).replace(/\|/g, "\\|")).join(" | ") + " |");
-          if (i === 0 && v.has_column_header) lines.push("|" + r.table_row.cells.map(() => " --- |").join(""));
+          lines.push(
+            "| " +
+              r.table_row.cells
+                .map((c) => rt(c).replace(/\|/g, "\\|"))
+                .join(" | ") +
+              " |",
+          );
+          if (i === 0 && v.has_column_header)
+            lines.push("|" + r.table_row.cells.map(() => " --- |").join(""));
         });
         continue;
       }
-      case "image": case "file": case "pdf": case "video": case "embed": case "bookmark":
-        lines.push(`${ind}[${b.type}: ${fileName(b)}]`); break;
-      case "link_to_page": lines.push(`${ind}→ odkaz na ${v.page_id || v.database_id}`); break;
-      case "synced_block": break;
-      default: lines.push(`${ind}[${b.type}]`);
+      case "image":
+      case "file":
+      case "pdf":
+      case "video":
+      case "embed":
+      case "bookmark":
+        lines.push(`${ind}[${b.type}: ${fileName(b)}]`);
+        break;
+      case "link_to_page":
+        lines.push(`${ind}→ odkaz na ${v.page_id || v.database_id}`);
+        break;
+      case "synced_block":
+        break;
+      default:
+        lines.push(`${ind}[${b.type}]`);
     }
-    if (b.has_children && !["child_page", "child_database", "table"].includes(b.type)) {
+    if (
+      b.has_children &&
+      !["child_page", "child_database", "table"].includes(b.type)
+    ) {
       lines.push(await blocksToMd(b.id, depth + 1));
     }
   }
@@ -161,7 +240,9 @@ async function blocksToMd(blockId, depth = 0) {
 }
 
 const title = (page) => {
-  const p = Object.values(page.properties || {}).find((x) => x.type === "title");
+  const p = Object.values(page.properties || {}).find(
+    (x) => x.type === "title",
+  );
   return p ? rt(p.title) : "";
 };
 
@@ -170,25 +251,36 @@ async function cmdPage(ref, json) {
   const id = await resolvePage(ref);
   const page = await api("GET", `/pages/${id}`);
   if (json) return console.log(JSON.stringify(page, null, 2));
-  console.log(`# ${title(page)}\n\n_id ${id} · upraveno ${page.last_edited_time}_\n`);
+  console.log(
+    `# ${title(page)}\n\n_id ${id} · upraveno ${page.last_edited_time}_\n`,
+  );
   console.log(await blocksToMd(id));
 }
 
 async function queryKanban(status) {
-  const filter = status ? { filter: { property: "Status", status: { equals: status } } } : {};
+  const filter = status
+    ? { filter: { property: "Status", status: { equals: status } } }
+    : {};
   return paginate("POST", `/databases/${KANBAN_DB}/query`, filter);
 }
 
 async function cmdKanban(status, json) {
   const rows = await queryKanban(status);
   if (json) return console.log(JSON.stringify(rows, null, 2));
-  if (!rows.length) return console.log("Kanban je prázdný" + (status ? ` ve stavu ${status}.` : "."));
+  if (!rows.length)
+    return console.log(
+      "Kanban je prázdný" + (status ? ` ve stavu ${status}.` : "."),
+    );
   console.log("| Status | Název | id |\n| --- | --- | --- |");
-  for (const r of rows) console.log(`| ${r.properties.Status?.status?.name ?? ""} | ${title(r)} | ${r.id.replace(/-/g, "")} |`);
+  for (const r of rows)
+    console.log(
+      `| ${r.properties.Status?.status?.name ?? ""} | ${title(r)} | ${r.id.replace(/-/g, "")} |`,
+    );
 }
 
 function checkStatus(s) {
-  if (!STATUSES.includes(s)) die(`Neplatný stav „${s}“. Povolené: ${STATUSES.join(", ")}.`);
+  if (!STATUSES.includes(s))
+    die(`Neplatný stav „${s}“. Povolené: ${STATUSES.join(", ")}.`);
 }
 
 async function cmdCardAdd(name, status = "Not started", file, json) {
@@ -196,44 +288,89 @@ async function cmdCardAdd(name, status = "Not started", file, json) {
   checkStatus(status);
   const page = await api("POST", "/pages", {
     parent: { database_id: KANBAN_DB },
-    properties: { Name: { title: [{ text: { content: name } }] }, Status: { status: { name: status } } },
+    properties: {
+      Name: { title: [{ text: { content: name } }] },
+      Status: { status: { name: status } },
+    },
   });
   if (file) await appendBlocks(page.id, mdToBlocks(readSource(file)));
-  console.log(json ? JSON.stringify(page, null, 2) : `Založeno: ${name} [${status}] id ${page.id.replace(/-/g, "")}`);
+  console.log(
+    json
+      ? JSON.stringify(page, null, 2)
+      : `Založeno: ${name} [${status}] id ${page.id.replace(/-/g, "")}`,
+  );
 }
 
 async function resolveCard(ref) {
   const id = toId(ref);
   if (id) return id;
-  const hits = (await queryKanban()).filter((r) => title(r).toLowerCase().includes(ref.toLowerCase()));
-  if (hits.length !== 1) die(hits.length ? `Název „${ref}“ odpovídá ${hits.length} kartám, použij id.` : `Karta „${ref}“ nenalezena.`);
+  const hits = (await queryKanban()).filter((r) =>
+    title(r).toLowerCase().includes(ref.toLowerCase()),
+  );
+  if (hits.length !== 1)
+    die(
+      hits.length
+        ? `Název „${ref}“ odpovídá ${hits.length} kartám, použij id.`
+        : `Karta „${ref}“ nenalezena.`,
+    );
   return hits[0].id.replace(/-/g, "");
 }
 
 async function cmdCardStatus(ref, status, json) {
   checkStatus(status);
   const id = await resolveCard(ref);
-  const page = await api("PATCH", `/pages/${id}`, { properties: { Status: { status: { name: status } } } });
-  console.log(json ? JSON.stringify(page, null, 2) : `${title(page)} → ${status}`);
+  const page = await api("PATCH", `/pages/${id}`, {
+    properties: { Status: { status: { name: status } } },
+  });
+  console.log(
+    json ? JSON.stringify(page, null, 2) : `${title(page)} → ${status}`,
+  );
 }
 
 async function cmdComment(ref, text, json) {
   if (!text) die("Chybí text komentáře.");
   const id = toId(ref) || (await resolveCard(ref));
-  const res = await api("POST", "/comments", { parent: { page_id: id }, rich_text: [{ text: { content: text } }] });
+  const res = await api("POST", "/comments", {
+    parent: { page_id: id },
+    rich_text: [{ text: { content: text } }],
+  });
   console.log(json ? JSON.stringify(res, null, 2) : `Komentář přidán k ${id}.`);
 }
 
 // ---------- Markdown → bloky ----------
-const LANGS = new Set(["gherkin", "java", "javascript", "typescript", "json", "sql", "shell", "bash", "markdown", "xml", "html", "css", "python", "yaml", "mermaid"]);
+const LANGS = new Set([
+  "gherkin",
+  "java",
+  "javascript",
+  "typescript",
+  "json",
+  "sql",
+  "shell",
+  "bash",
+  "markdown",
+  "xml",
+  "html",
+  "css",
+  "python",
+  "yaml",
+  "mermaid",
+]);
 
 function inline(text) {
   const out = [];
   const re = /(\*\*[^*]+\*\*|`[^`]+`|\[[^\]]+\]\([^)]+\)|_[^_\s][^_]*_)/g;
-  let last = 0, m;
+  let last = 0,
+    m;
   const push = (content, ann = {}, link) => {
     for (let i = 0; i < content.length; i += 2000) {
-      out.push({ type: "text", text: { content: content.slice(i, i + 2000), ...(link ? { link: { url: link } } : {}) }, annotations: ann });
+      out.push({
+        type: "text",
+        text: {
+          content: content.slice(i, i + 2000),
+          ...(link ? { link: { url: link } } : {}),
+        },
+        annotations: ann,
+      });
     }
   };
   while ((m = re.exec(text))) {
@@ -241,15 +378,21 @@ function inline(text) {
     const t = m[0];
     if (t.startsWith("**")) push(t.slice(2, -2), { bold: true });
     else if (t.startsWith("`")) push(t.slice(1, -1), { code: true });
-    else if (t.startsWith("[")) { const [, l, u] = t.match(/\[([^\]]+)\]\(([^)]+)\)/); /^https?:/.test(u) ? push(l, {}, u) : push(l); }
-    else push(t.slice(1, -1), { italic: true });
+    else if (t.startsWith("[")) {
+      const [, l, u] = t.match(/\[([^\]]+)\]\(([^)]+)\)/);
+      /^https?:/.test(u) ? push(l, {}, u) : push(l);
+    } else push(t.slice(1, -1), { italic: true });
     last = m.index + t.length;
   }
   if (last < text.length) push(text.slice(last));
   return out;
 }
 
-const blk = (type, text, extra = {}) => ({ object: "block", type, [type]: { rich_text: inline(text), ...extra } });
+const blk = (type, text, extra = {}) => ({
+  object: "block",
+  type,
+  [type]: { rich_text: inline(text), ...extra },
+});
 
 function mdToBlocks(md) {
   const lines = md.replace(/\r/g, "").split("\n");
@@ -266,30 +409,78 @@ function mdToBlocks(md) {
       i++;
       const lang = LANGS.has(fence[1]) ? fence[1] : "plain text";
       const content = body.join("\n");
-      blocks.push({ object: "block", type: "code", code: { language: lang, rich_text: chunks(content) } });
+      blocks.push({
+        object: "block",
+        type: "code",
+        code: { language: lang, rich_text: chunks(content) },
+      });
       continue;
     }
     if (/^\s*\|.*\|\s*$/.test(line)) {
       const rows = [];
-      while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i])) rows.push(lines[i++]);
-      const cells = rows.filter((r) => !/^\s*\|[\s:|-]+\|\s*$/.test(r))
-        .map((r) => r.trim().slice(1, -1).split(/(?<!\\)\|/).map((c) => c.trim().replace(/\\\|/g, "|")));
+      while (i < lines.length && /^\s*\|.*\|\s*$/.test(lines[i]))
+        rows.push(lines[i++]);
+      const cells = rows
+        .filter((r) => !/^\s*\|[\s:|-]+\|\s*$/.test(r))
+        .map((r) =>
+          r
+            .trim()
+            .slice(1, -1)
+            .split(/(?<!\\)\|/)
+            .map((c) => c.trim().replace(/\\\|/g, "|")),
+        );
       const width = Math.max(...cells.map((c) => c.length));
-      blocks.push({ object: "block", type: "table", table: {
-        table_width: width, has_column_header: rows.length > 1 && /^\s*\|[\s:|-]+\|\s*$/.test(rows[1]), has_row_header: false,
-        children: cells.map((c) => ({ object: "block", type: "table_row", table_row: { cells: Array.from({ length: width }, (_, k) => inline(c[k] ?? "")) } })),
-      } });
+      blocks.push({
+        object: "block",
+        type: "table",
+        table: {
+          table_width: width,
+          has_column_header:
+            rows.length > 1 && /^\s*\|[\s:|-]+\|\s*$/.test(rows[1]),
+          has_row_header: false,
+          children: cells.map((c) => ({
+            object: "block",
+            type: "table_row",
+            table_row: {
+              cells: Array.from({ length: width }, (_, k) =>
+                inline(c[k] ?? ""),
+              ),
+            },
+          })),
+        },
+      });
       continue;
     }
     i++;
-    if (!line.trim()) { lastList.length = 0; continue; }
+    if (!line.trim()) {
+      lastList.length = 0;
+      continue;
+    }
     let m;
-    if ((m = line.match(/^(#{1,3})\s+(.*)/))) { blocks.push(blk(`heading_${m[1].length}`, m[2])); continue; }
-    if (/^(-{3,}|\*{3,})\s*$/.test(line)) { blocks.push({ object: "block", type: "divider", divider: {} }); continue; }
-    if ((m = line.match(/^>\s?(.*)/))) { blocks.push(blk("quote", m[1])); continue; }
-    if ((m = line.match(/^(\s*)(?:[-*]\s+\[([ xX])\]\s+(.*))$/))) { list(m[1], blk("to_do", m[3], { checked: m[2] !== " " })); continue; }
-    if ((m = line.match(/^(\s*)[-*]\s+(.*)/))) { list(m[1], blk("bulleted_list_item", m[2])); continue; }
-    if ((m = line.match(/^(\s*)\d+[.)]\s+(.*)/))) { list(m[1], blk("numbered_list_item", m[2])); continue; }
+    if ((m = line.match(/^(#{1,3})\s+(.*)/))) {
+      blocks.push(blk(`heading_${m[1].length}`, m[2]));
+      continue;
+    }
+    if (/^(-{3,}|\*{3,})\s*$/.test(line)) {
+      blocks.push({ object: "block", type: "divider", divider: {} });
+      continue;
+    }
+    if ((m = line.match(/^>\s?(.*)/))) {
+      blocks.push(blk("quote", m[1]));
+      continue;
+    }
+    if ((m = line.match(/^(\s*)(?:[-*]\s+\[([ xX])\]\s+(.*))$/))) {
+      list(m[1], blk("to_do", m[3], { checked: m[2] !== " " }));
+      continue;
+    }
+    if ((m = line.match(/^(\s*)[-*]\s+(.*)/))) {
+      list(m[1], blk("bulleted_list_item", m[2]));
+      continue;
+    }
+    if ((m = line.match(/^(\s*)\d+[.)]\s+(.*)/))) {
+      list(m[1], blk("numbered_list_item", m[2]));
+      continue;
+    }
     blocks.push(blk("paragraph", line.trim()));
     lastList.length = 0;
   }
@@ -297,11 +488,15 @@ function mdToBlocks(md) {
 
   function chunks(s) {
     const r = [];
-    for (let k = 0; k < s.length; k += 2000) r.push({ type: "text", text: { content: s.slice(k, k + 2000) } });
+    for (let k = 0; k < s.length; k += 2000)
+      r.push({ type: "text", text: { content: s.slice(k, k + 2000) } });
     return r;
   }
   function list(indent, b) {
-    const level = Math.min(1, Math.floor(indent.replace(/\t/g, "  ").length / 2));
+    const level = Math.min(
+      1,
+      Math.floor(indent.replace(/\t/g, "  ").length / 2),
+    );
     if (level > 0 && lastList[0]) {
       const parent = lastList[0][lastList[0].type];
       (parent.children ||= []).push(b);
@@ -314,7 +509,9 @@ function mdToBlocks(md) {
 
 async function appendBlocks(pageId, blocks) {
   for (let k = 0; k < blocks.length; k += 100) {
-    await api("PATCH", `/blocks/${pageId}/children`, { children: blocks.slice(k, k + 100) });
+    await api("PATCH", `/blocks/${pageId}/children`, {
+      children: blocks.slice(k, k + 100),
+    });
   }
 }
 
@@ -340,7 +537,11 @@ async function cmdWrite(ref, src, append, json) {
     }
   }
   await appendBlocks(id, blocks);
-  console.log(json ? JSON.stringify({ id, removed, added: blocks.length }) : `Zapsáno do ${id}: ${blocks.length} bloků${append ? " (připojeno)" : `, ${removed} starých nahrazeno`}.`);
+  console.log(
+    json
+      ? JSON.stringify({ id, removed, added: blocks.length })
+      : `Zapsáno do ${id}: ${blocks.length} bloků${append ? " (připojeno)" : `, ${removed} starých nahrazeno`}.`,
+  );
 }
 
 async function cmdSubpage(ref, name, src, json) {
@@ -353,7 +554,11 @@ async function cmdSubpage(ref, name, src, json) {
     children: blocks.slice(0, 100),
   });
   if (blocks.length > 100) await appendBlocks(page.id, blocks.slice(100));
-  console.log(json ? JSON.stringify(page, null, 2) : `Podstránka „${name}“ id ${page.id.replace(/-/g, "")} (${blocks.length} bloků).`);
+  console.log(
+    json
+      ? JSON.stringify(page, null, 2)
+      : `Podstránka „${name}“ id ${page.id.replace(/-/g, "")} (${blocks.length} bloků).`,
+  );
 }
 
 async function cmdSearch(q, json) {
@@ -361,7 +566,9 @@ async function cmdSearch(q, json) {
   if (json) return console.log(JSON.stringify(res, null, 2));
   for (const r of res.results) {
     const t = r.object === "database" ? rt(r.title) : title(r);
-    console.log(`${r.object === "database" ? "🗂" : "📄"} ${t || "(bez názvu)"}  ${r.id.replace(/-/g, "")}`);
+    console.log(
+      `${r.object === "database" ? "🗂" : "📄"} ${t || "(bez názvu)"}  ${r.id.replace(/-/g, "")}`,
+    );
   }
 }
 
@@ -373,7 +580,8 @@ const append = argv.includes("--append");
 const opt = {};
 const pos = [];
 for (let i = 0; i < argv.length; i++) {
-  if (argv[i] === "--status" || argv[i] === "--file") opt[argv[i].slice(2)] = argv[++i];
+  if (argv[i] === "--status" || argv[i] === "--file")
+    opt[argv[i].slice(2)] = argv[++i];
   else if (!["--json", "--append"].includes(argv[i])) pos.push(argv[i]);
 }
 const status = opt.status;
@@ -390,7 +598,13 @@ const commands = {
   search: () => cmdSearch(a1, json),
 };
 if (!commands[cmd]) {
-  console.log(readFileSync(fileURLToPath(import.meta.url), "utf8").split("\n").slice(1, 14).map((l) => l.replace(/^\/\/ ?/, "")).join("\n"));
+  console.log(
+    readFileSync(fileURLToPath(import.meta.url), "utf8")
+      .split("\n")
+      .slice(1, 14)
+      .map((l) => l.replace(/^\/\/ ?/, ""))
+      .join("\n"),
+  );
   process.exit(cmd ? 1 : 0);
 }
 await commands[cmd]();

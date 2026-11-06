@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Condition_Type__c</fullName>
+    <description>Co musí nákup splnit, aby se kampaň uplatnila.</description>
+    <label>Podmínka</label>
+    <trackHistory>false</trackHistory>
+    <required>true</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Min Fuel Liters</fullName>
+                <default>false</default>
+                <label>Min. litrů paliva</label>
+            </value>
+            <value>
+                <fullName>Min Other Amount</fullName>
+                <default>false</default>
+                <label>Min. Kč za ostatní</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

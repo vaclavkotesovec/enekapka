@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Unit_Size__c</fullName>
+    <description>Velikost jedné jednotky, např. 1 litr nebo 20 Kč.</description>
+    <label>Jednotka</label>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <precision>8</precision>
+    <scale>2</scale>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

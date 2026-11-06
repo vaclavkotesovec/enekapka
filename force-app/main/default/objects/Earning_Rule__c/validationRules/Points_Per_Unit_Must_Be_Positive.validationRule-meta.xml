@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Points_Per_Unit_Must_Be_Positive</fullName>
+    <active>true</active>
+    <description>Pravidlo musí přidávat kladný počet kapek.</description>
+    <errorConditionFormula>Points_Per_Unit__c &lt;= 0</errorConditionFormula>
+    <errorDisplayField>Points_Per_Unit__c</errorDisplayField>
+    <errorMessage>Kapky za jednotku musí být větší než 0.</errorMessage>
+</ValidationRule>
