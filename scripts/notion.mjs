@@ -436,7 +436,20 @@ const today = () => {
   const p = (n) => String(n).padStart(2, "0");
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 };
-const cardKey = (cardTitle) => cardTitle.split(":")[0].trim();
+// Klíč karty pro Testy: text před dvojtečkou; u sdíleného prefixu „bonus“ přidá první slovo za ní
+// (bonus-expirace, bonus-rucni), jinak by se testy bonusových karet smíchaly.
+const cardKey = (cardTitle) => {
+  const [prefix, rest = ""] = cardTitle.split(/:(.*)/s);
+  const key = prefix.trim();
+  if (key !== "bonus") return key;
+  const word = rest.trim().split(/\s+/)[0] || "";
+  const slug = word
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, "");
+  return slug ? `${key}-${slug}` : key;
+};
 
 // Gherkin karty → [{ id: "AC-1.1", name, steps, expected }]
 function parseScenarios(gherkin) {

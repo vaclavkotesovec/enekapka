@@ -35,8 +35,13 @@ const notion = (...a) =>
   }).trim();
 
 // 1. scénáře karty
-console.log(notion("tests-sync", card));
-const key = card.replace(/:.*$/, "").trim();
+const synced = notion("tests-sync", card);
+console.log(synced);
+const key = (synced.match(/^Testy (\S+):/) || [])[1];
+if (!key) {
+  console.error(`Nerozpoznán klíč karty z výstupu tests-sync: ${synced}`);
+  process.exit(2);
+}
 
 // 2. mapování AC → testovací metody z komentářů
 const source = readFileSync(join(ROOT, `force-app/main/default/classes/${testClass}.cls`), "utf8");
