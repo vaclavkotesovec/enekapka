@@ -1,15 +1,52 @@
 /*
- * Your global styles here
+ * Brand Kapka – tokeny z Kapka Brand Kitu (Notion: page znacka), jen světlý režim (DS2).
+ * Pravidlo názvu: token X z brand kitu = var(--kapka-X). Komponenty používají jen tyto proměnné,
+ * hex barvy patří jen sem a do LWC modulu kapkaStyles (hlídá scripts/check-brand.mjs).
  */
+:root {
+    --kapka-kapka: #0b6e73;
+    --kapka-kapka-soft: #ddf0ee;
+    --kapka-on-kapka: #ffffff;
+    --kapka-jantar: #f0a830;
+    --kapka-on-jantar: #0a2e33;
+    --kapka-jantar-ink: #8a5300;
+    --kapka-hlubina: #0a2e33;
+    --kapka-surface: #f6f8f7;
+    --kapka-surface-raised: #ffffff;
+    --kapka-line: #d5e0df;
+    --kapka-ink: #0f2226;
+    --kapka-ink-muted: #4d6366;
+    --kapka-uspech: #2e7d32;
+    --kapka-chyba: #b3261e;
+    --kapka-focus-ring: var(--kapka-kapka);
+
+    --kapka-font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+    --kapka-font-sans: "Instrument Sans", "Segoe UI", system-ui, sans-serif;
+    --kapka-font-mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+
+    --kapka-space-1: 4px;
+    --kapka-space-2: 8px;
+    --kapka-space-4: 16px;
+    --kapka-space-6: 24px;
+    --kapka-space-8: 32px;
+
+    --kapka-radius-hrot: 2px;
+    --kapka-radius-sm: 8px;
+    --kapka-radius-md: 20px;
+}
+
 html,
 body {
     height: 100%;
 }
 
 html {
-    background: white;
+    background: var(--kapka-surface);
 }
 
 body {
     margin: 0;
+    color: var(--kapka-ink);
+    font-family: var(--kapka-font-sans);
+    font-variant-numeric: tabular-nums;
 }
