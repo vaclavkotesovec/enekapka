@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Points_Transaction__c</fullName>
+    <description>Připsání kapek za nákup, u kterého se kampaň uplatnila.</description>
+    <label>Pohyb kapek</label>
+    <referenceTo>Points_Transaction__c</referenceTo>
+    <relationshipLabel>Uplatněné kampaně</relationshipLabel>
+    <relationshipName>Applied_Campaigns</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

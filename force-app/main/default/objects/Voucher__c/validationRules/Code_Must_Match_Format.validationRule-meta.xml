@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Code_Must_Match_Format</fullName>
+    <active>true</active>
+    <description>AC-5.2: kód voucheru musí mít tvar KPK-XXXX-XXXX (velká písmena a číslice), jak ho zná partner i portál.</description>
+    <errorConditionFormula>NOT(REGEX(Code__c, &quot;KPK-[A-Z0-9]{4}-[A-Z0-9]{4}&quot;))</errorConditionFormula>
+    <errorDisplayField>Code__c</errorDisplayField>
+    <errorMessage>Kód voucheru musí mít tvar KPK-XXXX-XXXX.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Points_Transaction__c</fullName>
+    <description>Čerpání kapek, které voucher zaplatilo.</description>
+    <label>Pohyb kapek</label>
+    <trackHistory>false</trackHistory>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <referenceTo>Points_Transaction__c</referenceTo>
+    <relationshipLabel>Vouchery</relationshipLabel>
+    <relationshipName>Vouchers</relationshipName>
+    <required>false</required>
+    <type>Lookup</type>
+</CustomField>
