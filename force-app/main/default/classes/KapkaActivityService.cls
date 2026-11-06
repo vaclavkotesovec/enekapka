@@ -39,7 +39,9 @@ public with sharing class KapkaActivityService {
                 if (member.Status__c == REGISTERED) {
                     touched.Status__c = ACTIVE;
                 }
-                addOnce(credits, rewarded, member.Id, rewards.get(SOURCE_PROFILE), grantedAt);
+                if (member.Account__r.IsPersonAccount) {
+                    addOnce(credits, rewarded, member.Id, rewards.get(SOURCE_PROFILE), grantedAt); // A4: profil jen osoby
+                }
             } else if (purpose == MARKETING) {
                 addOnce(credits, rewarded, member.Id, rewards.get(SOURCE_CONSENT), grantedAt);
             }
@@ -143,7 +145,7 @@ public with sharing class KapkaActivityService {
         return names;
     }
 
-    /** Člen podle Individual: osoba přes Account.PersonIndividualId. */
+    /** Člen podle Individual: osoba přes Account.PersonIndividualId, řidič firmy přes Contact.IndividualId. */
     private static Map<Id, Loyalty_Member__c> membersByIndividual(List<PartyConsent> consents) {
         Set<Id> individualIds = new Set<Id>();
         for (PartyConsent consent : consents) {
@@ -151,12 +153,15 @@ public with sharing class KapkaActivityService {
         }
         Map<Id, Loyalty_Member__c> members = new Map<Id, Loyalty_Member__c>();
         for (Loyalty_Member__c member : [
-            SELECT Id, Status__c, Account__r.PersonIndividualId
+            SELECT Id, Status__c, Account__r.IsPersonAccount, Account__r.PersonIndividualId, Contact__r.IndividualId
             FROM Loyalty_Member__c
-            WHERE Account__r.PersonIndividualId IN :individualIds
+            WHERE Account__r.PersonIndividualId IN :individualIds OR Contact__r.IndividualId IN :individualIds
             WITH SYSTEM_MODE
         ]) {
-            members.put(member.Account__r.PersonIndividualId, member);
+            Id individualId = member.Account__r.IsPersonAccount
+                ? member.Account__r.PersonIndividualId
+                : member.Contact__r.IndividualId;
+            members.put(individualId, member);
         }
         return members;
     }

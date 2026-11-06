@@ -223,6 +223,35 @@ private class KapkaActivityServiceTest {
         Assert.areEqual(50, pointsOf(jana.Id, CONSENT), 'Odvolání souhlasu kapky nebere (A2).');
     }
 
+    // AC-2.2, AC-3.3
+    @IsTest
+    static void companyDriverConsents() {
+        // Pokud registrovaný firemní člen s řidičem
+        Map<String, DataUsePurpose> purposes = KapkaTestDataFactory.createDataUsePurposes();
+        Account company = KapkaTestDataFactory.createCompany('Doprava Morava s.r.o.');
+        Contact driver = KapkaTestDataFactory.createDriver(company.Id, 'Petr', 'Svoboda');
+        Loyalty_Member__c member = KapkaTestDataFactory.makeMember(company.Id);
+        member.Contact__c = driver.Id;
+        insert member;
+
+        // Když řidič udělí souhlas s účastí v Kapka Klubu i s marketingem
+        Test.startTest();
+        insert new List<PartyConsent>{
+            KapkaTestDataFactory.makeOptInConsent(driver.IndividualId, purposes.get(KapkaTestDataFactory.LOYALTY_PURPOSE)),
+            KapkaTestDataFactory.makeOptInConsent(driver.IndividualId, purposes.get(KapkaTestDataFactory.MARKETING_PURPOSE))
+        };
+        Test.stopTest();
+
+        // Pak je člen aktivní, kapky za profil se nepřipíší a za souhlas má 50 kapek
+        Loyalty_Member__c result = [SELECT Status__c FROM Loyalty_Member__c WHERE Id = :member.Id];
+        Decimal profilePoints = pointsOf(member.Id, PROFILE);
+        Decimal consentPoints = pointsOf(member.Id, CONSENT);
+        Assert.isTrue(
+            result.Status__c == ACTIVE && profilePoints == 0 && consentPoints == 50,
+            'Firma: aktivní, 0 kapek za profil, 50 za souhlas; je: ' + result.Status__c + ', ' + profilePoints + ', ' + consentPoints
+        );
+    }
+
     private static void setStatus(List<PartyConsent> consents, String status) {
         for (PartyConsent consent : consents) {
             consent.PrivacyConsentStatus = status;
