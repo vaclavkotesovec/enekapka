@@ -9,6 +9,8 @@ private class KapkaActivityServiceTest {
     private static final String POSTED = 'Posted';
     private static final String PROFILE = 'Profile';
     private static final String CONSENT = 'Consent';
+    private static final String OPT_IN = 'OptIn';
+    private static final String OPT_OUT = 'OptOut';
 
     // AC-1.1
     @IsTest
@@ -172,6 +174,40 @@ private class KapkaActivityServiceTest {
             result.Status__c == ACTIVE && total == 150,
             'Oba souhlasy najednou: aktivní člen se 150 kapkami, je: ' + result.Status__c + ', ' + total + ' kapek'
         );
+    }
+
+    // AC-2.3, AC-3.4
+    @IsTest
+    static void repeatedConsentEarnsNothing() {
+        // Pokud členka Jana, která už dostala kapky za profil i za marketing a oba souhlasy odvolala
+        Map<String, DataUsePurpose> purposes = KapkaTestDataFactory.createDataUsePurposes();
+        Loyalty_Member__c jana = KapkaTestDataFactory.createMember('Jana', 'Nováková');
+        Id individualId = individualOf(jana);
+        List<PartyConsent> consents = new List<PartyConsent>{
+            KapkaTestDataFactory.makeOptInConsent(individualId, purposes.get(KapkaTestDataFactory.LOYALTY_PURPOSE)),
+            KapkaTestDataFactory.makeOptInConsent(individualId, purposes.get(KapkaTestDataFactory.MARKETING_PURPOSE))
+        };
+        insert consents;
+        setStatus(consents, OPT_OUT);
+
+        // Když Jana udělí oba souhlasy znovu
+        Test.startTest();
+        setStatus(consents, OPT_IN);
+        Test.stopTest();
+
+        // Pak se žádné další kapky nepřipíší
+        Assert.areEqual(
+            150,
+            pointsOf(jana.Id, PROFILE) + pointsOf(jana.Id, CONSENT),
+            'Každá aktivita se odmění nejvýš jednou za členství (A2).'
+        );
+    }
+
+    private static void setStatus(List<PartyConsent> consents, String status) {
+        for (PartyConsent consent : consents) {
+            consent.PrivacyConsentStatus = status;
+        }
+        update consents;
     }
 
     private static Decimal pointsOf(Id memberId, String source) {

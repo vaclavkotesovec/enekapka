@@ -23,6 +23,7 @@ public with sharing class KapkaActivityService {
         Map<Id, Loyalty_Member__c> membersByIndividual = membersByIndividual(granted);
 
         Map<String, Kapka_Activity_Reward__mdt> rewards = rewardsBySource();
+        Set<String> rewarded = rewardedActivities(membersByIndividual.values());
 
         Map<Id, Loyalty_Member__c> membersToUpdate = new Map<Id, Loyalty_Member__c>();
         List<Points_Transaction__c> credits = new List<Points_Transaction__c>();
@@ -38,15 +39,46 @@ public with sharing class KapkaActivityService {
                 if (member.Status__c == REGISTERED) {
                     touched.Status__c = ACTIVE;
                 }
-                credits.add(credit(member.Id, rewards.get(SOURCE_PROFILE), grantedAt));
+                addOnce(credits, rewarded, member.Id, rewards.get(SOURCE_PROFILE), grantedAt);
             } else if (purpose == MARKETING) {
-                credits.add(credit(member.Id, rewards.get(SOURCE_CONSENT), grantedAt));
+                addOnce(credits, rewarded, member.Id, rewards.get(SOURCE_CONSENT), grantedAt);
             }
         }
         // SYSTEM_MODE záměrně: souhlas zakládá i portálový uživatel, který na členy a knihu kapek
         // práva nemá; aktivaci a kapky generuje systém (stejný vzor jako KapkaEarnService).
         Database.update(membersToUpdate.values(), AccessLevel.SYSTEM_MODE);
         Database.insert(credits, AccessLevel.SYSTEM_MODE);
+    }
+
+    /** Každá aktivita nejvýš jednou za členství (A2): přeskoč, co člen už má nebo dostal v této dávce. */
+    private static void addOnce(
+        List<Points_Transaction__c> credits,
+        Set<String> rewarded,
+        Id memberId,
+        Kapka_Activity_Reward__mdt reward,
+        Datetime grantedAt
+    ) {
+        if (rewarded.add(activityKey(memberId, reward.Source__c))) {
+            credits.add(credit(memberId, reward, grantedAt));
+        }
+    }
+
+    /** Aktivity, za které už člen kapky dostal, jako klíče člen|zdroj. */
+    private static Set<String> rewardedActivities(List<Loyalty_Member__c> members) {
+        Set<String> rewarded = new Set<String>();
+        for (Points_Transaction__c earned : [
+            SELECT Loyalty_Member__c, Source__c
+            FROM Points_Transaction__c
+            WHERE Loyalty_Member__c IN :members AND Type__c = :EARN AND Source__c IN (:SOURCE_PROFILE, :SOURCE_CONSENT)
+            WITH SYSTEM_MODE
+        ]) {
+            rewarded.add(activityKey(earned.Loyalty_Member__c, earned.Source__c));
+        }
+        return rewarded;
+    }
+
+    private static String activityKey(Id memberId, String source) {
+        return memberId + '|' + source;
     }
 
     /** Aktualizace člena: poslední aktivita = nejpozdější datum souhlasu v dávce (A6). */
