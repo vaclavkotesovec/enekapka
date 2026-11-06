@@ -10,7 +10,7 @@ Plán v kartě je zdroj pravdy; byl odsouhlasen ve `/kapka-spec`, takže ho impl
 
 ## Vstup
 
-Karta v Kanbanu (`node scripts/notion.mjs page "<id>:"`). Když nemá sekci Plán, pošli uživatele na `/kapka-spec` a skonči.
+Karta v Kanbanu ve stavu **Business ready** (`node scripts/notion.mjs page "<id>:"`). Když nemá sekci Plán nebo je ve stavu Not started, pošli uživatele na `/kapka-spec` a skonči.
 
 ## Postup
 

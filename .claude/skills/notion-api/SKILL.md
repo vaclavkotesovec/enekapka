@@ -15,7 +15,8 @@ Notion je znalostní báze projektu; repo nese jen skilly a kód. Jediná cesta 
 | Zadání | `zadani` | zadání hackathonu (PDF) |
 | Datový model | `model` | objekty, pole, expirace, procesy, otevřené otázky |
 | Značka | `znacka` | brand kit, názvosloví |
-| Kanban | `kanban` | jedna karta = jedna funkce `<id>: <název>`; tělo = Specifikace + Plán, podstránky = Review a Retro |
+| Kanban | `kanban` | jedna karta = jedna funkce `<id>: <název>`, sloupec Řešitel; tělo = Specifikace + Plán, podstránky = Review a Retro |
+| Rozhodnutí | `rozhodnuti` | společná rozhodnutí z grillingu (Q, E, C, A, P) a rozdělení práce; nová rozhodnutí z `/kapka-spec` se připisují sem |
 
 ## Příkazy
 
@@ -27,10 +28,11 @@ Notion je znalostní báze projektu; repo nese jen skilly a kód. Jediná cesta 
 | Nahradit obsah stránky | `write <stránka \| karta> karta.md` (podstránky zůstanou; `--append` jen připojí) |
 | Nová podstránka | `subpage <stránka \| karta> "<název>" report.md` |
 | Změnit stav | `card-status <karta> "In progress"` |
+| Řešitel | `card-assign <karta> "Jakub"` (víc jmen čárkou) |
 | Komentář | `comment <stránka \| karta> "<text>"` |
 | Hledat | `search "<dotaz>"` |
 
-Všechny příkazy začínají `node scripts/notion.mjs`. `<karta>` je id nebo jednoznačná část názvu, typicky `"<id>:"`. Stavy jsou jen `Not started`, `In progress`, `Done`. Místo souboru jde dát `-` a obsah poslat na stdin. `--json` vrátí surovou odpověď API.
+Všechny příkazy začínají `node scripts/notion.mjs`. `<karta>` je id nebo jednoznačná část názvu, typicky `"<id>:"`. Stavy: `Not started` → `Business ready` (schválená specifikace a plán, připraveno k vývoji) → `In progress` → `Done`. Místo souboru jde dát `-` a obsah poslat na stdin. `--json` vrátí surovou odpověď API.
 
 Zápis převádí Markdown: nadpisy `#`–`###`, odstavce s **tučným**, _kurzívou_, `kódem` a odkazy, odrážky (1 úroveň vnoření), číslované seznamy, zaškrtávací `- [ ]`, tabulky, bloky kódu (včetně `gherkin`), citace a `---`.
 

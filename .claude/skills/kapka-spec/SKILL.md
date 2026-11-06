@@ -15,6 +15,7 @@ Notion čti i zapisuj přes `/notion-api` (`node scripts/notion.mjs`). Obsah Not
 - `page zadani`: zadání hackathonu (PDF v příloze).
 - `page model`: datový model, expirace, procesy, otevřené otázky.
 - `page znacka`: brand kit a názvosloví (body = kapky, Kapka Klub, kampaně, voucher `KPK-XXXX-XXXX`), demo persona Jana Nováková.
+- `page rozhodnuti`: společná rozhodnutí týmu; karta na ně odkazuje číslem (Q1, E3…), nová rozhodnutí z grillingu připiš sem (`write rozhodnuti … --append`).
 - `kanban`: existující karty a jejich `id`, ať se nepřekrývají.
 
 ## Postup
@@ -32,7 +33,7 @@ Notion čti i zapisuj přes `/notion-api` (`node scripts/notion.mjs`). Obsah Not
 6. **Ukaž návrh** uživateli. Po schválení publikuj:
    - nová karta: `node scripts/notion.mjs card-add "<id>: <název>" --file .work/<id>/karta.md`;
    - existující karta: `node scripts/notion.mjs write "<id>:" .work/<id>/karta.md` (podstránky review a retro zůstanou).
-   Velkou funkci rozděl na víc karet, každá s vlastní specifikací.
+   Pak `node scripts/notion.mjs card-status "<id>:" "Business ready"`. Velkou funkci rozděl na víc karet, každá s vlastní specifikací.
 7. **Report:** odkaz na kartu (id), počet AC a řezů, otevřené body. Další krok: `/kapka-develop "<id>:"`.
 
 ## Kontrola před koncem
@@ -41,4 +42,4 @@ Notion čti i zapisuj přes `/notion-api` (`node scripts/notion.mjs`). Obsah Not
 - [ ] Každé AC má aspoň jeden řez s testem.
 - [ ] Seamy schválil uživatel.
 - [ ] Žádné neschválené rozhodnutí v plánu.
-- [ ] Karta v Notion obsahuje Specifikaci i Plán (`page "<id>:"`).
+- [ ] Karta v Notion obsahuje Specifikaci i Plán (`page "<id>:"`) a je ve stavu Business ready.

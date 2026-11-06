@@ -5,9 +5,10 @@
 //   page <zadani|model|znacka|kapka|karta|id|url>        stránka nebo karta jako Markdown
 //   kanban [--status "In progress"]                       karty Kanbanu
 //   card-add "<název>" [--status "Not started"] [--file spec.md]
-//   card-status <karta> "<Not started|In progress|Done>"
+//   card-status <karta> "<Not started|Business ready|In progress|Done>"
 //   write <stránka|karta> <soubor.md|-> [--append]        nahradí (nebo připojí) obsah; podstránky zůstanou
 //   subpage <stránka|karta> "<název>" [soubor.md|-]       nová podstránka, např. review nebo retro
+//   card-assign <karta> "<Jakub[, Veronika]>"           nastaví Řešitele (nahradí)
 //   comment <stránka|karta> "<text>"
 //   search "<dotaz>"
 //   --json vypíše surovou odpověď API; <karta> = id nebo jednoznačná část názvu
@@ -25,10 +26,11 @@ const ALIASES = {
   zadani: "4103881e844c8052ae4ff58141e67f1a",
   znacka: "4103881e844c803495d4f53602529b82",
   model: "4103881e844c8054b3a9df5f076ae11d",
+  rozhodnuti: "4103881e844c816e8df2e09084bcd11d",
   kanban: "4103881e844c8083bf5ddc41556d63d0",
 };
 const KANBAN_DB = ALIASES.kanban;
-const STATUSES = ["Not started", "In progress", "Done"];
+const STATUSES = ["Not started", "Business ready", "In progress", "Done"];
 
 function loadEnv() {
   const f = join(ROOT, ".env");
@@ -271,11 +273,15 @@ async function cmdKanban(status, json) {
     return console.log(
       "Kanban je prázdný" + (status ? ` ve stavu ${status}.` : "."),
     );
-  console.log("| Status | Název | id |\n| --- | --- | --- |");
-  for (const r of rows)
+  console.log("| Status | Řešitel | Název | id |\n| --- | --- | --- | --- |");
+  for (const r of rows) {
+    const who = (r.properties["Řešitel"]?.multi_select || [])
+      .map((o) => o.name)
+      .join(", ");
     console.log(
-      `| ${r.properties.Status?.status?.name ?? ""} | ${title(r)} | ${r.id.replace(/-/g, "")} |`,
+      `| ${r.properties.Status?.status?.name ?? ""} | ${who} | ${title(r)} | ${r.id.replace(/-/g, "")} |`,
     );
+  }
 }
 
 function checkStatus(s) {
@@ -324,6 +330,23 @@ async function cmdCardStatus(ref, status, json) {
   });
   console.log(
     json ? JSON.stringify(page, null, 2) : `${title(page)} → ${status}`,
+  );
+}
+
+async function cmdAssign(ref, names, json) {
+  if (!names) die('Chybí řešitel(é), např. "Jakub" nebo "Jakub, Veronika".');
+  const id = await resolveCard(ref);
+  const multi = names
+    .split(",")
+    .map((n) => ({ name: n.trim() }))
+    .filter((o) => o.name);
+  const page = await api("PATCH", `/pages/${id}`, {
+    properties: { Řešitel: { multi_select: multi } },
+  });
+  console.log(
+    json
+      ? JSON.stringify(page, null, 2)
+      : `${title(page)} → ${multi.map((o) => o.name).join(", ")}`,
   );
 }
 
@@ -594,6 +617,7 @@ const commands = {
   write: () => cmdWrite(a1, a2, append, json),
   subpage: () => cmdSubpage(a1, a2, a3, json),
   "card-status": () => cmdCardStatus(a1, a2, json),
+  "card-assign": () => cmdAssign(a1, a2, json),
   comment: () => cmdComment(a1, a2, json),
   search: () => cmdSearch(a1, json),
 };
@@ -601,7 +625,7 @@ if (!commands[cmd]) {
   console.log(
     readFileSync(fileURLToPath(import.meta.url), "utf8")
       .split("\n")
-      .slice(1, 14)
+      .slice(1, 15)
       .map((l) => l.replace(/^\/\/ ?/, ""))
       .join("\n"),
   );
