@@ -51,7 +51,13 @@ public with sharing class KapkaEarnService {
             WITH SYSTEM_MODE
         ];
 
+        if (purchases.isEmpty()) {
+            return;
+        }
+        KapkaCampaignEvaluator campaigns = campaignsFor(purchases);
+
         List<Points_Transaction__c> credits = new List<Points_Transaction__c>();
+        List<List<KapkaCampaignEvaluator.Award>> awardsPerCredit = new List<List<KapkaCampaignEvaluator.Award>>();
         Map<Id, Loyalty_Member__c> membersToTouch = new Map<Id, Loyalty_Member__c>();
         for (Order__c purchase : purchases) {
             Date purchaseDate = purchase.Purchase_Date__c.date();
@@ -68,9 +74,20 @@ public with sharing class KapkaEarnService {
                     expirationMonths = expirationMonths == null ? months : Math.min(expirationMonths, months);
                 }
             }
-            if (basePoints <= 0) {
+            List<KapkaCampaignEvaluator.Award> awards = campaigns.evaluate(
+                basePoints,
+                valueOrZero(purchase.Fuel_Liters__c),
+                valueOrZero(purchase.Other_Amount__c),
+                purchaseDate
+            );
+            Decimal totalPoints = basePoints;
+            for (KapkaCampaignEvaluator.Award award : awards) {
+                totalPoints += award.points;
+            }
+            if (totalPoints <= 0) {
                 continue; // E5: 0 kapek = žádný pohyb
             }
+            awardsPerCredit.add(awards);
             credits.add(
                 new Points_Transaction__c(
                     Loyalty_Member__c = purchase.Loyalty_Member__c,
@@ -79,7 +96,7 @@ public with sharing class KapkaEarnService {
                     Status__c = POSTED,
                     Source__c = SOURCE_PURCHASE,
                     Base_Points__c = basePoints,
-                    Points__c = basePoints,
+                    Points__c = totalPoints,
                     Transaction_Date__c = purchase.Purchase_Date__c,
                     Expiration_Date__c = expirationMonths == null ? null : purchaseDate.addMonths(expirationMonths)
                 )
@@ -90,7 +107,39 @@ public with sharing class KapkaEarnService {
             );
         }
         Database.insert(credits, AccessLevel.SYSTEM_MODE);
+        Database.insert(appliedCampaigns(credits, awardsPerCredit), AccessLevel.SYSTEM_MODE);
         Database.update(membersToTouch.values(), AccessLevel.SYSTEM_MODE);
+    }
+
+    private static KapkaCampaignEvaluator campaignsFor(List<Order__c> purchases) {
+        Date firstDay = purchases[0].Purchase_Date__c.date();
+        Date lastDay = firstDay;
+        for (Order__c purchase : purchases) {
+            Date day = purchase.Purchase_Date__c.date();
+            firstDay = day < firstDay ? day : firstDay;
+            lastDay = day > lastDay ? day : lastDay;
+        }
+        return new KapkaCampaignEvaluator(firstDay, lastDay);
+    }
+
+    /** Uplatněné kampaně pro report a historii; Campaign_Points__c je z nich roll-up. */
+    private static List<Applied_Campaign__c> appliedCampaigns(
+        List<Points_Transaction__c> credits,
+        List<List<KapkaCampaignEvaluator.Award>> awardsPerCredit
+    ) {
+        List<Applied_Campaign__c> rows = new List<Applied_Campaign__c>();
+        for (Integer i = 0; i < credits.size(); i++) {
+            for (KapkaCampaignEvaluator.Award award : awardsPerCredit[i]) {
+                rows.add(
+                    new Applied_Campaign__c(
+                        Points_Transaction__c = credits[i].Id,
+                        Loyalty_Campaign__c = award.campaignId,
+                        Points__c = award.points
+                    )
+                );
+            }
+        }
+        return rows;
     }
 
     private static List<Earning_Rule__c> rulesValidOn(List<Earning_Rule__c> rules, Date day) {
