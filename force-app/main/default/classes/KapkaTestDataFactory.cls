@@ -192,6 +192,74 @@ public class KapkaTestDataFactory {
         return manager;
     }
 
+    // ---- portál: přihlášený člen ----
+
+    public static final String PORTAL_PROFILE = 'Kapka Portal Member';
+
+    /**
+     * Portálový uživatel pro novou osobu s členstvím Kapka Klubu.
+     * Experience Cloud vyžaduje, aby vlastník účtu měl roli, proto účet zakládá vlastník s rolí.
+     */
+    public static User createPortalMember(String firstName, String lastName) {
+        User owner = createRoleOwner();
+        Account account;
+        System.runAs(owner) {
+            Individual person = new Individual(FirstName = firstName, LastName = lastName);
+            insert person;
+            account = new Account(
+                RecordTypeId = personAccountRecordTypeId(),
+                FirstName = firstName,
+                LastName = lastName,
+                PersonIndividualId = person.Id,
+                OwnerId = owner.Id
+            );
+            insert account;
+            insert makeMember(account.Id);
+        }
+        Id contactId = [SELECT PersonContactId FROM Account WHERE Id = :account.Id].PersonContactId;
+        User portalUser = new User(
+            ProfileId = [SELECT Id FROM Profile WHERE Name = :PORTAL_PROFILE LIMIT 1].Id,
+            ContactId = contactId,
+            Username = firstName.toLowerCase() + '.' + uniqueSuffix() + '@kapka.test',
+            Email = firstName.toLowerCase() + '@kapka.test',
+            FirstName = firstName,
+            LastName = lastName,
+            Alias = 'kapkacln',
+            TimeZoneSidKey = 'Europe/Prague',
+            LocaleSidKey = 'cs_CZ',
+            LanguageLocaleKey = 'en_US',
+            EmailEncodingKey = 'UTF-8'
+        );
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            insert portalUser;
+        }
+        return portalUser;
+    }
+
+    /** Člen Kapka Klubu přihlášeného portálového uživatele (přes Person Account). */
+    public static Loyalty_Member__c memberOf(User portalUser) {
+        Id accountId = [SELECT Contact.AccountId FROM User WHERE Id = :portalUser.Id].Contact.AccountId;
+        return [SELECT Id, Account__c FROM Loyalty_Member__c WHERE Account__c = :accountId LIMIT 1];
+    }
+
+    /** Vlastník účtů s rolí: aktuální uživatel testu, kterému se role v případě potřeby doplní. */
+    private static User createRoleOwner() {
+        User owner = [SELECT Id, UserRoleId FROM User WHERE Id = :UserInfo.getUserId()];
+        if (owner.UserRoleId == null) {
+            System.runAs(new User(Id = owner.Id)) {
+                UserRole role = new UserRole(Name = 'Kapka test ' + uniqueSuffix());
+                insert role;
+                owner.UserRoleId = role.Id;
+                update owner;
+            }
+        }
+        return owner;
+    }
+
+    private static String uniqueSuffix() {
+        return String.valueOf(Datetime.now().getTime()) + String.valueOf(Crypto.getRandomInteger()).remove('-');
+    }
+
     private static Id personAccountRecordTypeId() {
         return [SELECT Id FROM RecordType WHERE SobjectType = 'Account' AND IsPersonType = TRUE LIMIT 1].Id;
     }
