@@ -1,8 +1,12 @@
 /**
  * Uplatnění kapek za voucher z katalogu odměn. Volá ho portál i back-office;
  * vše proběhne v jedné transakci, chyba vrátí vše zpět (C2).
+ *
+ * inherited sharing a SYSTEM_MODE záměrně: čerpání je integrita knihy kapek, musí vidět všechna
+ * připsání člena bez ohledu na práva volajícího. Kterého člena smí volající čerpat, hlídá volající
+ * (portál jen přihlášeného člena, rozhodnutí P2).
  */
-public with sharing class KapkaRedeemService {
+public inherited sharing class KapkaRedeemService {
     private static final String MEMBER_ACTIVE = 'Active';
     private static final String EARN = 'Earn';
     private static final String REDEEM = 'Redeem';
@@ -33,7 +37,7 @@ public with sharing class KapkaRedeemService {
             SELECT Id, Points_Cost__c, Is_Active__c
             FROM Reward__c
             WHERE Id = :rewardId
-            WITH USER_MODE
+            WITH SYSTEM_MODE
         ];
         if (!reward.Is_Active__c) {
             throw new KapkaRedeemException(Label.Kapka_Redeem_RewardInactive);
@@ -54,8 +58,7 @@ public with sharing class KapkaRedeemService {
             Points__c = -reward.Points_Cost__c,
             Transaction_Date__c = System.now()
         );
-        // Zápis v systémovém režimu: knihu kapek a vouchery zakládá jen tahle služba,
-        // člen ani loyalty manažer na ně nemají právo zápisu.
+        // Knihu kapek a vouchery zakládá jen tahle služba; člen ani loyalty manažer na ně nemají právo zápisu.
         insert redemption;
         insert allocate(credits, redemption.Id, reward.Points_Cost__c);
 
@@ -77,7 +80,7 @@ public with sharing class KapkaRedeemService {
             SELECT Id, Remaining_Points__c
             FROM Points_Transaction__c
             WHERE Loyalty_Member__c = :memberId AND Type__c = :EARN AND Status__c = :POSTED AND Remaining_Points__c > 0
-            WITH USER_MODE
+            WITH SYSTEM_MODE
             ORDER BY Expiration_Date__c ASC NULLS LAST, Transaction_Date__c ASC
         ];
     }
@@ -113,6 +116,6 @@ public with sharing class KapkaRedeemService {
 
     /** Zámek člena brání tomu, aby dvě současná čerpání utratila stejné kapky. */
     private static Loyalty_Member__c lockMember(Id memberId) {
-        return [SELECT Id, Status__c FROM Loyalty_Member__c WHERE Id = :memberId WITH USER_MODE FOR UPDATE];
+        return [SELECT Id, Status__c FROM Loyalty_Member__c WHERE Id = :memberId WITH SYSTEM_MODE FOR UPDATE];
     }
 }
