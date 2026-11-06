@@ -1,0 +1,138 @@
+/*
+ * Sdílené styly brandu Kapka (Kapka Brand Kit). Komponenty portálu je importují:
+ *   @import 'c/kapkaStyles';
+ * Hodnoty jen z tokenů var(--kapka-*) ze styles.css sítě; žádné stíny, žádná nová barva.
+ */
+
+/* Kapková karta: levý horní roh ostrý (hrot kapky), ostatní kulaté. */
+.kapka-card {
+    background: var(--kapka-surface-raised);
+    color: var(--kapka-ink);
+    border: 1px solid var(--kapka-line);
+    border-radius: var(--kapka-radius-hrot) var(--kapka-radius-md) var(--kapka-radius-md) var(--kapka-radius-md);
+    padding: var(--kapka-space-6);
+    font-family: var(--kapka-font-sans);
+}
+
+/* Tmavá plocha značky: zůstatek, voucher. Text bílý, čísla jantar. */
+.kapka-card--hlubina {
+    background: var(--kapka-hlubina);
+    color: var(--kapka-on-kapka);
+    border-color: var(--kapka-hlubina);
+}
+
+.kapka-card--soft {
+    background: var(--kapka-kapka-soft);
+    border-color: var(--kapka-kapka-soft);
+}
+
+.kapka-title {
+    margin: 0 0 var(--kapka-space-2);
+    font-family: var(--kapka-font-display);
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 1.25;
+}
+
+.kapka-label {
+    margin: 0;
+    font-family: var(--kapka-font-sans);
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.4;
+    color: var(--kapka-ink-muted);
+}
+
+.kapka-card--hlubina .kapka-label {
+    color: inherit;
+    opacity: 0.8;
+}
+
+/* Zůstatek: velké jantarové číslo, patří na plochu hlubina. */
+.kapka-zustatek {
+    display: block;
+    font-family: var(--kapka-font-display);
+    font-weight: 800;
+    font-size: 48px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--kapka-jantar);
+}
+
+/* Drobný jantarový text na světlém pozadí (např. +109 kapek v historii). */
+.kapka-plus {
+    color: var(--kapka-jantar-ink);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.kapka-minus {
+    color: var(--kapka-chyba);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Kód voucheru: diktuje se do telefonu, proto mono a prostrkaný. */
+.kapka-voucher-code {
+    display: inline-block;
+    padding: var(--kapka-space-2) var(--kapka-space-4);
+    background: var(--kapka-kapka-soft);
+    color: var(--kapka-ink);
+    border-radius: var(--kapka-radius-hrot) var(--kapka-radius-sm) var(--kapka-radius-sm) var(--kapka-radius-sm);
+    font-family: var(--kapka-font-mono);
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: 0.08em;
+}
+
+/* Primární tlačítko: kapkový tvar, bez stínu. */
+.kapka-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 var(--kapka-space-6);
+    border: 0;
+    border-radius: var(--kapka-radius-hrot) var(--kapka-radius-md) var(--kapka-radius-md) var(--kapka-radius-md);
+    background: var(--kapka-kapka);
+    color: var(--kapka-on-kapka);
+    font-family: var(--kapka-font-sans);
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.kapka-btn:focus-visible {
+    outline: 2px solid var(--kapka-focus-ring);
+    outline-offset: 2px;
+}
+
+.kapka-btn:disabled {
+    background: var(--kapka-line);
+    color: var(--kapka-ink-muted);
+    cursor: not-allowed;
+}
+
+/* Štítky kampaní: pevné barvy všude (portál, e-mail, report). */
+.kapka-tag {
+    display: inline-block;
+    padding: var(--kapka-space-1) var(--kapka-space-2);
+    border-radius: var(--kapka-radius-hrot) var(--kapka-radius-sm) var(--kapka-radius-sm) var(--kapka-radius-sm);
+    font-family: var(--kapka-font-sans);
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 1.4;
+    background: var(--kapka-hlubina);
+    color: var(--kapka-on-kapka);
+}
+
+.kapka-tag--natankuj {
+    background: var(--kapka-kapka);
+    color: var(--kapka-on-kapka);
+}
+
+.kapka-tag--zastavka {
+    background: var(--kapka-jantar);
+    color: var(--kapka-on-jantar);
+}

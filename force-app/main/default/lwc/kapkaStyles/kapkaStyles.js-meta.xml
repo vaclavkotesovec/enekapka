@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>68.0</apiVersion>
+    <isExposed>false</isExposed>
+    <description>Sdílené styly brandu Kapka (CSS modul): kapková karta, zůstatek, kód voucheru, štítky kampaní, tlačítko.</description>
+</LightningComponentBundle>
