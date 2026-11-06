@@ -33,6 +33,7 @@ Notion je znalostní báze projektu; repo nese jen skilly a kód. Jediná cesta 
 | Začít kartu | `card-start <karta> "Jakub"` (In progress + Řešitel; vývojář přidá `--dev` a zapíše se i do sloupce Vývojář) |
 | Odškrtnout řez | `card-check <karta> "R3"` (víc čárkou; nepřepisuje kartu) |
 | Komentář | `comment <stránka \| karta> "<text>"` |
+| Automatická akceptace karty | `node scripts/accept-apex.mjs "<karta>" <TestTřída>` – scénáře AC ověří Apex testy v orgu (komentáře `// AC-x.y` nad testy) a zapíše Prošlo/Selhalo + běh Apex do Testů |
 | Hledat | `search "<dotaz>"` |
 | Scénáře karty do Testů | `tests-sync "<id>:"` (1 `Scénář: AC-x.y — …` = 1 řádek; idempotentní, Stav/Tester/Datum/Poznámku nepřepisuje) |
 | Výsledek ruční akceptace | `test-result "<id> AC-x.y" Prošlo --tester Jakub` (`--note "…"`); `Selhalo` založí kartu `bug: <id> AC-x.y` pro Řešitele původní karty |

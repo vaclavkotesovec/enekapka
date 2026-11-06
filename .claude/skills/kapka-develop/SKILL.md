@@ -26,7 +26,8 @@ Karta v Kanbanu ve stavu **Business ready** (`node scripts/notion.mjs page "<id>
      ```
    - Stejná chyba po třech různých pokusech → stop a reportuj s důkazy.
 3. **Po zeleném řezu** naráz: `node scripts/notion.mjs card-check "<id>:" "R<n>"`, `bash scripts/git-sync.sh`, commit `feat(<id>): R<n> <co>` a push.
-4. **Po posledním řezu:** spusť `/kapka-review "<id>:" <základ>` jako subagent na pozadí. Opravy 🔴 a 🟠 udělej hned (test-first, řez `R<n> (review)` připiš do karty přes `write "<id>:" … --append`); 🟡 a ⚪ zůstanou v reportu pro uživatele. Kolo review je jedno; druhé jen když oprava změnila chování.
+4. **Akceptace automaticky:** `node scripts/accept-apex.mjs "<id>:" <TestovacíTřída>` (každý test má nad sebou `// AC-x.y`); zapíše výsledky scénářů do databáze Testy, selhání založí bug kartu. Nic ručně.
+5. **Po posledním řezu:** spusť `/kapka-review "<id>:" <základ>` jako subagent na pozadí. Opravy 🔴 a 🟠 udělej hned (test-first, řez `R<n> (review)` připiš do karty přes `write "<id>:" … --append`); 🟡 a ⚪ zůstanou v reportu pro uživatele. Kolo review je jedno; druhé jen když oprava změnila chování.
 5. **Předej k akceptaci a pusť kartu z ruky:** `card-assign "<id>:" "<analytik karty>"` (stav zůstává In progress, akceptuje analytik) a do komentáře karty (`comment`) napiš výsledek testů, commity a demo krok (Jana, Kapka Brno – Vídeňská, 45 l + 180 Kč = +109 kapek). Analytik akceptuje ručně podle scénářů a kartu zavře `card-status "<id>:" Done`; selhaný scénář = nová karta `bug: <karta> AC-x.y` (Rozhodnutí TT4). Ty bereš další kartu.
 
 ## Report
