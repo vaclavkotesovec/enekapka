@@ -1,0 +1,12 @@
+:host { --kapka: #0b6e73; --jantar: #f0a830; --hlubina: #0a2e33; display: block; }
+.card { background: #fff; border: 1px solid #d8e4e5; border-radius: 0 12px 12px 12px; padding: 16px; margin-bottom: 12px; color: var(--hlubina); }
+h2 { color: var(--hlubina); font-size: 1.25rem; margin: 0 0 12px; }
+h3 { color: var(--kapka); font-size: 1.05rem; margin: 0 0 4px; }
+.muted { color: #5b7377; font-size: .875rem; }
+.kapky { color: var(--jantar); font-weight: 700; }
+.done { color: var(--kapka); font-weight: 600; }
+.todo { color: #8a5a00; font-weight: 600; }
+.row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.error { color: #b3261e; }
+.ok { color: var(--kapka); }
+a { color: var(--kapka); font-weight: 600; }

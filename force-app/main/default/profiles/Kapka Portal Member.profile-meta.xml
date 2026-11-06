@@ -8,6 +8,10 @@
         <apexClass>KapkaPortalController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <classAccesses>
+        <apexClass>KapkaPortalRewardController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <custom>true</custom>
     <description>Člen Kapka Klubu v portálu (klon Customer Community User). Data portál čte přes Apex podle přihlášeného uživatele (Q6, P2).</description>
     <userLicense>Customer Community</userLicense>

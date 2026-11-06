@@ -1,0 +1,30 @@
+<template>
+    <h2>Odměny EneServis</h2>
+    <template lwc:if={error}><p class="error">{error}</p></template>
+    <template for:each={rewards} for:item="r">
+        <div key={r.id} class="card row">
+            <div>
+                <h3>{r.name}</h3>
+                <p class="muted">{r.partnerName}</p>
+                <p>{r.description}</p>
+            </div>
+            <div>
+                <p class="kapky">{r.costLabel}</p>
+                <p class="todo">{r.missingLabel}</p>
+            </div>
+        </div>
+    </template>
+    <h2>Moje vouchery</h2>
+    <template lwc:if={hasVouchers}>
+        <template for:each={vouchers} for:item="v">
+            <div key={v.code} class="card row">
+                <div>
+                    <h3>{v.code}</h3>
+                    <p>{v.rewardName}</p>
+                </div>
+                <p class="muted">{v.issued} · {v.status}</p>
+            </div>
+        </template>
+    </template>
+    <template lwc:else><p class="muted">Zatím nemáš žádný voucher.</p></template>
+</template>
