@@ -13,6 +13,9 @@
 //   card-check <karta> "R3[,R4]"                          zaškrtne řezy v Plánu bez přepisu karty
 //   comment <stránka|karta> "<text>"
 //   search "<dotaz>"
+//   tests-sync <karta>                                    scénáře Gherkinu karty → řádky v Testech (idempotentně)
+//   test-result "<ID>" <Prošlo|Selhalo> --tester <jméno> [--note "…"]   výsledek; Selhalo založí kartu bug
+//   test-apex "<Třída>" --tests N --failures F --coverage C --tester <jméno> [--card <karta>]
 //   --json vypíše surovou odpověď API; <karta> = id nebo jednoznačná část názvu
 
 import { readFileSync, existsSync } from "node:fs";
@@ -30,8 +33,11 @@ const ALIASES = {
   model: "4103881e844c8054b3a9df5f076ae11d",
   rozhodnuti: "4103881e844c816e8df2e09084bcd11d",
   kanban: "4103881e844c8083bf5ddc41556d63d0",
+  testy: "4103881e844c8162a83cf19c3e0eda3d",
 };
 const KANBAN_DB = ALIASES.kanban;
+const TESTS_DB = ALIASES.testy;
+const TESTERS = ["Jakub", "Veronika", "Jan", "Václav"];
 const STATUSES = ["Not started", "Business ready", "In progress", "Done"];
 
 function loadEnv() {
@@ -367,13 +373,18 @@ async function cmdCardStart(ref, names, json) {
     },
   });
   console.log(
-    json ? JSON.stringify(page, null, 2) : `${title(page)} → In progress, ${names}`,
+    json
+      ? JSON.stringify(page, null, 2)
+      : `${title(page)} → In progress, ${names}`,
   );
 }
 
 async function cmdCardCheck(ref, slices) {
   if (!slices) die('Chybí řezy, např. "R3" nebo "R3,R4".');
-  const want = slices.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean);
+  const want = slices
+    .split(",")
+    .map((s) => s.trim().toUpperCase())
+    .filter(Boolean);
   const id = await resolveCard(ref);
   const todos = (await paginate("GET", `/blocks/${id}/children`)).filter(
     (b) => b.type === "to_do",
@@ -381,9 +392,14 @@ async function cmdCardCheck(ref, slices) {
   const done = [];
   for (const r of want) {
     const b = todos.find((t) =>
-      new RegExp(`^${r}\\b`, "i").test(rt(t.to_do.rich_text).replace(/^[*_`~]+/, "")),
+      new RegExp(`^${r}\\b`, "i").test(
+        rt(t.to_do.rich_text).replace(/^[*_`~]+/, ""),
+      ),
     );
-    if (!b) die(`Řez ${r} v kartě nenalezen (hledám zaškrtávací řádek začínající „${r}“).`);
+    if (!b)
+      die(
+        `Řez ${r} v kartě nenalezen (hledám zaškrtávací řádek začínající „${r}“).`,
+      );
     if (!b.to_do.checked)
       await api("PATCH", `/blocks/${b.id}`, { to_do: { checked: true } });
     done.push(r);
@@ -399,6 +415,246 @@ async function cmdComment(ref, text, json) {
     rich_text: [{ text: { content: text } }],
   });
   console.log(json ? JSON.stringify(res, null, 2) : `Komentář přidán k ${id}.`);
+}
+
+// ---------- Testy (scénáře a test log) ----------
+const plain = (arr = []) => arr.map((t) => t.plain_text ?? "").join("");
+const text = (s) => ({
+  rich_text: s ? chunkText(s) : [],
+});
+function chunkText(s) {
+  const r = [];
+  for (let k = 0; k < s.length; k += 2000)
+    r.push({ type: "text", text: { content: s.slice(k, k + 2000) } });
+  return r;
+}
+const today = () => {
+  const d = new Date();
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+};
+const cardKey = (cardTitle) => cardTitle.split(":")[0].trim();
+
+// Gherkin karty → [{ id: "AC-1.1", name, steps, expected }]
+function parseScenarios(gherkin) {
+  const out = [];
+  let cur = null;
+  let phase = null;
+  for (const raw of gherkin.replace(/\r/g, "").split("\n")) {
+    const line = raw.trim();
+    const sc = line.match(
+      /^Scénář(?: osnovy)?:\s*(AC-[\d.]+)\s*[—–-]?\s*(.*)$/,
+    );
+    if (sc) {
+      cur = { id: sc[1], name: sc[2].trim(), steps: [], expected: [] };
+      out.push(cur);
+      phase = "given";
+      continue;
+    }
+    if (!cur) continue;
+    if (/^(Pravidlo|Požadavek|Scénář|Pozadí|Příklady)\b/.test(line)) {
+      cur = null;
+      continue;
+    }
+    const kw = line.match(/^(Pokud|Když|Pak|A|Ale|Zároveň)\s/);
+    if (!kw) continue;
+    if (kw[1] === "Pak") phase = "then";
+    else if (kw[1] === "Když" || kw[1] === "Pokud") phase = "given";
+    (phase === "then" ? cur.expected : cur.steps).push(line);
+  }
+  return out;
+}
+
+async function cardGherkin(cardId) {
+  const blocks = await paginate("GET", `/blocks/${cardId}/children`);
+  return blocks
+    .filter((b) => b.type === "code" && b.code.language === "gherkin")
+    .map((b) => plain(b.code.rich_text))
+    .join("\n");
+}
+
+async function testRowsBy(filter) {
+  return paginate("POST", `/databases/${TESTS_DB}/query`, { filter });
+}
+
+async function cmdTestsSync(ref, json) {
+  if (!ref) die('Chybí karta, např. "earn-zaklad:".');
+  const cardId = await resolveCard(ref);
+  const card = await api("GET", `/pages/${cardId}`);
+  const key = cardKey(title(card));
+  const scenarios = parseScenarios(await cardGherkin(cardId));
+  if (!scenarios.length)
+    die(
+      `Karta „${title(card)}“ nemá v bloku gherkin žádný „Scénář: AC-x.y — …“.`,
+    );
+  const existing = new Map(
+    (await testRowsBy({ property: "Karta", rich_text: { equals: key } })).map(
+      (r) => [title(r), r],
+    ),
+  );
+  const res = { created: [], updated: [], unchanged: [] };
+  for (const s of scenarios) {
+    const name = `${key} ${s.id}`;
+    const steps = s.steps.join("\n");
+    const expected = s.expected.join("\n");
+    const row = existing.get(name);
+    if (!row) {
+      await api("POST", "/pages", {
+        parent: { database_id: TESTS_DB },
+        properties: {
+          Name: { title: [{ text: { content: name } }] },
+          Karta: text(key),
+          Typ: { select: { name: "Ruční" } },
+          Kroky: text(steps),
+          "Očekávaný výsledek": text(expected),
+          Stav: { select: { name: "Nespuštěno" } },
+        },
+      });
+      res.created.push(name);
+    } else if (
+      plain(row.properties.Kroky?.rich_text) !== steps ||
+      plain(row.properties["Očekávaný výsledek"]?.rich_text) !== expected
+    ) {
+      // jen text scénáře; Stav, Tester, Datum a Poznámka zůstávají
+      await api("PATCH", `/pages/${row.id}`, {
+        properties: {
+          Kroky: text(steps),
+          "Očekávaný výsledek": text(expected),
+        },
+      });
+      res.updated.push(name);
+    } else res.unchanged.push(name);
+  }
+  if (json) return console.log(JSON.stringify(res, null, 2));
+  console.log(
+    `Testy ${key}: ${scenarios.length} scénářů – ${res.created.length} nových, ${res.updated.length} aktualizovaných, ${res.unchanged.length} beze změny.`,
+  );
+}
+
+function checkTester(name) {
+  if (!TESTERS.includes(name))
+    die(`Neplatný tester „${name || ""}“. Povolení: ${TESTERS.join(", ")}.`);
+}
+
+async function cmdTestResult(testId, result, tester, note, json) {
+  if (!testId) die('Chybí ID testu, např. "earn-zaklad AC-1.1".');
+  if (!["Prošlo", "Selhalo"].includes(result))
+    die(`Neplatný výsledek „${result || ""}“. Povolené: Prošlo, Selhalo.`);
+  checkTester(tester);
+  const rows = await testRowsBy({
+    property: "Name",
+    title: { equals: testId },
+  });
+  if (rows.length !== 1)
+    die(
+      rows.length
+        ? `ID „${testId}“ má v Testech ${rows.length} řádků, oprav duplicity.`
+        : `Test „${testId}“ v Testech není; nejdřív tests-sync karty.`,
+    );
+  const row = await api("PATCH", `/pages/${rows[0].id}`, {
+    properties: {
+      Stav: { select: { name: result } },
+      Tester: { select: { name: tester } },
+      Datum: { date: { start: today() } },
+      ...(note !== undefined ? { Poznámka: text(note) } : {}),
+    },
+  });
+  let bug = null;
+  if (result === "Selhalo") bug = await ensureBug(testId, row, note);
+  if (json) return console.log(JSON.stringify({ row, bug }, null, 2));
+  console.log(`${testId} → ${result} (${tester}, ${today()})`);
+  if (bug)
+    console.log(
+      `${bug.existed ? "Bug už existuje" : "Založen bug"}: ${bug.name} → ${bug.owners.join(", ") || "bez řešitele"} id ${bug.id}`,
+    );
+}
+
+async function ensureBug(testId, row, note) {
+  const name = `bug: ${testId}`;
+  const open = (await queryKanban()).find(
+    (r) => title(r) === name && r.properties.Status?.status?.name !== "Done",
+  );
+  if (open)
+    return {
+      name,
+      id: open.id.replace(/-/g, ""),
+      existed: true,
+      owners: (open.properties["Řešitel"]?.multi_select || []).map(
+        (o) => o.name,
+      ),
+    };
+  const key = plain(row.properties.Karta?.rich_text) || testId.split(" ")[0];
+  const cards = (await queryKanban()).filter((r) =>
+    title(r).toLowerCase().startsWith(`${key.toLowerCase()}:`),
+  );
+  const owners =
+    cards.length === 1
+      ? (cards[0].properties["Řešitel"]?.multi_select || []).map((o) => o.name)
+      : [];
+  const url = row.url || `https://www.notion.so/${row.id.replace(/-/g, "")}`;
+  const page = await api("POST", "/pages", {
+    parent: { database_id: KANBAN_DB },
+    properties: {
+      Name: { title: [{ text: { content: name } }] },
+      Status: { status: { name: "Not started" } },
+      ...(owners.length
+        ? { Řešitel: { multi_select: owners.map((n) => ({ name: n })) } }
+        : {}),
+    },
+  });
+  const md = [
+    `**Selhaný test:** [${testId}](${url})`,
+    cards.length === 1
+      ? `**Karta:** ${title(cards[0])}`
+      : `**Karta:** ${key} (v Kanbanu nenalezena jednoznačně)`,
+    ...(note ? [`**Poznámka:** ${note}`] : []),
+    "",
+    "### Kroky",
+    ...plain(row.properties.Kroky?.rich_text)
+      .split("\n")
+      .filter(Boolean)
+      .map((l) => `- ${l}`),
+    "",
+    "### Očekávaný výsledek",
+    ...plain(row.properties["Očekávaný výsledek"]?.rich_text)
+      .split("\n")
+      .filter(Boolean)
+      .map((l) => `- ${l}`),
+  ].join("\n");
+  await appendBlocks(page.id, mdToBlocks(md));
+  return { name, id: page.id.replace(/-/g, ""), existed: false, owners };
+}
+
+async function cmdTestApex(cls, o, json) {
+  if (!cls) die('Chybí testovací třída, např. "KapkaEarnServiceTest".');
+  const n = Number(o.tests);
+  const f = Number(o.failures ?? 0);
+  const c = Number(o.coverage);
+  if (!Number.isInteger(n) || n < 0 || !Number.isInteger(f) || f < 0 || f > n)
+    die("Chybí nebo nesedí --tests N a --failures F (celá čísla, F ≤ N).");
+  if (o.coverage === undefined || Number.isNaN(c))
+    die("Chybí --coverage C (procenta).");
+  checkTester(o.tester);
+  const key = o.card ? cardKey(o.card) : "";
+  const result = f === 0 ? "Prošlo" : "Selhalo";
+  const noteText = `${n - f}/${n}, pokrytí ${c} %`;
+  const page = await api("POST", "/pages", {
+    parent: { database_id: TESTS_DB },
+    properties: {
+      Name: { title: [{ text: { content: cls } }] },
+      ...(key ? { Karta: text(key) } : {}),
+      Typ: { select: { name: "Apex" } },
+      Stav: { select: { name: result } },
+      Tester: { select: { name: o.tester } },
+      Datum: { date: { start: today() } },
+      Poznámka: text(noteText),
+    },
+  });
+  console.log(
+    json
+      ? JSON.stringify(page, null, 2)
+      : `${cls} → Apex ${result}, ${noteText} (${o.tester}, ${today()})`,
+  );
 }
 
 // ---------- Markdown → bloky ----------
@@ -641,11 +897,20 @@ loadEnv();
 const argv = process.argv.slice(2);
 const json = argv.includes("--json");
 const append = argv.includes("--append");
+const VALUE_OPTS = [
+  "--status",
+  "--file",
+  "--tester",
+  "--note",
+  "--tests",
+  "--failures",
+  "--coverage",
+  "--card",
+];
 const opt = {};
 const pos = [];
 for (let i = 0; i < argv.length; i++) {
-  if (argv[i] === "--status" || argv[i] === "--file")
-    opt[argv[i].slice(2)] = argv[++i];
+  if (VALUE_OPTS.includes(argv[i])) opt[argv[i].slice(2)] = argv[++i];
   else if (!["--json", "--append"].includes(argv[i])) pos.push(argv[i]);
 }
 const status = opt.status;
@@ -663,12 +928,15 @@ const commands = {
   "card-check": () => cmdCardCheck(a1, a2),
   comment: () => cmdComment(a1, a2, json),
   search: () => cmdSearch(a1, json),
+  "tests-sync": () => cmdTestsSync(a1, json),
+  "test-result": () => cmdTestResult(a1, a2, opt.tester, opt.note, json),
+  "test-apex": () => cmdTestApex(a1, opt, json),
 };
 if (!commands[cmd]) {
   console.log(
     readFileSync(fileURLToPath(import.meta.url), "utf8")
       .split("\n")
-      .slice(1, 17)
+      .slice(1, 20)
       .map((l) => l.replace(/^\/\/ ?/, ""))
       .join("\n"),
   );
