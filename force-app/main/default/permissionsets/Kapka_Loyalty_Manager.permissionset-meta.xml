@@ -91,6 +91,21 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>false</editable>
+        <field>Loyalty_Member__c.Nudge_Date__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Loyalty_Member__c.Nudge_Points_Missing__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Loyalty_Member__c.Nudge_Reward__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
         <field>Loyalty_Member__c.Points_Balance__c</field>
         <readable>true</readable>
     </fieldPermissions>
