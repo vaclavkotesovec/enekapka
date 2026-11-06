@@ -183,6 +183,21 @@ private class KapkaExpirationBatchTest {
         );
     }
 
+    // R10 (review T2): opakované naplánování nespadne a nechá jeden job
+    @IsTest
+    static void schedulingTwiceKeepsOneJob() {
+        Test.startTest();
+        KapkaExpirationBatch.scheduleNightly();
+        KapkaExpirationBatch.scheduleNightly();
+        Test.stopTest();
+
+        Assert.areEqual(
+            1,
+            [SELECT COUNT() FROM CronTrigger WHERE CronJobDetail.Name = 'Kapka – expirace kapek'],
+            'Druhé naplánování má nahradit první job, ne spadnout ani přidat další.'
+        );
+    }
+
     // Bulk: celá dávka 200 členů v jednom běhu
     @IsTest
     static void twoHundredMembersExpireInOneBatch() {

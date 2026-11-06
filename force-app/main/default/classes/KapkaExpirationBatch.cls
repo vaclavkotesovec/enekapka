@@ -1,8 +1,12 @@
 /**
  * Noční expirace kapek (karta bonus: expirace, X1–X4): zbytky balíčků s Expiration_Date__c
  * před dneškem propadnou jedním pohybem Expirace na člena s alokací na každý balíček.
+ *
+ * without sharing záměrně (review T1): noční systémový proces nad VŠEMI členy. Plánuje ho loyalty
+ * manažer, který členy vidí (View All), ale nevlastní; zápis expirace nesmí záviset na sdílení
+ * toho, kdo job naplánoval, jinak by celá dávka spadla a nic by neodepsala.
  */
-public with sharing class KapkaExpirationBatch implements Database.Batchable<SObject>, Schedulable {
+public without sharing class KapkaExpirationBatch implements Database.Batchable<SObject>, Schedulable {
     private static final String JOB_NAME = 'Kapka – expirace kapek';
     private static final String NIGHTLY_AT_TWO = '0 0 2 * * ?';
     private static final String EXPIRE = 'Expire';
@@ -10,8 +14,11 @@ public with sharing class KapkaExpirationBatch implements Database.Batchable<SOb
     private static final String SOURCE_EXPIRATION = 'Expiration';
     private static final Integer EXPIRING_SOON_DAYS = 30;
 
-    /** Naplánuje expiraci na každou noc ve 2:00 (X1, AC-4.1). */
+    /** Naplánuje expiraci na každou noc ve 2:00 (X1, AC-4.1); existující job stejného jména nahradí (review T2). */
     public static Id scheduleNightly() {
+        for (CronTrigger existing : [SELECT Id FROM CronTrigger WHERE CronJobDetail.Name = :JOB_NAME]) {
+            System.abortJob(existing.Id);
+        }
         return System.schedule(JOB_NAME, NIGHTLY_AT_TWO, new KapkaExpirationBatch());
     }
 
@@ -21,7 +28,7 @@ public with sharing class KapkaExpirationBatch implements Database.Batchable<SOb
     }
 
     public Database.QueryLocator start(Database.BatchableContext context) {
-        return Database.getQueryLocator([SELECT Id FROM Loyalty_Member__c WITH USER_MODE]);
+        return Database.getQueryLocator([SELECT Id FROM Loyalty_Member__c WITH SYSTEM_MODE]);
     }
 
     public void execute(Database.BatchableContext context, List<Loyalty_Member__c> members) {
