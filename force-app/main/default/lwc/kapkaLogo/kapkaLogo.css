@@ -1,0 +1,23 @@
+/* Výška značky = výška verzálek × 1,4, mezera = šířka otvoru (Kapka Brand Kit, Logo). */
+.logo {
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--kapka-space-2) * 0.75);
+    padding: var(--kapka-space-2) 0;
+    text-decoration: none;
+}
+
+.mark {
+    display: block;
+    width: 32px;
+    height: 32px;
+}
+
+.wordmark {
+    font-family: var(--kapka-font-display);
+    font-weight: 800;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--kapka-kapka);
+}
