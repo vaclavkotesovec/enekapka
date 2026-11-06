@@ -108,7 +108,7 @@ public with sharing class KapkaAdjustPointsAction {
         checkMembers(requests, new Map<Id, Loyalty_Member__c>(KapkaPointsLedger.lockMembers(memberIds)));
         Map<Id, List<Points_Transaction__c>> creditsByMember = new Map<Id, List<Points_Transaction__c>>();
         if (!debitedMembers.isEmpty()) {
-            creditsByMember = KapkaPointsLedger.creditsByMember(debitedMembers);
+            creditsByMember = validCredits(KapkaPointsLedger.creditsByMember(debitedMembers), adjustedAt.date());
         }
 
         List<Points_Transaction__c> movements = new List<Points_Transaction__c>();
@@ -134,6 +134,28 @@ public with sharing class KapkaAdjustPointsAction {
             movementIds.add(movement.Id);
         }
         return movementIds;
+    }
+
+    /**
+     * KapkaPointsLedger.creditsByMember vrací i balíčky po datu platnosti, které noční expirace ještě
+     * nezpracovala; FIFO by je vzala první. Odpis je přeskočí v kontrole zůstatku i v alokaci (review ST-5).
+     * Propadlé = Expiration_Date__c před dnem úpravy, stejně jako v KapkaExpirationBatch.
+     */
+    private static Map<Id, List<Points_Transaction__c>> validCredits(
+        Map<Id, List<Points_Transaction__c>> creditsByMember,
+        Date adjustedOn
+    ) {
+        Map<Id, List<Points_Transaction__c>> valid = new Map<Id, List<Points_Transaction__c>>();
+        for (Id memberId : creditsByMember.keySet()) {
+            List<Points_Transaction__c> credits = new List<Points_Transaction__c>();
+            for (Points_Transaction__c credit : creditsByMember.get(memberId)) {
+                if (credit.Expiration_Date__c == null || credit.Expiration_Date__c >= adjustedOn) {
+                    credits.add(credit);
+                }
+            }
+            valid.put(memberId, credits);
+        }
+        return valid;
     }
 
     /** Člen musí existovat, být pro manažera viditelný (zámek WITH USER_MODE) a nesmí mít ukončené členství. */

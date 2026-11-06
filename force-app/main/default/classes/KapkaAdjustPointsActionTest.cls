@@ -398,4 +398,61 @@ private class KapkaAdjustPointsActionTest {
             'Ukončenému členovi se kapky upravit nesmí.'
         );
     }
+
+    /** Alokace odpisů člena jako „platnost balíčku: kapky“ v pořadí platnosti. */
+    private static String allocationsOf(Id memberId) {
+        List<String> taken = new List<String>();
+        for (Points_Allocation__c allocation : [
+            SELECT Points__c, Credit_Transaction__r.Expiration_Date__c
+            FROM Points_Allocation__c
+            WHERE Debit_Transaction__r.Loyalty_Member__c = :memberId
+            ORDER BY Credit_Transaction__r.Expiration_Date__c
+        ]) {
+            taken.add(String.valueOf(allocation.Credit_Transaction__r.Expiration_Date__c) + ': ' + allocation.Points__c);
+        }
+        return String.join(taken, ', ');
+    }
+
+    // AC-4 (review ST-5): propadlý balíček, který noční expirace ještě nezpracovala, se neodepisuje
+    @IsTest
+    static void expiredUnprocessedPackageIsNotDebited() {
+        // Pokud Jana má 6. 11. 2026 balíček 50 kapek platný do 1. 11. 2026 (expirace ho ještě nezpracovala)
+        // a balíček 109 kapek platný do 6. 11. 2027
+        User adjuster = createAdjuster();
+        Loyalty_Member__c jana = createJana(
+            new Map<Date, Decimal>{ Date.newInstance(2026, 11, 1) => 50, Date.newInstance(2027, 11, 6) => 109 }
+        );
+        KapkaAdjustPointsAction.now = DEMO_NOW;
+
+        // Když jí loyalty manažer ubere 60 kapek
+        Test.startTest();
+        String error = adjustAs(adjuster, jana.Id, -60, 'Chybně naimportovaný nákup');
+        Test.stopTest();
+
+        // Pak se všech 60 kapek vezme z platného balíčku
+        Assert.areEqual(
+            'null / 2027-11-06: 60',
+            error + ' / ' + allocationsOf(jana.Id),
+            'Propadlý balíček se nesmí odepsat.'
+        );
+    }
+
+    // AC-4.2 (review ST-5): propadlé kapky se nepočítají do zůstatku pro odpis
+    @IsTest
+    static void expiredUnprocessedPackageDoesNotCountToBalance() {
+        // Pokud Jana má 6. 11. 2026 propadlý nezpracovaný balíček 50 kapek a platný balíček 40 kapek
+        User adjuster = createAdjuster();
+        Loyalty_Member__c jana = createJana(
+            new Map<Date, Decimal>{ Date.newInstance(2026, 11, 1) => 50, Date.newInstance(2027, 11, 6) => 40 }
+        );
+        KapkaAdjustPointsAction.now = DEMO_NOW;
+
+        // Když jí loyalty manažer ubere 60 kapek
+        Test.startTest();
+        String error = adjustAs(adjuster, jana.Id, -60, 'Oprava');
+        Test.stopTest();
+
+        // Pak se úprava neuloží a manažer vidí hlášku „Člen má jen 40 kapek.“
+        Assert.areEqual('Člen má jen 40 kapek.', error, 'Propadlé kapky se do zůstatku pro odpis nepočítají.');
+    }
 }
