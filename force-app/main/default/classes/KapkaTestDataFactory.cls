@@ -95,6 +95,15 @@ public class KapkaTestDataFactory {
         return driver;
     }
 
+    /** Řidič firmy s navázaným Individual (kvůli souhlasům v PartyConsent). */
+    public static Contact createDriver(Id accountId, String firstName, String lastName) {
+        Individual person = new Individual(FirstName = firstName, LastName = lastName);
+        insert person;
+        Contact driver = new Contact(AccountId = accountId, FirstName = firstName, LastName = lastName, IndividualId = person.Id);
+        insert driver;
+        return driver;
+    }
+
     public static Loyalty_Member__c makeMember(Id accountId) {
         return new Loyalty_Member__c(Account__c = accountId);
     }
