@@ -9,6 +9,7 @@ private class KapkaExpirationBatchTest {
     private static final String EXPIRE = 'Expire';
     private static final String POSTED = 'Posted';
     private static final String SOURCE_EXPIRATION = 'Expiration';
+    private static final String NIGHTLY_AT_TWO = '0 0 2 * * ?';
 
     // AC-1.1
     @IsTest
@@ -157,6 +158,28 @@ private class KapkaExpirationBatchTest {
 
         // Pak má Jana u členství 0 kapek k expiraci
         Assert.areEqual(0, expiringSoonOf(jana.Id), 'Utracené kapky už nemají vypršet.');
+    }
+
+    // AC-4.1
+    @IsTest
+    static void scheduleNightlyRunsAtTwo() {
+        // Když loyalty manažer naplánuje expiraci
+        Test.startTest();
+        Id jobId = KapkaExpirationBatch.scheduleNightly();
+        Test.stopTest();
+
+        // Pak je naplánovaná na každou noc ve 2:00
+        List<CronTrigger> jobs = [
+            SELECT CronExpression, CronJobDetail.Name
+            FROM CronTrigger
+            WHERE Id = :jobId
+        ];
+        Assert.isTrue(
+            jobs.size() == 1 &&
+                jobs[0].CronExpression == NIGHTLY_AT_TWO &&
+                jobs[0].CronJobDetail.Name == 'Kapka – expirace kapek',
+            'Expirace má být naplánovaná každou noc ve 2:00, je: ' + jobs
+        );
     }
 
     private static void runExpiration() {
