@@ -29,11 +29,13 @@ public with sharing class KapkaActivityService {
             if (member == null) {
                 continue;
             }
+            Datetime grantedAt = consent.CaptureDate == null ? Datetime.now() : consent.CaptureDate;
+            Loyalty_Member__c touched = touch(membersToUpdate, member.Id, grantedAt.date());
             if (purposeNames.get(consent.DataUsePurposeId) == LOYALTY) {
                 if (member.Status__c == REGISTERED) {
-                    membersToUpdate.put(member.Id, new Loyalty_Member__c(Id = member.Id, Status__c = ACTIVE));
+                    touched.Status__c = ACTIVE;
                 }
-                credits.add(credit(member.Id, rewards.get(SOURCE_PROFILE)));
+                credits.add(credit(member.Id, rewards.get(SOURCE_PROFILE), grantedAt));
             }
         }
         // SYSTEM_MODE záměrně: souhlas zakládá i portálový uživatel, který na členy a knihu kapek
@@ -42,7 +44,24 @@ public with sharing class KapkaActivityService {
         Database.insert(credits, AccessLevel.SYSTEM_MODE);
     }
 
-    private static Points_Transaction__c credit(Id memberId, Kapka_Activity_Reward__mdt reward) {
+    /** Aktualizace člena: poslední aktivita = nejpozdější datum souhlasu v dávce (A6). */
+    private static Loyalty_Member__c touch(Map<Id, Loyalty_Member__c> membersToUpdate, Id memberId, Date activityDate) {
+        Loyalty_Member__c touched = membersToUpdate.get(memberId);
+        if (touched == null) {
+            touched = new Loyalty_Member__c(Id = memberId);
+            membersToUpdate.put(memberId, touched);
+        }
+        if (touched.Last_Activity_Date__c == null || touched.Last_Activity_Date__c < activityDate) {
+            touched.Last_Activity_Date__c = activityDate;
+        }
+        return touched;
+    }
+
+    /** Earn za aktivitu: hned zaúčtované, datum souhlasu, expirace podle metadat (A6). */
+    private static Points_Transaction__c credit(Id memberId, Kapka_Activity_Reward__mdt reward, Datetime grantedAt) {
+        Date expiresOn = reward.Expiration_Months__c == null
+            ? null
+            : grantedAt.date().addMonths(reward.Expiration_Months__c.intValue());
         return new Points_Transaction__c(
             Loyalty_Member__c = memberId,
             Type__c = EARN,
@@ -50,7 +69,8 @@ public with sharing class KapkaActivityService {
             Source__c = reward.Source__c,
             Base_Points__c = reward.Points__c,
             Points__c = reward.Points__c,
-            Transaction_Date__c = Datetime.now()
+            Transaction_Date__c = grantedAt,
+            Expiration_Date__c = expiresOn
         );
     }
 

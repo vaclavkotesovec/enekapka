@@ -57,6 +57,51 @@ private class KapkaActivityServiceTest {
         );
     }
 
+    // AC-5.1
+    @IsTest
+    static void activityKapkyExpireTwelveMonthsAfterConsent() {
+        // Pokud registrovaná členka Jana Nováková
+        Map<String, DataUsePurpose> purposes = KapkaTestDataFactory.createDataUsePurposes();
+        Loyalty_Member__c jana = KapkaTestDataFactory.createMember('Jana', 'Nováková');
+
+        // Když Jana 6. 11. 2026 udělí souhlas s účastí v Kapka Klubu
+        Test.startTest();
+        grant(jana, purposes.get(KapkaTestDataFactory.LOYALTY_PURPOSE));
+        Test.stopTest();
+
+        // Pak kapky za profil platí do 6. 11. 2027
+        Points_Transaction__c credit = [
+            SELECT Transaction_Date__c, Expiration_Date__c
+            FROM Points_Transaction__c
+            WHERE Loyalty_Member__c = :jana.Id AND Source__c = :PROFILE
+        ];
+        Assert.isTrue(
+            credit.Transaction_Date__c == KapkaTestDataFactory.DEFAULT_PURCHASE_DATE &&
+                credit.Expiration_Date__c == Date.newInstance(2027, 11, 6),
+            'Kapky za profil mají datum souhlasu 6. 11. 2026 a platí do 6. 11. 2027, vzniklo: ' + credit
+        );
+    }
+
+    // AC-5.1
+    @IsTest
+    static void memberLastActivityIsConsentDate() {
+        // Pokud registrovaná členka Jana Nováková
+        Map<String, DataUsePurpose> purposes = KapkaTestDataFactory.createDataUsePurposes();
+        Loyalty_Member__c jana = KapkaTestDataFactory.createMember('Jana', 'Nováková');
+
+        // Když Jana 6. 11. 2026 udělí souhlas s účastí v Kapka Klubu
+        Test.startTest();
+        grant(jana, purposes.get(KapkaTestDataFactory.LOYALTY_PURPOSE));
+        Test.stopTest();
+
+        // Pak poslední aktivita Jany je 6. 11. 2026
+        Assert.areEqual(
+            Date.newInstance(2026, 11, 6),
+            [SELECT Last_Activity_Date__c FROM Loyalty_Member__c WHERE Id = :jana.Id].Last_Activity_Date__c,
+            'Poslední aktivita člena je datum souhlasu.'
+        );
+    }
+
     private static void grant(Loyalty_Member__c member, DataUsePurpose purpose) {
         insert KapkaTestDataFactory.makeOptInConsent(individualOf(member), purpose);
     }
