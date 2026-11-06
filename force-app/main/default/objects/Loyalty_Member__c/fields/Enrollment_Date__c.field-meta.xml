@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Enrollment_Date__c</fullName>
+    <defaultValue>TODAY()</defaultValue>
+    <description>Den vstupu do programu; kapky se připisují za nákupy od tohoto dne.</description>
+    <inlineHelpText>Předvyplní se dnešním dnem.</inlineHelpText>
+    <label>Datum vstupu</label>
+    <required>false</required>
+    <type>Date</type>
+</CustomField>

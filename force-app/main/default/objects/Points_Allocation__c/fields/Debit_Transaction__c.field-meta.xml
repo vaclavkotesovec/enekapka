@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Debit_Transaction__c</fullName>
+    <description>Čerpání nebo expirace, které kapky spotřebovaly; mazání blokuje kvůli auditu.</description>
+    <inlineHelpText>Pohyb, který kapky spotřeboval.</inlineHelpText>
+    <label>Čerpání</label>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <referenceTo>Points_Transaction__c</referenceTo>
+    <relationshipLabel>Čerpané připsání</relationshipLabel>
+    <relationshipName>Debit_Allocations</relationshipName>
+    <required>false</required>
+    <type>Lookup</type>
+</CustomField>

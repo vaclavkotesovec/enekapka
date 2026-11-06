@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Order__c</fullName>
+    <description>Nákup, ke kterému řádek patří.</description>
+    <inlineHelpText>Účtenka, na které je položka.</inlineHelpText>
+    <label>Nákup</label>
+    <referenceTo>Order__c</referenceTo>
+    <relationshipLabel>Položky</relationshipLabel>
+    <relationshipName>Order_Items</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

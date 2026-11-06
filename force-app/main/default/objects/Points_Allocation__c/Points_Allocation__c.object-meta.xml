@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Objekt Alokace říká, kolik kapek z kterého připsání spotřebovalo čerpání nebo expirace; kapky jsou vždy kladné. Ze součtu alokací se počítají zbývající kapky připsání. Umožňuje FIFO čerpání a dohledání každé kapky od nákupu po čerpání.</description>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <externalSharingModel>ControlledByParent</externalSharingModel>
+    <label>Alokace</label>
+    <nameField>
+        <label>Alokace</label>
+        <displayFormat>AL-{0000000000}</displayFormat>
+        <startingNumber>1</startingNumber>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Alokace</pluralLabel>
+    <sharingModel>ControlledByParent</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>

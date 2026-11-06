@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Remaining_Points__c</fullName>
+    <description>Nespotřebované kapky připsání; podle nich FIFO čerpání a expirace (AC-6).</description>
+    <formula><![CDATA[IF(ISPICKVAL(Type__c, "Earn"), Points__c - Consumed_Points__c, 0)]]></formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Kolik kapek z připsání ještě zbývá.</inlineHelpText>
+    <label>Zbývající kapky</label>
+    <precision>18</precision>
+    <scale>0</scale>
+    <type>Number</type>
+</CustomField>

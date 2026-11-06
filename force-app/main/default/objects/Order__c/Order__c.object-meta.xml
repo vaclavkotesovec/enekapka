@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Objekt Nákup je jedna účtenka člena Kapka Klubu na stanici: Číslo účtenky (povinné, unikátní externí ID), datum a stav. Člen je povinný. Celková částka, částka a litry paliva i částka za ostatní zboží se sčítají z položek. Používá se jako zdroj připsání kapek.</description>
+    <enableActivities>true</enableActivities>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <enableSearch>true</enableSearch>
+    <externalSharingModel>Private</externalSharingModel>
+    <label>Nákup</label>
+    <nameField>
+        <label>Nákup</label>
+        <displayFormat>N-{0000000}</displayFormat>
+        <startingNumber>1</startingNumber>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Nákupy</pluralLabel>
+    <sharingModel>Private</sharingModel>
+    <visibility>Public</visibility>
+</CustomObject>
