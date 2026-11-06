@@ -248,6 +248,62 @@ private class KapkaEarnServiceTest {
         Assert.areEqual(2000, pointsOf(member.Id), '200 nákupů po 10 l má v jedné transakci dát 200 připsání po 10 kapkách.');
     }
 
+    // R11 (review S1): expirace jen z pravidel, která něco přidala (E6)
+    @IsTest
+    static void expirationComesFromAppliedRulesOnly() {
+        Loyalty_Member__c member = createActiveMember('Petr', 'Svoboda');
+        Earning_Rule__c fuelRule = KapkaTestDataFactory.makeEarningRule(FUEL, 'Per Liter', 1, 1, RULES_VALID_FROM);
+        fuelRule.Expiration_Months__c = 12;
+        Earning_Rule__c otherRule = KapkaTestDataFactory.makeEarningRule(OTHER, 'Per CZK', 20, 1, RULES_VALID_FROM);
+        otherRule.Expiration_Months__c = 6;
+        insert new List<Earning_Rule__c>{ fuelRule, otherRule };
+        Order__c purchase = createOrder(member.Id, 'KPK-001-000011', Datetime.newInstance(2026, 11, 6, 8, 30, 0));
+        addItem(purchase.Id, 'Natural 95', FUEL, 38, 10);
+
+        Test.startTest();
+        complete(purchase);
+        Test.stopTest();
+
+        Assert.areEqual(
+            Date.newInstance(2027, 11, 6),
+            [SELECT Expiration_Date__c FROM Points_Transaction__c WHERE Order__c = :purchase.Id].Expiration_Date__c,
+            'Nákup jen paliva platí 12 měsíců; pravidlo za ostatní (6 měsíců) nic nepřidalo.'
+        );
+    }
+
+    // R12 (review T1): starší nákup nepřepíše novější poslední aktivitu
+    @IsTest
+    static void olderPurchaseKeepsNewerLastActivity() {
+        Loyalty_Member__c member = createActiveMember('Petr', 'Svoboda');
+        update new Loyalty_Member__c(Id = member.Id, Last_Activity_Date__c = Date.newInstance(2026, 11, 6));
+        createBaseRules(RULES_VALID_FROM);
+        Order__c purchase = createOrder(member.Id, 'KPK-001-000012', Datetime.newInstance(2026, 10, 15, 12, 0, 0));
+        addItem(purchase.Id, 'Natural 95', FUEL, 38, 10);
+
+        Test.startTest();
+        complete(purchase);
+        Test.stopTest();
+
+        Assert.areEqual(
+            Date.newInstance(2026, 11, 6),
+            [SELECT Last_Activity_Date__c FROM Loyalty_Member__c WHERE Id = :member.Id].Last_Activity_Date__c,
+            'Dodatečně dokončený starší nákup nesmí posunout poslední aktivitu dozadu.'
+        );
+    }
+
+    // R13 (review S4): nákup nejde založit rovnou jako Dokončený (kapky by se tiše nepřipsaly, E1)
+    @IsTest
+    static void purchaseCannotBeInsertedAsCompleted() {
+        Loyalty_Member__c member = createActiveMember('Petr', 'Svoboda');
+        Fuel_Station__c station = KapkaTestDataFactory.createStation('Kapka Brno – Vídeňská', 'KPK-001');
+        Order__c purchase = KapkaTestDataFactory.makeOrder(member.Id, station.Id, 'KPK-001-000013');
+        purchase.Status__c = COMPLETED;
+
+        Database.SaveResult result = Database.insert(purchase, false);
+
+        Assert.isFalse(result.isSuccess(), 'Nákup se má založit rozpracovaný a dokončit až po vložení položek.');
+    }
+
     // ---------- pomocníci ----------
 
     private static Decimal pointsOf(Id memberId) {

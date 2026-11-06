@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Order_Must_Start_As_Draft</fullName>
+    <active>true</active>
+    <description>Review earn-zaklad S4: kapky vznikají při přechodu na Dokončený (E1). Nákup založený rovnou jako Dokončený by kapky tiše nedostal – zakládá se rozpracovaný, dokončí se po vložení položek.</description>
+    <errorConditionFormula>AND(ISNEW(), ISPICKVAL(Status__c, &quot;Completed&quot;))</errorConditionFormula>
+    <errorDisplayField>Status__c</errorDisplayField>
+    <errorMessage>Nákup založ nejdřív jako rozpracovaný a dokonči ho až po vložení položek, jinak se nepřipíšou kapky.</errorMessage>
+</ValidationRule>

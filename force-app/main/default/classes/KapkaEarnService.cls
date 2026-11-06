@@ -34,6 +34,7 @@ public with sharing class KapkaEarnService {
                 Loyalty_Member__c,
                 Loyalty_Member__r.Status__c,
                 Loyalty_Member__r.Enrollment_Date__c,
+                Loyalty_Member__r.Last_Activity_Date__c,
                 Purchase_Date__c,
                 Fuel_Liters__c,
                 Fuel_Amount__c,
@@ -68,8 +69,10 @@ public with sharing class KapkaEarnService {
             Decimal basePoints = 0;
             Integer expirationMonths;
             for (Earning_Rule__c rule : rulesValidOn(rules, purchaseDate)) {
-                basePoints += pointsFor(rule, purchase);
-                if (rule.Expiration_Months__c != null) {
+                Decimal rulePoints = pointsFor(rule, purchase);
+                basePoints += rulePoints;
+                // E6 (review S1): expirace jen z pravidel, která k nákupu něco přidala
+                if (rulePoints > 0 && rule.Expiration_Months__c != null) {
                     Integer months = rule.Expiration_Months__c.intValue();
                     expirationMonths = expirationMonths == null ? months : Math.min(expirationMonths, months);
                 }
@@ -101,10 +104,17 @@ public with sharing class KapkaEarnService {
                     Expiration_Date__c = expirationMonths == null ? null : purchaseDate.addMonths(expirationMonths)
                 )
             );
-            membersToTouch.put(
-                purchase.Loyalty_Member__c,
-                new Loyalty_Member__c(Id = purchase.Loyalty_Member__c, Last_Activity_Date__c = purchaseDate)
-            );
+            // Review T1: poslední aktivita se jen posouvá dopředu – max z uložené hodnoty a nákupů v dávce
+            Loyalty_Member__c touched = membersToTouch.containsKey(purchase.Loyalty_Member__c)
+                ? membersToTouch.get(purchase.Loyalty_Member__c)
+                : new Loyalty_Member__c(
+                      Id = purchase.Loyalty_Member__c,
+                      Last_Activity_Date__c = purchase.Loyalty_Member__r.Last_Activity_Date__c
+                  );
+            if (touched.Last_Activity_Date__c == null || purchaseDate > touched.Last_Activity_Date__c) {
+                touched.Last_Activity_Date__c = purchaseDate;
+            }
+            membersToTouch.put(purchase.Loyalty_Member__c, touched);
         }
         Database.insert(credits, AccessLevel.SYSTEM_MODE);
         Database.insert(appliedCampaigns(credits, awardsPerCredit), AccessLevel.SYSTEM_MODE);
