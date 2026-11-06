@@ -33,6 +33,20 @@ private class KapkaExpirationBatchTest {
         );
     }
 
+    // AC-1.2
+    @IsTest
+    static void lastValidDayKeepsKapky() {
+        // Pokud Jana má připsání 100 kapek platné do dneška
+        Loyalty_Member__c jana = KapkaTestDataFactory.createMember('Jana', 'Nováková');
+        createEarn(jana.Id, 100, Date.today());
+
+        // Když dnes proběhne expirace
+        runExpiration();
+
+        // Pak Janě nic nepropadne
+        Assert.areEqual(0, expirationsOf(jana.Id).size(), 'V poslední den platnosti nesmí kapky propadnout.');
+    }
+
     private static void runExpiration() {
         Test.startTest();
         Database.executeBatch(new KapkaExpirationBatch());
