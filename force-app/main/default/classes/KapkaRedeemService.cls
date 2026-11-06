@@ -9,9 +9,30 @@ public with sharing class KapkaRedeemService {
     private static final String SOURCE_REWARD = 'Reward';
     private static final String VOUCHER_ISSUED = 'Issued';
 
+    /**
+     * Vymění kapky člena za voucher na odměnu.
+     * @throws KapkaRedeemException s hláškou pro člena, když čerpání nejde provést
+     */
     public static Voucher__c redeem(Id memberId, Id rewardId) {
+        Savepoint beforeRedeem = Database.setSavepoint();
+        try {
+            return issueVoucher(memberId, rewardId);
+        } catch (Exception e) {
+            Database.rollback(beforeRedeem);
+            throw e;
+        }
+    }
+
+    private static Voucher__c issueVoucher(Id memberId, Id rewardId) {
         Loyalty_Member__c member = lockMember(memberId);
         Reward__c reward = [SELECT Id, Points_Cost__c FROM Reward__c WHERE Id = :rewardId WITH USER_MODE];
+        List<Points_Transaction__c> credits = creditsOf(member.Id);
+        Decimal missing = reward.Points_Cost__c - remainingPoints(credits);
+        if (missing > 0) {
+            throw new KapkaRedeemException(
+                String.format(Label.Kapka_Redeem_Insufficient, new List<Object>{ missing })
+            );
+        }
 
         Points_Transaction__c redemption = new Points_Transaction__c(
             Loyalty_Member__c = member.Id,
@@ -24,7 +45,7 @@ public with sharing class KapkaRedeemService {
         // Zápis v systémovém režimu: knihu kapek a vouchery zakládá jen tahle služba,
         // člen ani loyalty manažer na ně nemají právo zápisu.
         insert redemption;
-        insert allocate(creditsOf(member.Id), redemption.Id, reward.Points_Cost__c);
+        insert allocate(credits, redemption.Id, reward.Points_Cost__c);
 
         Voucher__c voucher = new Voucher__c(
             Loyalty_Member__c = member.Id,
@@ -47,6 +68,15 @@ public with sharing class KapkaRedeemService {
             WITH USER_MODE
             ORDER BY Expiration_Date__c ASC NULLS LAST, Transaction_Date__c ASC
         ];
+    }
+
+    /** Zůstatek ze zbytků balíčků, ne z Points_Balance__c: musí sedět s tím, co jde alokovat. */
+    private static Decimal remainingPoints(List<Points_Transaction__c> credits) {
+        Decimal total = 0;
+        for (Points_Transaction__c credit : credits) {
+            total += credit.Remaining_Points__c;
+        }
+        return total;
     }
 
     private static List<Points_Allocation__c> allocate(

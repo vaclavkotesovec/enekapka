@@ -67,6 +67,38 @@ private class KapkaRedeemServiceTest {
         );
     }
 
+    // AC-3.1
+    @IsTest
+    static void notEnoughKapkyIsRefusedWithoutChanges() {
+        // Pokud aktivní člen má 450 kapek
+        Loyalty_Member__c member = createActiveMember('Petr', 'Svoboda');
+        insert KapkaTestDataFactory.makeTransaction(member.Id, EARN, POSTED, 450);
+        Reward__c reward = createReward(SLEVA_NA_PREZUTI, SLEVA_NA_PREZUTI_COST);
+
+        // Když uplatní odměnu za 500 kapek
+        Test.startTest();
+        String refusal = refusalOf(member.Id, reward.Id);
+        Test.stopTest();
+
+        // Pak uvidí „Na tuhle odměnu ti chybí 50 kapek.“ a nevznikne voucher ani pohyb kapek
+        Assert.areEqual('Na tuhle odměnu ti chybí 50 kapek.', refusal, 'Člen má vidět, kolik kapek mu chybí.');
+        Assert.areEqual(
+            0,
+            [SELECT COUNT() FROM Voucher__c] + [SELECT COUNT() FROM Points_Transaction__c WHERE Type__c != :EARN],
+            'Odmítnuté čerpání nesmí zanechat voucher ani pohyb kapek.'
+        );
+    }
+
+    /** Hláška odmítnutého čerpání; null, když čerpání prošlo. */
+    private static String refusalOf(Id memberId, Id rewardId) {
+        try {
+            KapkaRedeemService.redeem(memberId, rewardId);
+            return null;
+        } catch (KapkaRedeemException e) {
+            return e.getMessage();
+        }
+    }
+
     private static Points_Transaction__c makeEarn(Id memberId, Decimal points, Date expirationDate) {
         Points_Transaction__c earn = KapkaTestDataFactory.makeTransaction(memberId, EARN, POSTED, points);
         earn.Expiration_Date__c = expirationDate;

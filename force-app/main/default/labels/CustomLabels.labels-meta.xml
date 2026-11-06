@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>Kapka_Redeem_Insufficient</fullName>
+        <categories>Kapka,Cerpani</categories>
+        <language>cs</language>
+        <protected>false</protected>
+        <shortDescription>Čerpání: chybí kapky</shortDescription>
+        <value>Na tuhle odměnu ti chybí {0} kapek.</value>
+    </labels>
+</CustomLabels>
