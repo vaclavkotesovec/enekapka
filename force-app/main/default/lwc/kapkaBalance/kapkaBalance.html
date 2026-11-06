@@ -1,0 +1,17 @@
+<template>
+    <template lwc:if={member}>
+        <section class="kapka-card kapka-card--hlubina">
+            <p class="kapka-label">{labels.balance}</p>
+            <p class="kapka-zustatek">{balance}</p>
+            <template lwc:if={hasExpiring}>
+                <p class="kapka-tag expiring" role="status">{expiringText}</p>
+            </template>
+            <template lwc:if={isNewMember}>
+                <p class="cta">{labels.emptyHistory}</p>
+            </template>
+        </section>
+    </template>
+    <template lwc:elseif={error}>
+        <p class="kapka-card" role="alert">{error}</p>
+    </template>
+</template>

@@ -1,0 +1,24 @@
+<template>
+    <section class="kapka-card">
+        <h2 class="kapka-title">{labels.title}</h2>
+        <template lwc:if={isEmpty}>
+            <p>{labels.empty}</p>
+        </template>
+        <template lwc:elseif={error}>
+            <p role="alert">{error}</p>
+        </template>
+        <template lwc:else>
+            <ul class="list">
+                <template for:each={rows} for:item="row">
+                    <li key={row.id} class="row">
+                        <div class="meta">
+                            <span class="kapka-label">{row.dateText} · {row.type}</span>
+                            <span class="reason">{row.reason}</span>
+                        </div>
+                        <span class={row.pointsClass}>{row.pointsText}</span>
+                    </li>
+                </template>
+            </ul>
+        </template>
+    </section>
+</template>

@@ -1,0 +1,9 @@
+@import 'c/kapkaStyles';
+
+.expiring {
+    margin-top: var(--kapka-space-4);
+}
+
+.cta {
+    margin: var(--kapka-space-4) 0 0;
+}
