@@ -32,4 +32,44 @@
         <shortDescription>Portál: uživatel bez členství</shortDescription>
         <value>K tomuto účtu zatím není přiřazené členství v Kapka Klubu.</value>
     </labels>
+    <labels>
+        <fullName>Kapka_Adjust_Reason_Required</fullName>
+        <categories>Kapka</categories>
+        <language>cs</language>
+        <protected>false</protected>
+        <shortDescription>Úprava kapek bez důvodu</shortDescription>
+        <value>U úpravy vyplňte důvod.</value>
+    </labels>
+    <labels>
+        <fullName>Kapka_Adjust_Insufficient</fullName>
+        <categories>Kapka</categories>
+        <language>cs</language>
+        <protected>false</protected>
+        <shortDescription>Ubrání víc kapek, než má člen</shortDescription>
+        <value>Člen má jen {0} kapek.</value>
+    </labels>
+    <labels>
+        <fullName>Kapka_Adjust_No_Permission</fullName>
+        <categories>Kapka</categories>
+        <language>cs</language>
+        <protected>false</protected>
+        <shortDescription>Úprava kapek bez oprávnění</shortDescription>
+        <value>Na úpravu kapek nemáte oprávnění.</value>
+    </labels>
+    <labels>
+        <fullName>Kapka_Adjust_Zero_Points</fullName>
+        <categories>Kapka</categories>
+        <language>cs</language>
+        <protected>false</protected>
+        <shortDescription>Úprava o nula kapek</shortDescription>
+        <value>Zadejte nenulový počet kapek.</value>
+    </labels>
+    <labels>
+        <fullName>Kapka_Completed_Order_Item_Locked</fullName>
+        <categories>Kapka</categories>
+        <language>cs</language>
+        <protected>false</protected>
+        <shortDescription>Smazání položky dokončeného nákupu</shortDescription>
+        <value>Nákup je dokončený, jeho položky už nelze mazat.</value>
+    </labels>
 </CustomLabels>

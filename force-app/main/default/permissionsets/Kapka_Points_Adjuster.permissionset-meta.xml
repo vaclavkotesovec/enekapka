@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <classAccesses>
+        <apexClass>KapkaAdjustPointsAction</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>Kapka_Adjust_Points</name>
+    </customPermissions>
+    <description>Ruční úprava kapek pro loyalty manažera s oprávněním (reklamace, opravy). Přiřazuje se navíc ke Kapka_Loyalty_Manager.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>Kapka – úprava kapek</label>
+</PermissionSet>
