@@ -5,7 +5,7 @@
     <label>Hodnota (Kč)</label>
     <required>false</required>
     <trackHistory>false</trackHistory>
-    <precision>12</precision>
+    <precision>10</precision>
     <scale>2</scale>
     <type>Currency</type>
 </CustomField>

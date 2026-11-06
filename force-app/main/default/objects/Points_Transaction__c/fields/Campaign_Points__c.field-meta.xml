@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Campaign_Points__c</fullName>
-    <description>U připsání za nákup část z kampaní (Q17).</description>
+    <description>U připsání za nákup část z kampaní (Q17); součet uplatněných kampaní, aby se nemohl rozejít s jejich rozpadem.</description>
     <inlineHelpText>Kapky navíc z kampaní.</inlineHelpText>
     <label>Kapky z kampaní</label>
-    <precision>18</precision>
-    <required>false</required>
-    <scale>0</scale>
-    <type>Number</type>
+    <summarizedField>Applied_Campaign__c.Points__c</summarizedField>
+    <summaryForeignKey>Applied_Campaign__c.Points_Transaction__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <type>Summary</type>
 </CustomField>
