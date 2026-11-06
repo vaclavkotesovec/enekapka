@@ -55,14 +55,6 @@ public class KapkaTestDataFactory {
         return new Voucher__c(Loyalty_Member__c = memberId, Reward__c = rewardId, Code__c = code);
     }
 
-    public static Applied_Campaign__c makeAppliedCampaign(Id earnTransactionId, Id campaignId, Decimal points) {
-        return new Applied_Campaign__c(
-            Points_Transaction__c = earnTransactionId,
-            Loyalty_Campaign__c = campaignId,
-            Points__c = points
-        );
-    }
-
     /** Kampaň uplatněná na připsání (karta model-nabidka, R3). */
     public static Applied_Campaign__c makeAppliedCampaign(Id earnTransactionId, Id campaignId, Decimal points) {
         return new Applied_Campaign__c(
