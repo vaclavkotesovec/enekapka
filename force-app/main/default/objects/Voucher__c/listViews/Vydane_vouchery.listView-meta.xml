@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Vydane_vouchery</fullName>
+    <columns>NAME</columns>
+    <columns>Code__c</columns>
+    <columns>Loyalty_Member__c</columns>
+    <columns>Reward__c</columns>
+    <columns>Issued_Date__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Status__c</field>
+        <operation>equals</operation>
+        <value>Issued</value>
+    </filters>
+    <label>Vydané vouchery</label>
+</ListView>
