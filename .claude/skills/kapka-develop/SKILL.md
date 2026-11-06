@@ -27,7 +27,8 @@ Karta v Kanbanu ve stavu **Business ready** (`node scripts/notion.mjs page "<id>
 6. **Necommituj.** Commity jsou na uživateli.
 7. **Předej do review:** spusť `/kapka-review "<id>:"` (ideálně jako subagent bez tvého kontextu). Nálezy ukaž podle závažnosti, nech uživatele vybrat, co opravit; schválené opravy nejdřív připiš do Plánu v kartě jako nové řezy, pak je udělej test-first a znovu krok 4.
 8. **Ruční test:** požádej uživatele o ověření v orgu (demo: Jana, Kapka Brno – Vídeňská, 45 l + 180 Kč = +109 kapek). Každý nález → nejdřív řez do karty, pak test-first oprava.
-9. **Zavři:** po zeleném review a ručním testu `card-status "<id>:" Done` a navrhni `/kapka-retro "<id>:"`.
+9. **Akceptace:** zapiš výsledek Apex testů do databáze Testy a požádej analytika karty (Jakub / Veronika) o ruční akceptaci podle scénářů karty. Selhaný scénář = nová karta `bug: <karta> AC-x.y` (Rozhodnutí TT4).
+10. **Zavři:** až po zeleném review a zelené akceptaci `card-status "<id>:" Done` a navrhni `/kapka-retro "<id>:"`.
 
 ## Report
 
