@@ -1,0 +1,25 @@
+<template>
+    <h2>Můj profil</h2>
+    <template lwc:if={message}><p class={messageClass}>{message}</p></template>
+    <template lwc:if={isPerson}>
+        <div class="card">
+            <p><strong>{profile.firstName} {profile.lastName}</strong></p>
+            <lightning-input label="Telefon" name="phone" type="tel" value={profile.phone} onchange={handleChange}></lightning-input>
+            <lightning-input label="Datum narození" name="birthdate" type="date" value={profile.birthdate} onchange={handleChange}></lightning-input>
+            <lightning-input label="Ulice" name="street" value={profile.street} onchange={handleChange}></lightning-input>
+            <lightning-input label="Město" name="city" value={profile.city} onchange={handleChange}></lightning-input>
+            <lightning-input label="PSČ" name="postalCode" value={profile.postalCode} onchange={handleChange}></lightning-input>
+            <lightning-button variant="brand" label="Uložit" onclick={handleSave} disabled={saving}></lightning-button>
+        </div>
+        <div class="card">
+            <h3>Souhlasy</h3>
+            <lightning-input type="toggle" label="Účast ve věrnostním programu Kapka Klub" data-purpose="Loyalty"
+                checked={profile.loyaltyConsent} message-toggle-active="Ano" message-toggle-inactive="Ne" onchange={handleConsent}></lightning-input>
+            <lightning-input type="toggle" label="Novinky a nabídky e-mailem (+50 kapek)" data-purpose="Marketing"
+                checked={profile.marketingConsent} message-toggle-active="Ano" message-toggle-inactive="Ne" onchange={handleConsent}></lightning-input>
+        </div>
+    </template>
+    <template lwc:elseif={profile}>
+        <p class="muted">Profil a souhlasy firemního členství spravuje loyalty manažer.</p>
+    </template>
+</template>

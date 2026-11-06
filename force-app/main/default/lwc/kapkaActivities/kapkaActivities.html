@@ -1,0 +1,17 @@
+<template>
+    <h2>Aktivity za kapky</h2>
+    <template lwc:if={error}><p class="error">{error}</p></template>
+    <template for:each={activities} for:item="a">
+        <div key={a.source} class="card row">
+            <div>
+                <h3>{a.name}</h3>
+                <span class="kapky">{a.pointsLabel}</span>
+            </div>
+            <div>
+                <span class={a.statusClass}>{a.statusLabel}</span>
+                <template lwc:if={a.done}></template>
+                <template lwc:else> · <a href={profileUrl}>Do profilu</a></template>
+            </div>
+        </div>
+    </template>
+</template>
