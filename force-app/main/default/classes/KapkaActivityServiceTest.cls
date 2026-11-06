@@ -203,6 +203,26 @@ private class KapkaActivityServiceTest {
         );
     }
 
+    // AC-3.5
+    @IsTest
+    static void optOutKeepsKapky() {
+        // Pokud členka Jana, která dostala 50 kapek za marketing
+        Map<String, DataUsePurpose> purposes = KapkaTestDataFactory.createDataUsePurposes();
+        Loyalty_Member__c jana = KapkaTestDataFactory.createMember('Jana', 'Nováková');
+        List<PartyConsent> consents = new List<PartyConsent>{
+            KapkaTestDataFactory.makeOptInConsent(individualOf(jana), purposes.get(KapkaTestDataFactory.MARKETING_PURPOSE))
+        };
+        insert consents;
+
+        // Když Jana souhlas s marketingem odvolá
+        Test.startTest();
+        setStatus(consents, OPT_OUT);
+        Test.stopTest();
+
+        // Pak má Jana pořád 50 kapek
+        Assert.areEqual(50, pointsOf(jana.Id, CONSENT), 'Odvolání souhlasu kapky nebere (A2).');
+    }
+
     private static void setStatus(List<PartyConsent> consents, String status) {
         for (PartyConsent consent : consents) {
             consent.PrivacyConsentStatus = status;
