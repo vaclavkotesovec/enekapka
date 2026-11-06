@@ -1,0 +1,202 @@
+<title>Přehled Kapka Klubu</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: jedna úzká kolona pro Petru – odpovědi na její tři otázky nahoře, detail pod nimi. */
+:root {
+  --bg: #f3f7f7;
+  --surface: #ffffff;
+  --ink: #0a2e33;
+  --muted: #557478;
+  --line: #d5e3e4;
+  --kapka: #0b6e73;
+  --kapka-soft: #d3eaeb;
+  --jantar: #f0a830;
+  --jantar-ink: #8a5800;
+  --warn: #b3261e;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "Cascadia Mono", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #071f23; --surface: #0d2c31; --ink: #e6f2f2; --muted: #93b2b5; --line: #1f464c;
+    --kapka: #4fc1c6; --kapka-soft: #123f44; --jantar: #f4b84d; --jantar-ink: #f4b84d; --warn: #ff8a80;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #071f23; --surface: #0d2c31; --ink: #e6f2f2; --muted: #93b2b5; --line: #1f464c;
+  --kapka: #4fc1c6; --kapka-soft: #123f44; --jantar: #f4b84d; --jantar-ink: #f4b84d; --warn: #ff8a80;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 48px;
+}
+main { max-width: 960px; margin: 0 auto; display: grid; gap: 28px; }
+header { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+h1 { font-family: var(--font-display); font-size: clamp(1.9rem, 4vw, 2.6rem); line-height: 1.05; margin: 0; text-wrap: balance; }
+h1 .drop { color: var(--kapka); }
+h2 { font-family: var(--font-display); font-size: 1.25rem; margin: 0; text-wrap: balance; }
+.eyebrow { text-transform: uppercase; letter-spacing: .08em; font-size: .72rem; color: var(--muted); font-weight: 600; }
+.stamp { font-family: var(--font-data); font-size: .8rem; color: var(--muted); text-align: right; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.kpi { background: var(--surface); border: 1px solid var(--line); border-radius: 0 14px 14px 14px; padding: 16px; display: grid; gap: 4px; min-width: 0; }
+.kpi .value { font-family: var(--font-display); font-size: 2rem; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.kpi .value small { font-size: 1rem; color: var(--muted); font-family: var(--font-body); font-weight: 500; }
+.kpi .note { color: var(--muted); font-size: .85rem; }
+.meter { height: 8px; background: var(--kapka-soft); border-radius: 4px; overflow: hidden; margin-top: 6px; }
+.meter span { display: block; height: 100%; background: var(--jantar); }
+.meter.over span { background: var(--warn); }
+section { display: grid; gap: 12px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 0 14px 14px 14px; padding: 16px; min-width: 0; }
+.legend { display: flex; gap: 16px; flex-wrap: wrap; font-size: .85rem; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+.chart { overflow-x: auto; }
+.chart svg { display: block; width: 100%; min-width: 320px; height: auto; }
+.chart text { fill: var(--muted); font-family: var(--font-data); font-size: 11px; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+td.num, th.num { text-align: right; font-family: var(--font-data); }
+.empty { color: var(--muted); font-style: italic; margin: 0; }
+.answers { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.answer { display: grid; gap: 6px; }
+.answer p { margin: 0; max-width: 60ch; }
+footer { color: var(--muted); font-size: .8rem; }
+</style>
+
+<main>
+  <header>
+    <div>
+      <div class="eyebrow">Kapka Klub · report pro Petru Královou</div>
+      <h1>Přehled Kapka Klubu<span class="drop">.</span></h1>
+    </div>
+    <div class="stamp" id="stamp"></div>
+  </header>
+
+  <div class="kpis" id="kpis"></div>
+
+  <section aria-labelledby="h-answers">
+    <h2 id="h-answers">Odpovědi na otázky vedení</h2>
+    <div class="answers" id="answers"></div>
+  </section>
+
+  <section aria-labelledby="h-kapky">
+    <h2 id="h-kapky">Připsané a vyčerpané kapky po měsících</h2>
+    <div class="panel">
+      <div class="legend"><span><i style="background: var(--kapka)"></i>Připsáno</span><span><i style="background: var(--jantar)"></i>Vyčerpáno za vouchery</span></div>
+      <div class="chart" id="chart-kapky"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-reg">
+    <h2 id="h-reg">Nové registrace po týdnech</h2>
+    <div class="panel"><div class="chart" id="chart-reg"></div></div>
+  </section>
+
+  <section aria-labelledby="h-rewards">
+    <h2 id="h-rewards">Oblíbené odměny a partneři</h2>
+    <div class="panel table-wrap" id="rewards"></div>
+  </section>
+
+  <section aria-labelledby="h-campaigns">
+    <h2 id="h-campaigns">Kampaně</h2>
+    <div class="panel table-wrap" id="campaigns"></div>
+  </section>
+
+  <footer id="footer"></footer>
+</main>
+
+<script>
+const DATA = /*__KAPKA_DATA__*/null;
+const NUM = new Intl.NumberFormat('cs-CZ');
+const CZK = new Intl.NumberFormat('cs-CZ', { style: 'currency', currency: 'CZK', maximumFractionDigits: 0 });
+const PCT = new Intl.NumberFormat('cs-CZ', { style: 'percent', maximumFractionDigits: 0 });
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const kapky = (n) => `${NUM.format(n)} ${n === 1 ? 'kapka' : n >= 2 && n <= 4 ? 'kapky' : 'kapek'}`;
+const EMPTY = 'Zatím bez dat – objeví se po nahrání demo dat do orgu (karta test-data).';
+
+function render(d) {
+  const members = d.members.reduce((s, m) => s + m.count, 0);
+  const active = (d.members.find((m) => m.status === 'Aktivní' || m.status === 'Active') || { count: 0 }).count;
+  const lastWeeks = d.registrations.slice(-4).reduce((s, r) => s + r.count, 0);
+  const earned = d.kapky.reduce((s, m) => s + m.earned, 0);
+  const redeemed = d.kapky.reduce((s, m) => s + m.redeemed, 0);
+  const expired = d.kapky.reduce((s, m) => s + m.expired, 0);
+  const rate = earned ? redeemed / earned : null;
+  const spent = d.vouchers.reduce((s, v) => s + v.valueCzk, 0);
+  const budget = d.budgetCzk;
+  const budgetShare = budget ? spent / budget : null;
+
+  $('stamp').innerHTML = `Data ze Salesforce<br>načtena ${esc(new Date(d.fetchedAt).toLocaleString('cs-CZ'))}`;
+
+  $('kpis').innerHTML = [
+    `<div class="kpi"><span class="eyebrow">Členové</span><span class="value">${NUM.format(members)}</span><span class="note">z toho aktivních ${NUM.format(active)}</span></div>`,
+    `<div class="kpi"><span class="eyebrow">Nové registrace</span><span class="value">${NUM.format(lastWeeks)}</span><span class="note">za poslední 4 týdny s registrací</span></div>`,
+    `<div class="kpi"><span class="eyebrow">Míra čerpání</span><span class="value">${rate === null ? '–' : PCT.format(rate)}</span><span class="note">${kapky(redeemed)} z ${kapky(earned)}</span></div>`,
+    `<div class="kpi"><span class="eyebrow">Rozpočet na vouchery</span><span class="value">${CZK.format(spent)}<small> / ${budget ? CZK.format(budget) : '–'}</small></span>
+      <div class="meter${budgetShare > 1 ? ' over' : ''}"><span style="width:${Math.min(100, (budgetShare || 0) * 100)}%"></span></div>
+      <span class="note">${budgetShare === null ? 'rozpočet není nastavený' : `vyčerpáno ${PCT.format(budgetShare)}`}</span></div>`,
+  ].join('');
+
+  const topCampaign = d.campaigns[0];
+  $('answers').innerHTML = [
+    `<div class="panel answer"><span class="eyebrow">Finanční ředitel</span><p>${rate === null ? 'Kolik % kapek se vyčerpá, ukážeme po prvních připsáních.' : `Členové zatím vyčerpali <strong>${PCT.format(rate)}</strong> připsaných kapek${expired ? ` a ${kapky(expired)} propadlo` : ''}. Pro rozpočet na příští rok počítejte s touto mírou čerpání.`}</p></div>`,
+    `<div class="panel answer"><span class="eyebrow">Marketing</span><p>${topCampaign ? `Nejvíc kapek přidala kampaň <strong>${esc(topCampaign.name)}</strong>: ${NUM.format(topCampaign.purchases)} nákupů, ${NUM.format(topCampaign.members)} členů.` : 'Výkon kampaní ukážeme po prvních nákupech, kde se kampaň uplatní.'}</p></div>`,
+    `<div class="panel answer"><span class="eyebrow">Rozpočet na vouchery</span><p>${budget ? `Vydané vouchery mají hodnotu <strong>${CZK.format(spent)}</strong> z ročního rozpočtu ${CZK.format(budget)}.` : 'Rozpočet nastavíte v Salesforce v Kapka nastavení programu.'}</p></div>`,
+  ].join('');
+
+  $('chart-kapky').innerHTML = d.kapky.length ? barChart(d.kapky.map((m) => ({ label: m.month, values: [m.earned, m.redeemed] })), ['var(--kapka)', 'var(--jantar)']) : `<p class="empty">${EMPTY}</p>`;
+  $('chart-reg').innerHTML = d.registrations.length ? barChart(d.registrations.map((r) => ({ label: r.week, values: [r.count] })), ['var(--kapka)']) : `<p class="empty">${EMPTY}</p>`;
+
+  $('rewards').innerHTML = d.vouchers.length
+    ? `<table><thead><tr><th>Odměna</th><th>Partner</th><th class="num">Vydaných voucherů</th><th class="num">Hodnota</th></tr></thead><tbody>${d.vouchers
+        .map((v) => `<tr><td>${esc(v.name)}</td><td>${esc(v.partner)}</td><td class="num">${NUM.format(v.count)}</td><td class="num">${CZK.format(v.valueCzk)}</td></tr>`)
+        .join('')}</tbody></table>`
+    : `<p class="empty">${EMPTY}</p>`;
+
+  $('campaigns').innerHTML = d.campaigns.length
+    ? `<table><thead><tr><th>Kampaň</th><th class="num">Nákupů</th><th class="num">Členů</th><th class="num">Přidané kapky</th></tr></thead><tbody>${d.campaigns
+        .map((c) => `<tr><td>${esc(c.name)}</td><td class="num">${NUM.format(c.purchases)}</td><td class="num">${NUM.format(c.members)}</td><td class="num">${NUM.format(c.kapky)}</td></tr>`)
+        .join('')}</tbody></table>`
+    : `<p class="empty">${EMPTY}</p>`;
+
+  $('footer').textContent = 'Zdroj: org Kapka Klub (členové, pohyby kapek, vouchery, uplatněné kampaně). Data o prodejích v Salesforce nejsou, proto report neukazuje dopad na tržby.';
+}
+
+function barChart(rows, colors) {
+  const W = Math.max(320, rows.length * (colors.length * 18 + 22) + 60), H = 200, left = 44, bottom = 28, top = 12;
+  const max = Math.max(1, ...rows.flatMap((r) => r.values));
+  const step = niceStep(max);
+  const top_ = Math.ceil(max / step) * step;
+  const y = (v) => top + (H - top - bottom) * (1 - v / top_);
+  const group = (W - left - 8) / rows.length;
+  const barW = Math.min(18, (group - 10) / colors.length);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Sloupcový graf">`;
+  for (let v = 0; v <= top_; v += step) {
+    svg += `<line x1="${left}" x2="${W - 8}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-width="1"/><text x="${left - 6}" y="${y(v) + 4}" text-anchor="end">${NUM.format(v)}</text>`;
+  }
+  rows.forEach((r, i) => {
+    const x0 = left + i * group + (group - barW * colors.length) / 2;
+    r.values.forEach((v, j) => {
+      svg += `<rect x="${x0 + j * barW}" y="${y(v)}" width="${barW - 2}" height="${y(0) - y(v)}" fill="${colors[j]}" rx="2"><title>${esc(r.label)}: ${NUM.format(v)}</title></rect>`;
+    });
+    svg += `<text x="${left + i * group + group / 2}" y="${H - 8}" text-anchor="middle">${esc(r.label)}</text>`;
+  });
+  return svg + '</svg>';
+}
+
+function niceStep(max) {
+  const raw = max / 4, pow = Math.pow(10, Math.floor(Math.log10(raw)));
+  return [1, 2, 5, 10].map((m) => m * pow).find((s) => s >= raw) || raw;
+}
+
+render(DATA || { fetchedAt: new Date().toISOString(), members: [], registrations: [], kapky: [], vouchers: [], campaigns: [], budgetCzk: null });
+</script>
