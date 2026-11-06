@@ -126,7 +126,7 @@ private class KapkaDataModelTest {
         natural.Price__c = 40;
         Test.startTest();
         update natural;
-        update item;
+        update new Order_Item__c(Id = item.Id, Quantity__c = FUEL_LITERS);
         Test.stopTest();
 
         // Pak položka v nákupu dál stojí 38 Kč
@@ -147,6 +147,20 @@ private class KapkaDataModelTest {
 
         // Pak se položka neuloží
         Assert.isFalse(result.isSuccess(), 'Položka s nulovým množstvím se nesmí uložit.');
+    }
+
+    @IsTest
+    static void itemWithoutProductIsRejected() {
+        // Pokud existuje nákup
+        Order__c purchase = createJanaOrder();
+
+        // Když se zapíše položka bez produktu
+        Test.startTest();
+        Database.SaveResult result = Database.insert(KapkaTestDataFactory.makeOrderItem(purchase.Id, null, FUEL_LITERS), false);
+        Test.stopTest();
+
+        // Pak se položka neuloží
+        Assert.isFalse(result.isSuccess(), 'Položka bez produktu se nesmí uložit.');
     }
 
     @IsTest
@@ -270,9 +284,8 @@ private class KapkaDataModelTest {
         insert earn;
 
         // Když se někdo pokusí změnit kapky na 200
-        earn.Points__c = 200;
         Test.startTest();
-        Database.SaveResult result = Database.update(earn, false);
+        Database.SaveResult result = Database.update(new Points_Transaction__c(Id = earn.Id, Points__c = 200), false);
         Test.stopTest();
 
         // Pak se změna neuloží
