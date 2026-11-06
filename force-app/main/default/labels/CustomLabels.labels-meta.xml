@@ -31,6 +31,8 @@
         <protected>false</protected>
         <shortDescription>Portál: uživatel bez členství</shortDescription>
         <value>K tomuto účtu zatím není přiřazené členství v Kapka Klubu.</value>
+    </labels>
+    <labels>
         <fullName>Kapka_Portal_ProfileOnlyPerson</fullName>
         <categories>Kapka Portal</categories>
         <language>cs</language>
