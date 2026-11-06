@@ -92,6 +92,39 @@ private class KapkaExpirationBatchTest {
         );
     }
 
+    // AC-2.2
+    @IsTest
+    static void validKapkyStay() {
+        // Pokud Jana má prošlý balíček se zbytkem 20 kapek a platný balíček 109 kapek
+        Loyalty_Member__c jana = KapkaTestDataFactory.createMember('Jana', 'Nováková');
+        createEarn(jana.Id, 20, Date.today().addDays(-1));
+        createEarn(jana.Id, 109, Date.today().addYears(1));
+
+        // Když proběhne expirace
+        runExpiration();
+
+        // Pak má Jana zůstatek 109 kapek
+        Assert.areEqual(109, balanceOf(jana.Id), 'Platné kapky mají Janě zůstat.');
+    }
+
+    // AC-2.3
+    @IsTest
+    static void secondRunWritesOffNothing() {
+        // Pokud expirace už Janě prošlé kapky odepsala
+        Loyalty_Member__c jana = KapkaTestDataFactory.createMember('Jana', 'Nováková');
+        Points_Transaction__c earn = createEarn(jana.Id, 100, Date.today().addDays(-1));
+        Points_Transaction__c previousExpiration = KapkaTestDataFactory.makeTransaction(jana.Id, EXPIRE, POSTED, -100);
+        previousExpiration.Source__c = SOURCE_EXPIRATION;
+        insert previousExpiration;
+        insert KapkaTestDataFactory.makeAllocation(earn.Id, previousExpiration.Id, 100);
+
+        // Když proběhne expirace znovu
+        runExpiration();
+
+        // Pak se nic dalšího neodepíše
+        Assert.areEqual(1, expirationsOf(jana.Id).size(), 'Opakovaný běh nesmí odepsat nic dalšího.');
+    }
+
     private static void runExpiration() {
         Test.startTest();
         Database.executeBatch(new KapkaExpirationBatch());
@@ -117,6 +150,10 @@ private class KapkaExpirationBatchTest {
             FROM Points_Transaction__c
             WHERE Loyalty_Member__c = :memberId AND Type__c = :EXPIRE
         ];
+    }
+
+    private static Decimal balanceOf(Id memberId) {
+        return [SELECT Points_Balance__c FROM Loyalty_Member__c WHERE Id = :memberId].Points_Balance__c;
     }
 
     private static Decimal remainingOf(Id earnId) {
