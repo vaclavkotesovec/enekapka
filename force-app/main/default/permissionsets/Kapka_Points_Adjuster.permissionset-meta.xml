@@ -9,6 +9,10 @@
         <name>Kapka_Adjust_Points</name>
     </customPermissions>
     <description>Ruční úprava kapek pro loyalty manažera s oprávněním (reklamace, opravy). Přiřazuje se navíc ke Kapka_Loyalty_Manager.</description>
+    <flowAccesses>
+        <enabled>true</enabled>
+        <flow>Kapka_Adjust_Points</flow>
+    </flowAccesses>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Kapka – úprava kapek</label>
 </PermissionSet>

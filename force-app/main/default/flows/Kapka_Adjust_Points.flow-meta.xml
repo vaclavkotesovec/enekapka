@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Zapíše úpravu jako nový pohyb kapek (KapkaAdjustPointsAction); oprávnění, důvod a zůstatek hlídá Apex.</description>
+        <name>Adjust_Points_Action</name>
+        <label>Upravit kapky</label>
+        <locationX>176</locationX>
+        <locationY>278</locationY>
+        <actionName>KapkaAdjustPointsAction</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Success_Screen</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Set_Error</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>memberId</name>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>points</name>
+            <value>
+                <elementReference>Points</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>reason</name>
+            <value>
+                <elementReference>Reason</elementReference>
+            </value>
+        </inputParameters>
+        <nameSegment>KapkaAdjustPointsAction</nameSegment>
+    </actionCalls>
+    <apiVersion>68.0</apiVersion>
+    <assignments>
+        <description>Hláška z Apexu (Custom Label) se ukáže manažerovi nad formulářem, aby úpravu opravil (AC-2.1, AC-4.2).</description>
+        <name>Set_Error</name>
+        <label>Uložit hlášku chyby</label>
+        <locationX>440</locationX>
+        <locationY>278</locationY>
+        <assignmentItems>
+            <assignToReference>ErrorMessage</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>FaultText</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Adjust_Screen</targetReference>
+        </connector>
+    </assignments>
+    <description>Karta bonus: ruční úprava kapek (R7): akce Upravit kapky na členovi. Manažer zadá kapky (+ přidá, − ubere) a důvod; chyba z Apexu se ukáže na formuláři, úspěch potvrdí obrazovka.</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Text chyby bez technického prefixu „…KapkaAdjustPointsException: “; jiná chyba se ukáže celá.</description>
+        <name>FaultText</name>
+        <dataType>String</dataType>
+        <expression>TRIM(IF(CONTAINS({!$Flow.FaultMessage}, &quot;KapkaAdjustPointsException: &quot;), MID({!$Flow.FaultMessage}, FIND(&quot;KapkaAdjustPointsException: &quot;, {!$Flow.FaultMessage}) + 28, 1000), {!$Flow.FaultMessage}))</expression>
+    </formulas>
+    <interviewLabel>Kapka – úprava kapek {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Kapka – úprava kapek</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <screens>
+        <name>Adjust_Screen</name>
+        <label>Upravit kapky</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Adjust_Points_Action</targetReference>
+        </connector>
+        <fields>
+            <name>Error_Text</name>
+            <fieldText>&lt;p&gt;&lt;strong&gt;{!ErrorMessage}&lt;/strong&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <visibilityRule>
+                <conditionLogic>and</conditionLogic>
+                <conditions>
+                    <leftValueReference>ErrorMessage</leftValueReference>
+                    <operator>IsNull</operator>
+                    <rightValue>
+                        <booleanValue>false</booleanValue>
+                    </rightValue>
+                </conditions>
+            </visibilityRule>
+        </fields>
+        <fields>
+            <name>Points</name>
+            <dataType>Number</dataType>
+            <fieldText>Kapky</fieldText>
+            <fieldType>InputField</fieldType>
+            <helpText>&lt;p&gt;Kladné číslo kapky přidá, záporné ubere (např. 100 nebo -60).&lt;/p&gt;</helpText>
+            <isRequired>true</isRequired>
+            <scale>0</scale>
+        </fields>
+        <fields>
+            <name>Reason</name>
+            <dataType>String</dataType>
+            <fieldText>Důvod</fieldText>
+            <fieldType>InputField</fieldType>
+            <helpText>&lt;p&gt;Povinné. Uloží se k pohybu kapek do historie člena.&lt;/p&gt;</helpText>
+            <isRequired>false</isRequired>
+        </fields>
+        <nextOrFinishButtonLabel>Uložit</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <screens>
+        <name>Success_Screen</name>
+        <label>Kapky upraveny</label>
+        <locationX>176</locationX>
+        <locationY>398</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Success_Text</name>
+            <fieldText>&lt;p&gt;Hotovo, kapky jsou upravené o {!Points}.&lt;/p&gt;&lt;p&gt;Úpravu s důvodem „{!Reason}“ najdete v Pohybech kapek člena.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <nextOrFinishButtonLabel>Zavřít</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>true</showHeader>
+    </screens>
+    <start>
+        <locationX>50</locationX>
+        <locationY>50</locationY>
+        <connector>
+            <targetReference>Adjust_Screen</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>ErrorMessage</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Člen (Loyalty_Member__c), na kterém manažer spustil akci Upravit kapky.</description>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

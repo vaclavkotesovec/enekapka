@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>View</actionName>
+        <comment>Stránka člena s akcí Upravit kapky (karta bonus: ruční úprava kapek).</comment>
+        <content>Kapka_Clen_Record_Page</content>
+        <formFactor>Large</formFactor>
+        <skipRecordTypeSelect>false</skipRecordTypeSelect>
+        <type>Flexipage</type>
+        <pageOrSobjectType>Loyalty_Member__c</pageOrSobjectType>
+    </actionOverrides>
     <brand>
         <headerColor>#0B6E73</headerColor>
         <logo>kapkaAppIcon</logo>

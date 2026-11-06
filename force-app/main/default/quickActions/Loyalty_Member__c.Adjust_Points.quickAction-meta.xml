@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Ruční přidání nebo ubrání kapek s důvodem (karta bonus: ruční úprava kapek). Na stránce člena se ukáže jen s custom permission Kapka_Adjust_Points.</description>
+    <flowDefinition>Kapka_Adjust_Points</flowDefinition>
+    <label>Upravit kapky</label>
+    <optionsCreateFeedItem>false</optionsCreateFeedItem>
+    <type>Flow</type>
+</QuickAction>
