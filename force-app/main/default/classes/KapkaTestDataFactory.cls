@@ -192,6 +192,48 @@ public class KapkaTestDataFactory {
         return manager;
     }
 
+    /**
+     * Admin s rolí a permission setem Kapka_Loyalty_Manager (viditelnost record typu Person Account):
+     * účet, ke kterému patří uživatel portálu, musí vlastnit někdo s rolí.
+     */
+    public static User createAccountOwnerWithRole() {
+        User owner = makeUser('System Administrator', 'kapka.owner', 'Vlastník účtů');
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            UserRole role = new UserRole(Name = 'Kapka test ' + owner.Alias, DeveloperName = 'Kapka_Test_' + owner.Alias);
+            insert role;
+            owner.UserRoleId = role.Id;
+            insert owner;
+            insert new PermissionSetAssignment(
+                AssigneeId = owner.Id,
+                PermissionSetId = [SELECT Id FROM PermissionSet WHERE Name = 'Kapka_Loyalty_Manager' LIMIT 1].Id
+            );
+        }
+        return owner;
+    }
+
+    /** Člen portálu Customer Community pro osobní účet (Person Account). */
+    public static User createPortalUser(Id personAccountId) {
+        User member = makeUser('Kapka Portal Member', 'kapka.member', 'Člen portálu');
+        member.ContactId = [SELECT PersonContactId FROM Account WHERE Id = :personAccountId].PersonContactId;
+        insert member;
+        return member;
+    }
+
+    private static User makeUser(String profileName, String usernamePrefix, String lastName) {
+        String unique = String.valueOf(Crypto.getRandomInteger()).remove('-');
+        return new User(
+            ProfileId = [SELECT Id FROM Profile WHERE Name = :profileName LIMIT 1].Id,
+            Username = usernamePrefix + '.' + unique + '@kapka.test',
+            Email = usernamePrefix + '@kapka.test',
+            LastName = lastName,
+            Alias = 'k' + unique.left(7),
+            TimeZoneSidKey = 'Europe/Prague',
+            LocaleSidKey = 'cs_CZ',
+            LanguageLocaleKey = 'en_US',
+            EmailEncodingKey = 'UTF-8'
+        );
+    }
+
     private static Id personAccountRecordTypeId() {
         return [SELECT Id FROM RecordType WHERE SobjectType = 'Account' AND IsPersonType = TRUE LIMIT 1].Id;
     }
