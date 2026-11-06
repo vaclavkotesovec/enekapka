@@ -133,6 +133,57 @@ private class KapkaActivityServiceTest {
         );
     }
 
+    // AC-3.2
+    @IsTest
+    static void registeredMemberGetsMarketingKapky() {
+        // Pokud registrovaná členka Jana Nováková
+        Map<String, DataUsePurpose> purposes = KapkaTestDataFactory.createDataUsePurposes();
+        Loyalty_Member__c jana = KapkaTestDataFactory.createMember('Jana', 'Nováková');
+
+        // Když Jana udělí souhlas s marketingem
+        Test.startTest();
+        grant(jana, purposes.get(KapkaTestDataFactory.MARKETING_PURPOSE));
+        Test.stopTest();
+
+        // Pak má Jana připsáno 50 kapek za souhlas
+        Assert.areEqual(50, pointsOf(jana.Id, CONSENT), 'Kapky za marketing se připíší i registrovanému členovi (A3).');
+    }
+
+    // AC-4.1
+    @IsTest
+    static void bothConsentsAtOnceActivateAndGiveHundredFifty() {
+        // Pokud registrovaná členka Jana Nováková
+        Map<String, DataUsePurpose> purposes = KapkaTestDataFactory.createDataUsePurposes();
+        Loyalty_Member__c jana = KapkaTestDataFactory.createMember('Jana', 'Nováková');
+        Id individualId = individualOf(jana);
+
+        // Když Jana udělí najednou souhlas s účastí i s marketingem
+        Test.startTest();
+        insert new List<PartyConsent>{
+            KapkaTestDataFactory.makeOptInConsent(individualId, purposes.get(KapkaTestDataFactory.LOYALTY_PURPOSE)),
+            KapkaTestDataFactory.makeOptInConsent(individualId, purposes.get(KapkaTestDataFactory.MARKETING_PURPOSE))
+        };
+        Test.stopTest();
+
+        // Pak je Jana aktivní členkou a má připsáno 150 kapek
+        Loyalty_Member__c result = [SELECT Status__c FROM Loyalty_Member__c WHERE Id = :jana.Id];
+        Decimal total = pointsOf(jana.Id, PROFILE) + pointsOf(jana.Id, CONSENT);
+        Assert.isTrue(
+            result.Status__c == ACTIVE && total == 150,
+            'Oba souhlasy najednou: aktivní člen se 150 kapkami, je: ' + result.Status__c + ', ' + total + ' kapek'
+        );
+    }
+
+    private static Decimal pointsOf(Id memberId, String source) {
+        AggregateResult total = [
+            SELECT SUM(Points__c) points
+            FROM Points_Transaction__c
+            WHERE Loyalty_Member__c = :memberId AND Source__c = :source
+        ];
+        Decimal points = (Decimal) total.get('points');
+        return points == null ? 0 : points;
+    }
+
     private static void grant(Loyalty_Member__c member, DataUsePurpose purpose) {
         insert KapkaTestDataFactory.makeOptInConsent(individualOf(member), purpose);
     }
