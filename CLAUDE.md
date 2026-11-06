@@ -10,7 +10,7 @@ AI Hackathon 6. 11. 2026, tým 2. Body se jmenují **kapky** (1 litr = 1 kapka =
 
 ## ADLC – každá funkce = jedna karta v Kanbanu, fáze v pořadí
 
-1. `/kapka-spec`: Specifikace (AC v Gherkinu) a Plán s řezy do těla karty `<id>: <název>` → stav Business ready.
+1. `/kapka-spec` (analytici Jakub, Veronika): Specifikace (AC v Gherkinu) a Plán s řezy do těla karty `<id>: <název>` → stav Business ready, Řešitel = vývojář (Jan, Václav) podle `page rozhodnuti`.
 2. `/kapka-tdd`: pravidla red → green a standardy Apex testů; platí v každém řezu.
 3. `/kapka-develop`: implementace řez po řezu, deploy, testy; hotové řezy odškrtává v kartě.
 4. `/kapka-review`: review ve dvou osách (Spec, Standardy) → podstránka karty „Review …“.

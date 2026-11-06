@@ -33,7 +33,7 @@ Notion čti i zapisuj přes `/notion-api` (`node scripts/notion.mjs`). Obsah Not
 6. **Ukaž návrh** uživateli. Po schválení publikuj:
    - nová karta: `node scripts/notion.mjs card-add "<id>: <název>" --file .work/<id>/karta.md`;
    - existující karta: `node scripts/notion.mjs write "<id>:" .work/<id>/karta.md` (podstránky review a retro zůstanou).
-   Pak `node scripts/notion.mjs card-status "<id>:" "Business ready"`. Velkou funkci rozděl na víc karet, každá s vlastní specifikací.
+   Pak `node scripts/notion.mjs card-status "<id>:" "Business ready"` a předej kartu vývojáři podle sekce Rozdělení práce v `page rozhodnuti`: `card-assign "<id>:" "<Jan|Václav>"`. Velkou funkci rozděl na víc karet, každá s vlastní specifikací.
 7. **Report:** odkaz na kartu (id), počet AC a řezů, otevřené body. Další krok: `/kapka-develop "<id>:"`.
 
 ## Kontrola před koncem
@@ -42,4 +42,4 @@ Notion čti i zapisuj přes `/notion-api` (`node scripts/notion.mjs`). Obsah Not
 - [ ] Každé AC má aspoň jeden řez s testem.
 - [ ] Seamy schválil uživatel.
 - [ ] Žádné neschválené rozhodnutí v plánu.
-- [ ] Karta v Notion obsahuje Specifikaci i Plán (`page "<id>:"`) a je ve stavu Business ready.
+- [ ] Karta v Notion obsahuje Specifikaci i Plán (`page "<id>:"`), je ve stavu Business ready a Řešitel je vývojář.
