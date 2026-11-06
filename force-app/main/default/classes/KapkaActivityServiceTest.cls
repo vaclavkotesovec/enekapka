@@ -8,6 +8,7 @@ private class KapkaActivityServiceTest {
     private static final String EARN = 'Earn';
     private static final String POSTED = 'Posted';
     private static final String PROFILE = 'Profile';
+    private static final String CONSENT = 'Consent';
 
     // AC-1.1
     @IsTest
@@ -99,6 +100,36 @@ private class KapkaActivityServiceTest {
             Date.newInstance(2026, 11, 6),
             [SELECT Last_Activity_Date__c FROM Loyalty_Member__c WHERE Id = :jana.Id].Last_Activity_Date__c,
             'Poslední aktivita člena je datum souhlasu.'
+        );
+    }
+
+    // AC-3.1
+    @IsTest
+    static void marketingConsentGivesFiftyKapky() {
+        // Pokud aktivní členka Jana Nováková
+        Map<String, DataUsePurpose> purposes = KapkaTestDataFactory.createDataUsePurposes();
+        Loyalty_Member__c jana = KapkaTestDataFactory.createMember('Jana', 'Nováková');
+        jana.Status__c = ACTIVE;
+        update jana;
+
+        // Když Jana udělí souhlas s marketingem
+        Test.startTest();
+        grant(jana, purposes.get(KapkaTestDataFactory.MARKETING_PURPOSE));
+        Test.stopTest();
+
+        // Pak má Jana připsáno 50 kapek za souhlas
+        Points_Transaction__c credit = [
+            SELECT Type__c, Status__c, Source__c, Points__c, Expiration_Date__c
+            FROM Points_Transaction__c
+            WHERE Loyalty_Member__c = :jana.Id
+        ];
+        Assert.isTrue(
+            credit.Type__c == EARN &&
+                credit.Status__c == POSTED &&
+                credit.Source__c == CONSENT &&
+                credit.Points__c == 50 &&
+                credit.Expiration_Date__c == Date.newInstance(2027, 11, 6),
+            'Za souhlas s marketingem má vzniknout jedno zaúčtované připsání 50 kapek, vzniklo: ' + credit
         );
     }
 

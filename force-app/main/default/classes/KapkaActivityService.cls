@@ -10,6 +10,8 @@ public with sharing class KapkaActivityService {
     private static final String EARN = 'Earn';
     private static final String POSTED = 'Posted';
     private static final String SOURCE_PROFILE = 'Profile';
+    private static final String SOURCE_CONSENT = 'Consent';
+    private static final String MARKETING = 'Marketing';
 
     /** Volá trigger po insertu a updatu souhlasu; zpracuje jen souhlasy, které jsou nově Opt In. */
     public static void handleConsents(List<PartyConsent> records, Map<Id, PartyConsent> oldMap) {
@@ -31,11 +33,14 @@ public with sharing class KapkaActivityService {
             }
             Datetime grantedAt = consent.CaptureDate == null ? Datetime.now() : consent.CaptureDate;
             Loyalty_Member__c touched = touch(membersToUpdate, member.Id, grantedAt.date());
-            if (purposeNames.get(consent.DataUsePurposeId) == LOYALTY) {
+            String purpose = purposeNames.get(consent.DataUsePurposeId);
+            if (purpose == LOYALTY) {
                 if (member.Status__c == REGISTERED) {
                     touched.Status__c = ACTIVE;
                 }
                 credits.add(credit(member.Id, rewards.get(SOURCE_PROFILE), grantedAt));
+            } else if (purpose == MARKETING) {
+                credits.add(credit(member.Id, rewards.get(SOURCE_CONSENT), grantedAt));
             }
         }
         // SYSTEM_MODE záměrně: souhlas zakládá i portálový uživatel, který na členy a knihu kapek
