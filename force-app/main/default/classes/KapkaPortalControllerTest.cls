@@ -30,6 +30,33 @@ private class KapkaPortalControllerTest {
         );
     }
 
+    // AC-3.2
+    @IsTest
+    static void controllerNeverReturnsOtherMember() {
+        // Pokud je přihlášena Jana a existuje člen Petr s 2 000 kapkami
+        User jana = KapkaTestDataFactory.createPortalMember('Jana', 'Nováková');
+        User petr = KapkaTestDataFactory.createPortalMember('Petr', 'Svoboda');
+        insert new List<Points_Transaction__c>{
+            KapkaTestDataFactory.makeTransaction(KapkaTestDataFactory.memberOf(jana).Id, EARN, POSTED, 109),
+            KapkaTestDataFactory.makeTransaction(KapkaTestDataFactory.memberOf(petr).Id, EARN, POSTED, 2000)
+        };
+
+        // Když portál načte data člena
+        KapkaPortalController.MemberView shown;
+        Test.startTest();
+        System.runAs(jana) {
+            shown = KapkaPortalController.getCurrentMember();
+        }
+        Test.stopTest();
+
+        // Pak dostane jen data Jany
+        Assert.areEqual(
+            new List<Object>{ 'Jana Nováková', (Decimal) 109 },
+            new List<Object>{ shown.name, shown.balance },
+            'Portál nesmí Janě ukázat data jiného člena.'
+        );
+    }
+
     // AC-3.1
     @IsTest
     static void userWithoutMembershipGetsNoMember() {
