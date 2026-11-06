@@ -11,6 +11,7 @@ private class KapkaRedeemServiceTest {
     private static final String SLEVA_NA_PREZUTI = 'Sleva 200 Kč na přezutí';
     private static final Decimal SLEVA_NA_PREZUTI_COST = 500;
     private static final String VOUCHER_CODE_FORMAT = 'KPK-[A-Z0-9]{4}-[A-Z0-9]{4}';
+    private static final String DICTATABLE_CODE = 'KPK-[A-HJKMNP-Z2-9]{4}-[A-HJKMNP-Z2-9]{4}';
 
     // AC-1.1
     @IsTest
@@ -128,6 +129,27 @@ private class KapkaRedeemServiceTest {
             'Tvoje členství v Kapka Klubu není aktivní.',
             refusal,
             'Pozastavený člen nesmí čerpat kapky.'
+        );
+    }
+
+    // AC-6.1
+    @IsTest
+    static void codesAreUniqueAndDictatable() {
+        // Když se vydá 200 voucherů
+        Test.startTest();
+        List<String> codes = KapkaVoucherCodeGenerator.newCodes(200);
+        Test.stopTest();
+
+        // Pak jsou všechny kódy různé a žádný neobsahuje znaky 0, O, 1, I ani L
+        List<String> undictatable = new List<String>();
+        for (String code : codes) {
+            if (!Pattern.matches(DICTATABLE_CODE, code)) {
+                undictatable.add(code);
+            }
+        }
+        Assert.isTrue(
+            new Set<String>(codes).size() == 200 && undictatable.isEmpty(),
+            'Kódy mají být různé a bez znaků 0, O, 1, I, L; nevyhovují: ' + undictatable
         );
     }
 

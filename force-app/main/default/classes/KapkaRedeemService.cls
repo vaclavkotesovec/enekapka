@@ -63,7 +63,7 @@ public with sharing class KapkaRedeemService {
             Loyalty_Member__c = member.Id,
             Reward__c = reward.Id,
             Points_Transaction__c = redemption.Id,
-            Code__c = KapkaVoucherCodeGenerator.newCode(),
+            Code__c = KapkaVoucherCodeGenerator.newCodes(1)[0],
             Status__c = VOUCHER_ISSUED,
             Issued_Date__c = System.now()
         );
