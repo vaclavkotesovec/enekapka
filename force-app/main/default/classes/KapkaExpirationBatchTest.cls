@@ -62,6 +62,36 @@ private class KapkaExpirationBatchTest {
         Assert.areEqual(0, expirationsOf(jana.Id).size(), 'Z vyčerpaného balíčku nemá nic propadnout.');
     }
 
+    // AC-2.1
+    @IsTest
+    static void twoExpiredPackagesMakeOneExpire() {
+        // Pokud Jana má dva prošlé balíčky se zbytky 20 a 30 kapek
+        Loyalty_Member__c jana = KapkaTestDataFactory.createMember('Jana', 'Nováková');
+        Points_Transaction__c older = createEarn(jana.Id, 20, Date.today().addDays(-10));
+        Points_Transaction__c newer = createEarn(jana.Id, 30, Date.today().addDays(-1));
+
+        // Když proběhne expirace
+        runExpiration();
+
+        // Pak má Jana jeden pohyb Expirace −50 kapek a u každého balíčku je vidět, kolik z něj propadlo
+        List<Points_Transaction__c> expirations = expirationsOf(jana.Id);
+        Map<Id, Decimal> expiredByPackage = new Map<Id, Decimal>();
+        for (Points_Allocation__c allocation : [
+            SELECT Credit_Transaction__c, Points__c
+            FROM Points_Allocation__c
+            WHERE Debit_Transaction__r.Type__c = :EXPIRE
+        ]) {
+            expiredByPackage.put(allocation.Credit_Transaction__c, allocation.Points__c);
+        }
+        Assert.isTrue(
+            expirations.size() == 1 &&
+                expirations[0].Points__c == -50 &&
+                expiredByPackage.get(older.Id) == 20 &&
+                expiredByPackage.get(newer.Id) == 30,
+            'Má vzniknout jedna Expirace −50 s alokacemi 20 a 30, je: ' + expirations + ' ' + expiredByPackage
+        );
+    }
+
     private static void runExpiration() {
         Test.startTest();
         Database.executeBatch(new KapkaExpirationBatch());
