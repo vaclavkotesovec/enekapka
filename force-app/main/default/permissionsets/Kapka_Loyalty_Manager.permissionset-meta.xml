@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <applicationVisibilities>
+        <application>Kapka_Klub</application>
+        <visible>true</visible>
+    </applicationVisibilities>
     <description>Loyalty manažer Kapka Klubu: členové, stanice, nákupy, kniha kapek, souhlasy, pravidla, kampaně a katalog odměn. Pohyby kapek, alokace ani členy nelze mazat (smazání člena by kaskádou smazalo knihu kapek).</description>
     <fieldPermissions>
         <editable>true</editable>
@@ -386,4 +390,36 @@
         <recordType>Account.Account</recordType>
         <visible>true</visible>
     </recordTypeVisibilities>
+    <tabSettings>
+        <tab>Earning_Rule__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>Fuel_Station__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>Loyalty_Campaign__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>Loyalty_Member__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>Order__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>Points_Transaction__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>Reward__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>Voucher__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
 </PermissionSet>
