@@ -1,0 +1,12 @@
+{
+  "type" : "sfdc_cms__route",
+  "title" : "Odměny",
+  "contentBody" : {
+    "activeViewId" : "odmeny",
+    "configurationTags" : [],
+    "pageAccess" : "UseParent",
+    "routeType" : "custom-odmeny",
+    "urlPrefix" : "odmeny"
+  },
+  "urlName" : "odmeny"
+}

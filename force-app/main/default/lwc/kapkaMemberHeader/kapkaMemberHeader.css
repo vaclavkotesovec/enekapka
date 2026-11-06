@@ -1,0 +1,7 @@
+@import 'c/kapkaStyles';
+
+.header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--kapka-space-2);
+}

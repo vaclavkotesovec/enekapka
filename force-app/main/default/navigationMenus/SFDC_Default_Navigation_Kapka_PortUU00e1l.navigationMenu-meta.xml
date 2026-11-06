@@ -4,10 +4,31 @@
     <containerType>Network</containerType>
     <label>Default Navigation</label>
     <navigationMenuItem>
-        <label>Topics</label>
+        <label>Domů</label>
         <position>1</position>
-        <publiclyAvailable>true</publiclyAvailable>
-        <target>ShowMoreTopics</target>
-        <type>NavigationalTopic</type>
+        <publiclyAvailable>false</publiclyAvailable>
+        <target>/</target>
+        <type>InternalLink</type>
+    </navigationMenuItem>
+    <navigationMenuItem>
+        <label>Kampaně a aktivity</label>
+        <position>2</position>
+        <publiclyAvailable>false</publiclyAvailable>
+        <target>/kampane</target>
+        <type>InternalLink</type>
+    </navigationMenuItem>
+    <navigationMenuItem>
+        <label>Odměny</label>
+        <position>3</position>
+        <publiclyAvailable>false</publiclyAvailable>
+        <target>/odmeny</target>
+        <type>InternalLink</type>
+    </navigationMenuItem>
+    <navigationMenuItem>
+        <label>Profil</label>
+        <position>4</position>
+        <publiclyAvailable>false</publiclyAvailable>
+        <target>/profil</target>
+        <type>InternalLink</type>
     </navigationMenuItem>
 </NavigationMenu>

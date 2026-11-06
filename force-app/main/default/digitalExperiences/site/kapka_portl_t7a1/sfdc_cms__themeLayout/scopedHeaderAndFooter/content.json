@@ -76,7 +76,7 @@
                                 "lineHeightOverride" : "",
                                 "menuHorizontalAlignment" : "left",
                                 "overrideTextStyle" : false,
-                                "showHomeLink" : true,
+                                "showHomeLink" : false,
                                 "showParentMenuIcon" : true,
                                 "spaceBetweenMenuItems" : "30px",
                                 "textDecorationOverride" : "",
@@ -115,7 +115,7 @@
                                 "modalSubmenuTextStyle" : "body-regular",
                                 "modalTextDecorationOverride" : "",
                                 "modalTextStyle" : "body-regular",
-                                "showHomeLink" : true
+                                "showHomeLink" : false
                               },
                               "definition" : "community_navigation:customizableNavigationHamburgerMenuContainer",
                               "id" : "d8596530-f79c-4f0c-b720-b8ac398ff508",

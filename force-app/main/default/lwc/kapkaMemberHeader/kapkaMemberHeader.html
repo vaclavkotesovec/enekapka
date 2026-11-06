@@ -1,0 +1,14 @@
+<template>
+    <template lwc:if={member}>
+        <section class="kapka-card kapka-card--hlubina header">
+            <p class="kapka-label">Ahoj, {member.name} · {member.status}</p>
+            <span class="kapka-zustatek">{balanceText}</span>
+            <p class="kapka-label">kapek na tvém účtu</p>
+        </section>
+    </template>
+    <template lwc:elseif={errorMessage}>
+        <section class="kapka-card">
+            <p class="kapka-title">{errorMessage}</p>
+        </section>
+    </template>
+</template>
