@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Item_Snapshot_Immutable</fullName>
+    <active>true</active>
+    <description>Produkt, cena a kategorie položky jsou snímek z okamžiku vložení; změna by rozbila součty nákupu i kapky.</description>
+    <errorConditionFormula><![CDATA[AND(NOT(ISNEW()), OR(ISCHANGED(Product__c), ISCHANGED(Unit_Price__c), ISCHANGED(Product_Family__c)))]]></errorConditionFormula>
+    <errorMessage>Produkt, cenu a kategorii položky nelze po vložení měnit. Položku smažte a zapište znovu.</errorMessage>
+</ValidationRule>

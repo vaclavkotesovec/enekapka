@@ -4,7 +4,7 @@
     <description>Druh pohybu kapek.</description>
     <inlineHelpText>Úpravu zakládá jen podpora a vyžaduje důvod.</inlineHelpText>
     <label>Typ</label>
-    <required>false</required>
+    <required>true</required>
     <type>Picklist</type>
     <valueSet>
         <restricted>true</restricted>

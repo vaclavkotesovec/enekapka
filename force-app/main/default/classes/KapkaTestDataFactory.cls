@@ -167,6 +167,31 @@ public class KapkaTestDataFactory {
         );
     }
 
+    /** Uživatel s profilem Standard User a permission setem Kapka_Loyalty_Manager (testy oprávnění). */
+    public static User createLoyaltyManager() {
+        String unique = String.valueOf(Datetime.now().getTime()) + String.valueOf(Crypto.getRandomInteger()).remove('-');
+        User manager = new User(
+            ProfileId = [SELECT Id FROM Profile WHERE Name = 'Standard User' LIMIT 1].Id,
+            Username = 'kapka.manager.' + unique + '@kapka.test',
+            Email = 'kapka.manager@kapka.test',
+            LastName = 'Loyalty manažer',
+            Alias = 'kapkamgr',
+            TimeZoneSidKey = 'Europe/Prague',
+            LocaleSidKey = 'cs_CZ',
+            LanguageLocaleKey = 'en_US',
+            EmailEncodingKey = 'UTF-8'
+        );
+        // Setup objekty v samostatném runAs, aby se nemíchaly s DML na datech testu (MIXED_DML_OPERATION).
+        System.runAs(new User(Id = UserInfo.getUserId())) {
+            insert manager;
+            insert new PermissionSetAssignment(
+                AssigneeId = manager.Id,
+                PermissionSetId = [SELECT Id FROM PermissionSet WHERE Name = 'Kapka_Loyalty_Manager' LIMIT 1].Id
+            );
+        }
+        return manager;
+    }
+
     private static Id personAccountRecordTypeId() {
         return [SELECT Id FROM RecordType WHERE SobjectType = 'Account' AND IsPersonType = TRUE LIMIT 1].Id;
     }

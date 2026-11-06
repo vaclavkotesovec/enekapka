@@ -4,7 +4,7 @@
     <description>Do zůstatku se počítají jen zaúčtované pohyby.</description>
     <inlineHelpText>Čekající pohyb ještě není v zůstatku.</inlineHelpText>
     <label>Stav</label>
-    <required>false</required>
+    <required>true</required>
     <type>Picklist</type>
     <valueSet>
         <restricted>true</restricted>
@@ -12,7 +12,7 @@
             <sorted>false</sorted>
             <value>
                 <fullName>Pending</fullName>
-                <default>false</default>
+                <default>true</default>
                 <label>Čeká</label>
             </value>
             <value>

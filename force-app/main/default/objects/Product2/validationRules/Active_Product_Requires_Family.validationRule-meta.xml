@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Active_Product_Requires_Family</fullName>
+    <active>true</active>
+    <description>Bez kategorie by položky produktu nepadly do paliva ani do ostatního zboží a kapky by se nepřipsaly.</description>
+    <errorConditionFormula><![CDATA[AND(IsActive, ISPICKVAL(Family, ""))]]></errorConditionFormula>
+    <errorDisplayField>Family</errorDisplayField>
+    <errorMessage>Aktivní produkt musí mít kategorii (Palivo nebo Ostatní).</errorMessage>
+</ValidationRule>

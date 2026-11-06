@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Status_Changes_Only_From_Pending</fullName>
+    <active>true</active>
+    <description>Stav se mění jen z Čeká na Zaúčtováno nebo Zrušeno; zpětný přechod by vrátil nebo schoval kapky v zůstatku.</description>
+    <errorConditionFormula><![CDATA[AND(ISCHANGED(Status__c), NOT(ISPICKVAL(PRIORVALUE(Status__c), "Pending")))]]></errorConditionFormula>
+    <errorDisplayField>Status__c</errorDisplayField>
+    <errorMessage>Stav lze změnit jen u čekajícího pohybu.</errorMessage>
+</ValidationRule>
