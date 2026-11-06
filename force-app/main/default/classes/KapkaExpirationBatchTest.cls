@@ -10,6 +10,7 @@ private class KapkaExpirationBatchTest {
     private static final String POSTED = 'Posted';
     private static final String SOURCE_EXPIRATION = 'Expiration';
     private static final String NIGHTLY_AT_TWO = '0 0 2 * * ?';
+    private static final Integer BULK_SIZE = 200;
 
     // AC-1.1
     @IsTest
@@ -179,6 +180,39 @@ private class KapkaExpirationBatchTest {
                 jobs[0].CronExpression == NIGHTLY_AT_TWO &&
                 jobs[0].CronJobDetail.Name == 'Kapka – expirace kapek',
             'Expirace má být naplánovaná každou noc ve 2:00, je: ' + jobs
+        );
+    }
+
+    // Bulk: celá dávka 200 členů v jednom běhu
+    @IsTest
+    static void twoHundredMembersExpireInOneBatch() {
+        // Pokud 200 členů má každý prošlý balíček 10 kapek
+        List<Account> accounts = new List<Account>();
+        for (Integer i = 0; i < BULK_SIZE; i++) {
+            accounts.add(new Account(Name = 'Firma ' + i));
+        }
+        insert accounts;
+        List<Loyalty_Member__c> members = new List<Loyalty_Member__c>();
+        for (Account account : accounts) {
+            members.add(KapkaTestDataFactory.makeMember(account.Id));
+        }
+        insert members;
+        List<Points_Transaction__c> earns = new List<Points_Transaction__c>();
+        for (Loyalty_Member__c member : members) {
+            Points_Transaction__c earn = KapkaTestDataFactory.makeTransaction(member.Id, EARN, POSTED, 10);
+            earn.Expiration_Date__c = Date.today().addDays(-1);
+            earns.add(earn);
+        }
+        insert earns;
+
+        // Když proběhne expirace
+        runExpiration();
+
+        // Pak má každý z nich jeden pohyb Expirace
+        Assert.areEqual(
+            BULK_SIZE,
+            [SELECT COUNT() FROM Points_Transaction__c WHERE Type__c = :EXPIRE AND Points__c = -10],
+            'Každý z 200 členů má mít jednu Expiraci −10 kapek.'
         );
     }
 
