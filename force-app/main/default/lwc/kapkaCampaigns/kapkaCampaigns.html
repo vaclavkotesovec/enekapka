@@ -1,0 +1,14 @@
+<template>
+    <h2>Aktivní kampaně</h2>
+    <template lwc:if={error}><p class="error">{error}</p></template>
+    <template lwc:if={hasCampaigns}>
+        <template for:each={campaigns} for:item="c">
+            <div key={c.name} class="card">
+                <h3>{c.name}</h3>
+                <p>{c.description}</p>
+                <p class="muted">{c.validity}</p>
+            </div>
+        </template>
+    </template>
+    <template lwc:else><p class="muted">Teď neběží žádná kampaň.</p></template>
+</template>
