@@ -4,6 +4,7 @@
  */
 public with sharing class KapkaEarnService {
     private static final String COMPLETED = 'Completed';
+    private static final String ACTIVE = 'Active';
     private static final String EARN = 'Earn';
     private static final String POSTED = 'Posted';
     private static final String SOURCE_PURCHASE = 'Purchase';
@@ -28,9 +29,20 @@ public with sharing class KapkaEarnService {
         // SYSTEM_MODE záměrně: kapky generuje systém. Nákup dokončuje i pokladní import,
         // který nemá práva na knihu kapek ani na pravidla; výsledek musí být stejný pro každého.
         List<Order__c> purchases = [
-            SELECT Id, Loyalty_Member__c, Purchase_Date__c, Fuel_Liters__c, Fuel_Amount__c, Other_Amount__c
+            SELECT
+                Id,
+                Loyalty_Member__c,
+                Loyalty_Member__r.Status__c,
+                Loyalty_Member__r.Enrollment_Date__c,
+                Purchase_Date__c,
+                Fuel_Liters__c,
+                Fuel_Amount__c,
+                Other_Amount__c
             FROM Order__c
-            WHERE Id IN :orderIds AND Loyalty_Member__c != NULL
+            WHERE
+                Id IN :orderIds
+                AND Loyalty_Member__r.Status__c = :ACTIVE
+                AND Id NOT IN (SELECT Order__c FROM Points_Transaction__c WHERE Type__c = :EARN AND Order__c IN :orderIds)
             WITH SYSTEM_MODE
         ];
         List<Earning_Rule__c> rules = [
@@ -43,6 +55,10 @@ public with sharing class KapkaEarnService {
         Map<Id, Loyalty_Member__c> membersToTouch = new Map<Id, Loyalty_Member__c>();
         for (Order__c purchase : purchases) {
             Date purchaseDate = purchase.Purchase_Date__c.date();
+            Date enrolledOn = purchase.Loyalty_Member__r.Enrollment_Date__c;
+            if (enrolledOn != null && purchaseDate < enrolledOn) {
+                continue; // E2: jen nákupy od data registrace
+            }
             Decimal basePoints = 0;
             Integer expirationMonths;
             for (Earning_Rule__c rule : rulesValidOn(rules, purchaseDate)) {
@@ -51,6 +67,9 @@ public with sharing class KapkaEarnService {
                     Integer months = rule.Expiration_Months__c.intValue();
                     expirationMonths = expirationMonths == null ? months : Math.min(expirationMonths, months);
                 }
+            }
+            if (basePoints <= 0) {
+                continue; // E5: 0 kapek = žádný pohyb
             }
             credits.add(
                 new Points_Transaction__c(
